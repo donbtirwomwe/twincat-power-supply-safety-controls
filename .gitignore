@@ -2,6 +2,8 @@
 *.bak
 *.tnzip
 *.tclrs
+*.lic
+*.license
 
 **/_Boot/
 **/_CompileInfo/
