@@ -14,6 +14,8 @@ END_VAR
       <ST><![CDATA[FOR devIdx := 0 TO 19 DO
   IF devIdx < 4 THEN
     GVL.GroupMembership[devIdx] := -1; (** Devices 0-3 not in groups **)
+        ELSIF GVL.UseIndividualBicControl THEN
+          GVL.GroupMembership[devIdx] := -1; (** Individual mode: disable grouping for BIC devices 4-19 **)
   ELSIF devIdx >= 4 AND devIdx <= 7 THEN
     GVL.GroupMembership[devIdx] := 0; (** Group 0: devices 4-7 **)
   ELSIF devIdx >= 8 AND devIdx <= 11 THEN
@@ -33,21 +35,45 @@ VAR
   groupBase : INT;                           (** Base index for group devices **)
   opCount : UINT;                            (** Count of devices with OperationOn **)
   outCount : UINT;                           (** Count of devices with OutputOn **)
+  reverseMode : BOOL;                        (** TRUE when group is in reverse direction **)
+  perDeviceLimit : UINT;                     (** Direction-dependent per-device current limit [A] **)
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-FOR groupIdx := 0 TO 3 DO
+        IF GVL.UseIndividualBicControl THEN
+          FOR groupIdx := 0 TO 3 DO
+            GVL.GroupCapacity[groupIdx] := 0;
+            GVL.NumericOutput[104 + groupIdx] := 0;
+          END_FOR;
+          RETURN;
+        END_IF;
+
+        FOR groupIdx := 0 TO 3 DO
   groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
   activeDevices := 0;
   opCount := 0;
   outCount := 0;
   GVL.GroupCapacity[groupIdx] := 0;
+  reverseMode := FALSE;
 
-  (** Calculate active devices based on input voltage feedback **)
+  FOR devIdx := groupBase TO groupBase + 3 DO
+    IF devIdx <= 19 AND GVL.Direction[devIdx] THEN
+      reverseMode := TRUE;
+      EXIT;
+    END_IF;
+  END_FOR;
+
+  IF reverseMode THEN
+    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_REV); (** 64.3A -> 64A for UINT capacity channel **)
+  ELSE
+    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_FWD); (** 80A **)
+  END_IF;
+
+  (** Calculate active healthy devices for limit calculation **)
   FOR devIdx := groupBase TO groupBase + 3 DO
     IF devIdx <= 19 THEN
-      IF GVL.Vin[devIdx] > 100 THEN
+      IF GVL.Vin[devIdx] > 100 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
         activeDevices := activeDevices + 1;
       END_IF;
       IF GVL.OperationOn[devIdx] THEN
@@ -58,7 +84,7 @@ FOR groupIdx := 0 TO 3 DO
       END_IF;
     END_IF;
   END_FOR;
-  GVL.GroupCapacity[groupIdx] := activeDevices * GVL_Constant.IoutMax; (** 75A per device **)
+  GVL.GroupCapacity[groupIdx] := activeDevices * perDeviceLimit; (** Active healthy devices x direction-dependent per-device current limit **)
 
   (** Update group status and alarms **)
   IF GVL.GroupMaster[groupIdx] >= 0 AND GVL.GroupMaster[groupIdx] <= 19 THEN
@@ -83,7 +109,14 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-FOR groupIdx := 0 TO 3 DO
+        IF GVL.UseIndividualBicControl THEN
+          FOR groupIdx := 0 TO 3 DO
+            GVL.GroupMaster[groupIdx] := -1;
+          END_FOR;
+          RETURN;
+        END_IF;
+
+        FOR groupIdx := 0 TO 3 DO
   groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
   oldMaster := GVL.GroupMaster[groupIdx];
   GVL.GroupMaster[groupIdx] := -1;

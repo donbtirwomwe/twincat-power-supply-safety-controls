@@ -82,6 +82,21 @@ Alias devices:
 - **50 ms minimum command spacing**: Required by DPU CAN protocol; enforced in `ApplyCommands` and `DeviceManager.Poll`.
 - **BIC group setpoints**: Group master/slave assignment and `SYSTEM_CONFIG` timing — debugging deferred; see `ProcessInputs` lines ~380–420.
 
+### March 30, 2026 Update
+
+- **BIC limits aligned to hardware (24 V platform)**:
+  `MIN_VOLTAGE=19`, `MAX_VOLTAGE=28`, forward current cap `80.0 A`, reverse current cap `64.3 A`.
+- **CC-mode voltage headroom added**:
+  In BIC forward current mode, voltage command is capped at `26.6 V` to preserve ~5% headroom below 28 V max.
+- **CAN command map corrections**:
+  Fan reads corrected to `0x0070` (Fan1) and `0x0071` (Fan2), and BIDIRECTIONAL_CONFIG handled as 2-byte DLC4.
+- **Grouped BIC control behavior**:
+  In grouped non-maintenance mode, current demand is split across active healthy devices in each group and constrained by direction-dependent per-device limits.
+- **Group feedback to Morphee without remap**:
+  Group masters now publish aggregated group telemetry/status through existing master device channels (Vin/Vout, Iout, temp, fans, fault/status bits).
+- **Manual mode/test interaction fix**:
+  `SetpointTest` no longer forces individual BIC control unless test `Enable` is TRUE, so Morphee maintenance/non-maintenance mode selection is respected.
+
 ---
 
 ## Build & Deploy

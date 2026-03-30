@@ -79,6 +79,7 @@
     UseTempGroupInputs : BOOL := FALSE;        (** When TRUE, EthercatManager will read group inputs from TempGroupInput instead of NumericInput **)
     TempGroupInput : ARRAY[0..27] OF WORD;     (** Temporary group inputs mapping for testing; indexes 0..27 map to group base 10..37 **) 
     UseTempBus1Direct : BOOL := FALSE;         (** When TRUE, EthercatManager will read Bus1 device inputs from TempBus1* arrays instead of NumericInput **)
+    UseIndividualBicControl : BOOL := FALSE;   (** When TRUE, BIC devices 4..19 are controlled individually (no group/master logic) **)
     TempBus1VoutSetpoint : ARRAY[0..3] OF WORD;(** Temporary Bus1 voltage setpoints, V*100 **)
     TempBus1IoutSetpoint : ARRAY[0..3] OF WORD;(** Temporary Bus1 current setpoints, A*100 **)
     TempBus1Flags : ARRAY[0..3] OF WORD;       (** Temporary Bus1 flags, same bit mapping as device flags **)

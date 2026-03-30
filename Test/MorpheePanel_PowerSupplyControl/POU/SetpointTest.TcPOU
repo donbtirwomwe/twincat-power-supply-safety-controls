@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
   <POU Name="SetpointTest" Id="{a1b2c3d4-1234-5678-abcd-ef0123456789}" SpecialFunc="None">
     <Declaration><![CDATA[
@@ -25,7 +25,7 @@
    TempGroupInput layout (28 WORDs, groups 0-3 x 7 WORDs each):
      Offset 0  (group 0 base) : VoutSetpoint  (desired V * 100)
      Offset 1                 : IoutSetpoint  (desired A * 100)
-     Offset 2                 : Flags         (bit 0=OutputOn, bit 1=OperationOn, bit 2=Voltage, bit 3=Current)
+    Offset 2                 : Flags         (bit 0=Direction, bit 1=OperationOn, bit 2=Current, bit 3=Voltage, bit 4=OutputOn)
      Offset 3                 : VoutSetMin    (min V * 100)
      Offset 4                 : VoutSetMax    (max V * 100)
      Offset 5                 : IoutSetMin    (min A * 100)
@@ -38,6 +38,7 @@ VAR
   Enable_Prev    : BOOL := FALSE;      (* Previous value for edge detection *)
 
   EnableBus1Direct : BOOL := FALSE;    (* TRUE: directly drive devices 0..3 setpoints/flags *)
+  EnableBicIndividualControl : BOOL := FALSE; (* TRUE: disable BIC grouping and control devices 4..19 individually via NumericInput device slots *)
   Bus1DeviceMask   : BYTE := 16#0F;    (* bit0..bit3 select Bus1 devices to drive *)
   Bus1Direction    : BOOL := FALSE;    (* FALSE = AC->DC charge direction for DPU *)
   Bus1VoutTarget   : REAL := 28.0;     (* Direct voltage setpoint [V] for devices 0..3 *)
@@ -53,48 +54,53 @@ VAR
 
   UseCommonAllGroups : BOOL := TRUE;   (* TRUE: push one shared profile to all 4 groups on enable *)
   CommonVoutTarget   : REAL := 28.0;   (* Shared voltage target [V] *)
-  CommonIoutTarget   : REAL := 10.0;   (* Shared current target [A] *)
-  CommonFlags        : WORD := 16#001A;(* bit1=OperationOn, bit3=Voltage, bit4=OutputOn *)
-  CommonVoutSetMin   : REAL := 0.0;
-  CommonVoutSetMax   : REAL := 500.0;
+  CommonIoutTarget   : REAL := 80.0;   (* Shared current target [A] *)
+  CommonDirection    : BOOL := FALSE;
+  CommonOperationOn  : BOOL := TRUE;
+  CommonVoltageMode  : BOOL := TRUE;
+  CommonCurrentMode  : BOOL := FALSE;
+  CommonOutputOn     : BOOL := TRUE;
+  CommonFlags        : WORD := 16#001A;(* built from Common* booleans *)
+  CommonVoutSetMin   : REAL := 19.0;
+  CommonVoutSetMax   : REAL := 28.0;
   CommonIoutSetMin   : REAL := 0.0;
-  CommonIoutSetMax   : REAL := 300.0;
+  CommonIoutSetMax   : REAL := 80.0;
 
   (* Group 0 test parameters (indices 0-6 in TempGroupInput) *)
   G0_VoutTarget  : REAL := 28.0;       (* Desired voltage [V] – will be stored as WORD(value*100) *)
-  G0_IoutTarget  : REAL := 10.0;       (* Desired current [A] – stored as WORD(value*100) *)
+  G0_IoutTarget  : REAL := 80.0;       (* Desired current [A] – stored as WORD(value*100) *)
   G0_Flags       : WORD := 16#001A;    (* bit1=OperationOn, bit3=Voltage, bit4=OutputOn *)
-  G0_VoutSetMin  : REAL := 0.0;
-  G0_VoutSetMax  : REAL := 500.0;
+  G0_VoutSetMin  : REAL := 19.0;
+  G0_VoutSetMax  : REAL := 28.0;
   G0_IoutSetMin  : REAL := 0.0;
-  G0_IoutSetMax  : REAL := 300.0;
+  G0_IoutSetMax  : REAL := 80.0;
 
   (* Group 1 test parameters (indices 7-13 in TempGroupInput) *)
   G1_VoutTarget  : REAL := 28.0;
-  G1_IoutTarget  : REAL := 10.0;
+  G1_IoutTarget  : REAL := 80.0;
   G1_Flags       : WORD := 16#001A;
-  G1_VoutSetMin  : REAL := 0.0;
-  G1_VoutSetMax  : REAL := 500.0;
+  G1_VoutSetMin  : REAL := 19.0;
+  G1_VoutSetMax  : REAL := 28.0;
   G1_IoutSetMin  : REAL := 0.0;
-  G1_IoutSetMax  : REAL := 300.0;
+  G1_IoutSetMax  : REAL := 80.0;
 
   (* Group 2 test parameters (indices 14-20 in TempGroupInput) *)
   G2_VoutTarget  : REAL := 28.0;
-  G2_IoutTarget  : REAL := 10.0;
+  G2_IoutTarget  : REAL := 80.0;
   G2_Flags       : WORD := 16#001A;
-  G2_VoutSetMin  : REAL := 0.0;
-  G2_VoutSetMax  : REAL := 500.0;
+  G2_VoutSetMin  : REAL := 19.0;
+  G2_VoutSetMax  : REAL := 28.0;
   G2_IoutSetMin  : REAL := 0.0;
-  G2_IoutSetMax  : REAL := 300.0;
+  G2_IoutSetMax  : REAL := 80.0;
 
   (* Group 3 test parameters (indices 21-27 in TempGroupInput) *)
   G3_VoutTarget  : REAL := 28.0;
-  G3_IoutTarget  : REAL := 10.0;
+  G3_IoutTarget  : REAL := 80.0;
   G3_Flags       : WORD := 16#001A;
-  G3_VoutSetMin  : REAL := 0.0;
-  G3_VoutSetMax  : REAL := 500.0;
+  G3_VoutSetMin  : REAL := 19.0;
+  G3_VoutSetMax  : REAL := 28.0;
   G3_IoutSetMin  : REAL := 0.0;
-  G3_IoutSetMax  : REAL := 300.0;
+  G3_IoutSetMax  : REAL := 80.0;
 
   SetpointApplied : BOOL := FALSE;     (* TRUE while temp inputs are active *)
   busDev          : INT;
@@ -105,7 +111,17 @@ END_VAR
       <ST><![CDATA[
 (* ---- While enabled: continuously refresh temp group inputs ---- *)
 IF Enable THEN
+  GVL.UseIndividualBicControl := EnableBicIndividualControl;
+END_IF;
+
+IF Enable THEN
   IF UseCommonAllGroups THEN
+    CommonFlags := SEL(CommonDirection, 16#0000, 16#0001)
+                OR SEL(CommonOperationOn, 16#0000, 16#0002)
+                OR SEL(CommonCurrentMode, 16#0000, 16#0004)
+                OR SEL(CommonVoltageMode, 16#0000, 16#0008)
+                OR SEL(CommonOutputOn, 16#0000, 16#0010);
+
     G0_VoutTarget := CommonVoutTarget;
     G0_IoutTarget := CommonIoutTarget;
     G0_Flags := CommonFlags;
@@ -232,5 +248,9 @@ END_IF;
 Enable_Prev := Enable;
 ]]></ST>
     </Implementation>
+    <LineIds Name="SetpointTest">
+      <LineId Id="3" Count="135" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
   </POU>
 </TcPlcObject>

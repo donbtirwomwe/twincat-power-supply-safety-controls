@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
   <GVL Name="GVL_Constant" Id="{7718ce57-0681-4809-ba8b-af8e8a7d9d96}">
     <Declaration><![CDATA[VAR_GLOBAL CONSTANT
-  CMD_BIDIRECTIONAL_CONFIG : UINT := 16#0140; (* R/W, 1 byte: Bidirectional config, DLC 3 *)
+  CMD_BIDIRECTIONAL_CONFIG : UINT := 16#0140; (* R/W, 2 bytes: Bidirectional config, DLC 4 *)
   CMD_DIRECTION_CTRL : UINT := 16#0100;     (* R/W, 1 byte: 00h=AC-to-DC, 01h=DC-to-AC, DLC 3 *)
   CMD_FAULT_STATUS : UINT := 16#0040;   (* R, 2 bytes: Fault status *)
   CMD_IOUT_SET : UINT := 16#0030;       (* R/W, 2 bytes: Current setpoint, DLC 4 *)
@@ -16,8 +16,8 @@
   CMD_MFR_SERIAL_B0B5 : UINT := 16#0087;    (* R/W, 6 bytes: Serial number, bytes 0-5 *)
   CMD_MFR_SERIAL_B6B11 : UINT := 16#0088;   (* R/W, 6 bytes: Serial number, bytes 6-11 *)
   CMD_OPERATION : UINT := 16#0000;      (* R/W, 1 byte: 00h=OFF, 01h=ON, DLC 3 *)
-  CMD_READ_FAN_SPEED1 : UINT := 16#0071;    (* R, 2 bytes: Fan 1 speed *)
-  CMD_READ_FAN_SPEED2 : UINT := 16#0072;    (* R, 2 bytes: Fan 2 speed *)
+  CMD_READ_FAN_SPEED1 : UINT := 16#0070;    (* R, 2 bytes: Fan 1 speed *)
+  CMD_READ_FAN_SPEED2 : UINT := 16#0071;    (* R, 2 bytes: Fan 2 speed *)
   CMD_READ_IOUT : UINT := 16#0061;      (* R, 2 bytes: Output current, F=0.01 or 0.1 *)
   CMD_READ_TEMPERATURE_1 : UINT := 16#0062; (* R, 2 bytes: Temperature, F=0.1 *)
   CMD_READ_VIN : UINT := 16#0050;       (* R, 2 bytes: Input voltage, F=0.1 *)
@@ -30,16 +30,19 @@
   CMD_VOUT_SET : UINT := 16#0020;       (* R/W, 2 bytes: Voltage setpoint, DLC 4 *)
   ESTOPTIME : TIME := T#10s;            (* Delay before E-Stop disables outputs *)
   HEARTBEATTIMEOUT : TIME := T#45ms;    (* Timeout for Morphee heartbeat *)
-  IoutMax : UINT := 75;               (* Maximum current per BIC-2200 device, 2200A *)
+  IoutMax : UINT := 80;               (* Legacy per-device current limit [A] for generic group-capacity math *)
+  BIC24_IOUT_MAX_FWD : REAL := 80.0;  (* BIC-2200-24 forward current max [A] in battery mode (IOUT_SET) *)
+  BIC24_IOUT_MAX_REV : REAL := 64.3;  (* BIC-2200-24 reverse current max [A] in battery mode (REVERSE_IOUT_SET) *)
+  BIC24_VOUT_CC_MAX : REAL := 26.6;   (* BIC CC-mode voltage ceiling [V]: MAX_VOLTAGE/1.05, preserves 5% headroom below 28V hardware max in CC operation *)
   MAX_CURRENT : UINT := 270;            (* Maximum allowable current limit, 270A, unscaled, per CBU group *)
-  MAX_VOLTAGE : UINT := 32;             (* Maximum allowable voltage limit, 32V, unscaled *)
+  MAX_VOLTAGE : UINT := 28;             (* Maximum allowable voltage limit, 28V, unscaled for BIC-2200-24 *)
   MAXCOMMSTALE : TIME := T#2s;          (* Threshold for stale communication data *)
   MAXCOMMTIMEOUT : UINT := 200;         (* Max comm timeouts before fault, 2s at 10ms cycle *)
   MfrCommands : ARRAY[0..8] OF UINT := [CMD_MFR_ID_B0B5, CMD_MFR_ID_B6B11, CMD_MFR_MODEL_B0B5,
                                         CMD_MFR_MODEL_B6B11, CMD_MFR_REVISION_B0B5, CMD_MFR_LOCATION_B0B2,
                                         CMD_MFR_DATE_B0B5, CMD_MFR_SERIAL_B0B5, CMD_MFR_SERIAL_B6B11]; (* Commands for Morphee initialization *)
   MIN_CURRENT : UINT := 0;              (* Minimum allowable current limit, 0A, unscaled *)
-  MIN_VOLTAGE : UINT := 24;             (* Minimum allowable voltage limit, 24V, unscaled *)
+  MIN_VOLTAGE : UINT := 19;             (* Minimum allowable voltage limit, 19V, unscaled for BIC-2200-24 *)
   MINSUCCESSCLEAR : UINT := 3;          (* Minimum successful polls to clear fault *)
   MODE_CURRENT_FWD : BYTE := 1;         (* Current control, forward direction *)
   MODE_CURRENT_REV : BYTE := 3;         (* Current control, reverse direction *)

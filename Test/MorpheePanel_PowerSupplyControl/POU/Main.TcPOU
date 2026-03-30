@@ -43,13 +43,13 @@ IF CycleCounter >= 10 THEN
     Devices[i](DeviceIndex := i, Reset := FALSE); // Update device managers without reset
     Devices[i].Poll();                        // Poll CAN devices for data
   END_FOR;
+  SetpointTest();                             // TEMP: run setpoint test before group/input processing
   SafetyMgr.UpdateSafety();                   // Update safety conditions
   GroupMgr.UpdateGroupMasters();              // Update group master assignments
   GroupMgr.UpdateGroupCapacity();             // Update group capacities and demands
   EthercatMgr.ProcessInputs();                // Process EtherCAT inputs
   EthercatMgr.UpdateOutputs();                // Update EtherCAT outputs
   // Commands are already sent inside EthercatMgr.ProcessInputs() via THIS^.ApplyCommands(...)
-  SetpointTest();                             // TEMP: run setpoint test (remove when done)
   CycleCounter := 0;                          // Reset cycle counter
 END_IF;
 ]]></ST>
