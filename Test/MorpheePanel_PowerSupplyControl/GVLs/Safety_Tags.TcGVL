@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <GVL Name="Safety_Tags" Id="{a36fc3c1-26ca-4ca9-8fbb-6959cc4e5ca4}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	Reset AT %Q*: BOOL;
+	Run AT %Q*: BOOL;
+	
+	Estop_ok AT %I*: BOOL;
+	ECU1_2_Ok AT %I*: BOOL;
+	CBU_LB_Ok AT %I*: BOOL;
+	MCS_OK AT %I*: BOOL;
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

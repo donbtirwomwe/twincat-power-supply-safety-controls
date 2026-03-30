@@ -1,0 +1,1149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="EthercatManager" Id="{f73e9df5-d22b-4027-8eaf-ab5cb0520b6c}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK EthercatManager
+VAR
+  IsInitPhase : BOOL := FALSE;               (* TRUE during initialization phase *)
+  InitCycle : INT := 0;                      (* Current initialization cycle, 0-5 *)
+  LastVoutSetpoint : ARRAY[0..19] OF UINT;   (* Last voltage setpoint sent *)
+  LastIoutSetpoint : ARRAY[0..19] OF UINT;   (* Last current setpoint sent *)
+  LastOutputOn : ARRAY[0..19] OF BOOL;       (* Last output enabled state *)
+  LastOperationOn : ARRAY[0..19] OF BOOL;    (* Last operation state *)
+  LastDirection : ARRAY[0..19] OF BOOL;      (* Last direction state *)
+  fbDeviceManager : DeviceManager;           (* Device manager instance *)
+  DataRefreshRequired : BOOL;                (* Flag for data refresh required *)
+  RefreshTableRequired : BOOL;               (* Flag for table refresh required *)
+  InitTimeout : TON;                         (* 10s timeout for init cycles *)
+  LastMorpheeSignal : UINT;                  (* Track last Morphee signal *)
+  VoutSetMin : ARRAY[0..19] OF UINT;		 (* Vout min limit *)
+  VoutSetMax : ARRAY[0..19] OF UINT; 		 (* Vout max limit *)
+  IoutSetMin : ARRAY[0..19] OF UINT; 		 (* Iout min limit *)
+  IoutSetMax : ARRAY[0..19] OF UINT; 		 (* Iout max limit *)
+  CanCtrlConfigured : ARRAY[0..19] OF BOOL; (* True after SYSTEM_CONFIG(0x00C2)=0x0003 is sent successfully *)
+  commandData : UINT;                        (** Data to use for command **)
+  LastCommandSentTime : ARRAY[0..19] OF TIME; (* Last successful write timestamp per device *)
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Comment Section: GVL.NumericInput and GVL.NumericOutput Mapping *)
+(* Purpose: This section provides a detailed reference for the GVL.NumericInput and GVL.NumericOutput *)
+(* mappings used by the EthercatManager function block, including system inputs, group inputs, *)
+(* device inputs, and output structures. All indices are carefully allocated to ensure no overlap *)
+(* and to support the system's parallel configuration, maintenance mode, and group operation. *)
+
+(* GVL.NumericInput Mapping *)
+(* Overview: GVL.NumericInput stores system-wide inputs, group inputs, and device inputs for the *)
+(* 20 power supply units (devices 0-19) and 4 groups (LVLA1-LVLA4). The allocation starts system *)
+(* inputs at index 0, with group and device inputs starting at index 10. Each device and group *)
+(* has 7 inputs to support setpoints, flags, and limits. *)
+
+(* 0-4: System-Level Inputs and Reserves (5 indices) *)
+(*   0: GVL.SystemAlarms (WORD to UINT) *)
+(*      - Stores system-wide alarms, processed in ProcessInputs *)
+(*   1: System Flags (WORD) *)
+(*      - Bit 0 (16#0001): GVL.SystemFlags (includes maintenanceMode, set in ProcessInputs) *)
+(*        - maintenanceMode = TRUE: Disables groups, uses individual device inputs *)
+(*        - maintenanceMode = FALSE: Enables groups, master uses group inputs *)
+(*      - Bit 1 (16#0002): GVL.EthercatAliveFromMaster (EtherCAT master status) *)
+(*      - Bit 2 (16#0004): GVL.RemoteMasterAlive (Remote master status) *)
+(*      - Bits 3-15: Unallocated (reserved for future flags) *)
+(*   2: Morphee Initialization Signal (DWORD to UINT, processed in UpdateOutputs) *)
+(*      - Values 1-5: Initialization cycle *)
+(*      - Value 100: Complete initialization *)
+(*   3-4: Reserved *)
+(*      - Unallocated indices for future system-wide inputs *)
+(* 5  EL2809 rack 1 slot 1
+-9: Unallocated *)
+(*      - Reserved for future system expansion *)
+(* 10-37: Group Inputs (4 groups x 7 inputs = 28 indices) *)
+(*   - Each group (LVLA1-LVLA4) has 7 inputs, treating the group as a single device in normal mode *)
+(*   - For groupIdx = 0 TO 3, baseIdx = 10 + (groupIdx * 7): *)
+(*     baseIdx: GroupVoutSetpoint (Voltage setpoint for group, applied to master) *)
+(*     baseIdx + 1: GroupIoutSetpoint (Current setpoint for master, internally distributed) *)
+(*     baseIdx + 2: Group Flags (WORD, similar to device flags) *)
+(*       - Bit 0 (16#0001): GroupDirection (Forward/reverse, assumed) *)
+(*       - Bit 1 (16#0002): GroupOperationOn (Operation active, assumed) *)
+(*       - Bits 2-3 (16#000C): GroupDeviceMode (0-3, assumed) *)
+(*       - Bit 7 (16#0080): GroupEStop (Assumed) *)
+(*     baseIdx + 3: GroupVoutSetMin (Minimum voltage limit for master) *)
+(*     baseIdx + 4: GroupVoutSetMax (Maximum voltage limit for master) *)
+(*     baseIdx + 5: GroupIoutSetMin (Minimum current limit for master) *)
+(*     baseIdx + 6: GroupIoutSetMax (Maximum current limit, constrained by GVL.GroupCapacity) *)
+(*   - Group Index Breakdown: *)
+(*     LVLA1 (groupIdx = 0): 10-16 *)
+(*     LVLA2 (groupIdx = 1): 17-23 *)
+(*     LVLA3 (groupIdx = 2): 24-30 *)
+(*     LVLA4 (groupIdx = 3): 31-37 *)
+(*   - Note: GroupIoutSetMax must not exceed GVL.GroupCapacity (set by GroupManager based *)
+(*     on healthy units, e.g., opCount * 25). Limits are applied in ReadLimits method. *)
+(* 38-177: Device Inputs (20 devices x 7 inputs = 140 indices) *)
+(*   - Each device (0-19) has 7 inputs for setpoints, flags, and limits *)
+(*   - For devIdx = 0 TO 19, baseIdx = 38 + (devIdx * 7): *)
+(*     baseIdx: VoutSetpoint (Voltage setpoint, applied to device in maintenance mode *)
+(*              or master in normal mode) *)
+(*     baseIdx + 1: IoutSetpoint (Current setpoint, applied to device or master) *)
+(*     baseIdx + 2: Flags (WORD, processed in ProcessInputs) *)
+(*       - Bit 0 (16#0001): Direction (Forward/reverse) *)
+(*       - Bit 1 (16#0002): OperationOn (Operation active) *)
+(*       - Bits 2-3 (16#000C): DeviceMode (0-3, e.g., 1 = current mode, 2 = voltage mode) *)
+(*       - Bit 4 (16#0010): OutputOn (Device enabled) *)
+(*       - Bit 5 (16#0020): OrangeStop *)
+(*       - Bit 6 (16#0040): RedStop *)
+(*       - Bit 7 (16#0080): EStop *)
+(*     baseIdx + 3: VoutSetMin (Minimum voltage limit) *)
+(*     baseIdx + 4: VoutSetMax (Maximum voltage limit) *)
+(*     baseIdx + 5: IoutSetMin (Minimum current limit) *)
+(*     baseIdx + 6: IoutSetMax (Maximum current limit) *)
+(*   - Device Index Breakdown (examples): *)
+(*     devIdx = 0: 38-44 *)
+(*     devIdx = 4: 66-72 *)
+(*     devIdx = 19: 171-177 *)
+(*   - Note: In normal mode, master device's setpoints/limits are overridden by group *)
+(*     inputs (handled in ReadLimits). In maintenance mode, each device uses its own inputs. *)
+(* 178+: Unallocated *)
+(*      - Available for future expansion *)
+
+(* GVL.NumericOutput Mapping *)
+(* Overview: GVL.NumericOutput stores device status, system alarms, group master indices, *)
+(* and group capacities. In initialization mode, it handles manufacturer serial data. *)
+(* 0-99: Device Outputs (20 devices x 5 outputs = 100 indices) *)
+(*   - For devIdx = 0 TO 19, baseIdx = devIdx * 5: *)
+(*     baseIdx: Vin (high 16 bits), Vout (low 16 bits) *)
+(*     baseIdx + 1: Iout (high), Temperature (low) *)
+(*     baseIdx + 2: FanSpeed1 (high), FanSpeed2 (low) *)
+(*     baseIdx + 3: FaultStatus (high 16 bits), Status Flags (low bits) *)
+
+(*       - Bit 0: OperationOn *)
+(*       - Bit 1: Direction *)
+(*       - Bits 2: current*)
+(*       - Bits 3: current*)
+(*       - Bit 4: OutputOn *)
+(*       - Bit 5: OrangeStop *)
+(*       - Bit 6: RedStop *)
+(*       - Bit 7: EStop *)
+(*       - Bit 8: TemperatureFaultHigh *)
+(*     baseIdx + 4: FanSpeed1 (high 16 bits) *)
+(*   - Example: *)
+(*     devIdx = 0: 0-4 *)
+(*     devIdx = 4: 20-24 *)
+(*     devIdx = 19: 95-99 *)
+(* 100: systemAlarms (DWORD, system-wide alarms) *)
+(* 101: System Flags (WORD) *)
+(*   - Bit 0: GVL.SystemFlags *)
+(*   - Bit 1: RefreshTableRequired *)
+(*   - Bit 2: GVL.EthercatAliveFromMaster *)
+(*   - Bit 3: GVL.RemoteMasterAlive *)
+(*   - Bit 4: watchDog (toggled per cycle) *)
+(*   - Bit 5: DataRefreshRequired *)
+(*   - Bit 6: EL3174_Channel1_Alarm *)
+(*   - Bit 7: EL3174_Channel2_Alarm *)
+(*   - Bit 8: EL3174_Channel3_Alarm *)
+(*   - Bit 9: EL3174_Channel4_Alarm *)
+(* 102: GroupMaster[0] (high 16 bits), GroupMaster[1] (low 16 bits) *)
+(* 103: GroupMaster[2] (high), GroupMaster[3] (low) *)
+(* 104-107: Group Status (outCount high 16 bits, opCount low 16 bits) *)
+(*   - 104: LVLA1 (devices 4-7) *)
+(*   - 105: LVLA2 (devices 8-11) *)
+(*   - 106: LVLA3 (devices 12-15) *)
+(*   - 107: LVLA4 (devices 16-19) *)
+(*   - outCount: Number of devices with OutputOn *)
+(*   - opCount: Number of devices with OperationOn *)
+(* 108-111: GVL.GroupCapacity (UINT to DWORD, capacity per group) *)
+(*   - 108: LVLA1 *)
+(*   - 109: LVLA2 *)
+(*   - 110: LVLA3 *)
+(*   - 111: LVLA4 *)
+(*   - Capacity based on healthy units (opCount * 25), influences group limits *)
+(* 0-119 (Initialization Mode): Manufacturer Serial Data *)
+(*   - Used for MfrSerialPersistent during initialization cycles *)
+(*   - Index calculation: idx = (devIdx * 27) + (i * 3) + j *)
+(*   - cmdId (16#80 + i) and serial data packed into WORD *)
+]]></ST>
+    </Implementation>
+    <Method Name="ApplyCommands" Id="{ee2cc573-91f9-4349-9f7c-e0af36fc135f}">
+      <Declaration><![CDATA[METHOD ApplyCommands : BOOL
+VAR_INPUT
+  devIdx : INT;                            (** Device index **)
+  commandCode : UINT;                      (** Command code **)
+  data : UINT;                             (** Command data value **)
+END_VAR
+VAR
+  nowTime : TIME;
+END_VAR
+       
+       ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(** Send CAN commands with polling paused, respecting OutputOn **)
+IF devIdx >= 0 AND devIdx <= 19 THEN
+  (* Re-arm configuration if communication fault is active for this device. *)
+  IF GVL.CommFault[devIdx] THEN
+    CanCtrlConfigured[devIdx] := FALSE;
+  END_IF;
+
+    (* Ensure CAN control mode is enabled for BIC devices (4..19) only.
+      Bus1 DPU devices (0..3) use a different protocol model and should not receive SYSTEM_CONFIG here. *)
+  IF (commandCode = 16#0000 OR commandCode = 16#0020 OR commandCode = 16#0030 OR commandCode = 16#0120 OR commandCode = 16#0130)
+      AND devIdx >= 4 AND NOT CanCtrlConfigured[devIdx] THEN
+    IF fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_SYSTEM_CONFIG, 16#0005) THEN
+      CanCtrlConfigured[devIdx] := TRUE;
+    END_IF;
+    ApplyCommands := FALSE;
+    RETURN;
+  END_IF;
+
+  (* DPU manual requires >=50 ms spacing between commands. Apply per-device write pacing globally for safety. *)
+  nowTime := TIME();
+  IF LastCommandSentTime[devIdx] <> T#0MS AND (nowTime - LastCommandSentTime[devIdx]) < T#50MS THEN
+    ApplyCommands := FALSE;
+    RETURN;
+  END_IF;
+
+  (** Determine command data and clear setpoints based on OutputOn **)
+  IF GVL.OutputOn[devIdx] OR commandCode = 16#0000 OR commandCode = 16#0100 THEN
+    commandData := data; (** Use provided data for enabled output or non-setpoint commands **)
+  ELSE
+    commandData := 0; (** Use zero data for setpoint commands if output disabled **)
+    (** Clear setpoints for relevant commands **)
+    CASE commandCode OF
+      16#0020: (** CMD_VOUT_SET **)
+        GVL.VoutSetpoint[devIdx] := 0.0; (** Clear forward Vout setpoint **)
+      16#0030: (** CMD_IOUT_SET **)
+        GVL.IoutSetpoint[devIdx] := 0.0; (** Clear forward Iout setpoint **)
+      16#0120: (** CMD_REVERSE_VOUT_SET **)
+        GVL.VoutSetRev[devIdx] := 0.0; (** Clear reverse Vout setpoint **)
+      16#0130: (** CMD_REVERSE_IOUT_SET **)
+        GVL.IoutSetRev[devIdx] := 0.0; (** Clear reverse Iout setpoint **)
+    END_CASE;
+  END_IF;
+
+  (** Proceed with command **)
+  GVL.PollingPaused[devIdx] := TRUE; (** Pause polling for this device **)
+  GVL.PollingPauseStartTime[devIdx] := TIME(); (** Record pause start time **)
+  GVL.PollingPauseTimeout[devIdx](IN := TRUE, PT := T#100MS); (** Start 100ms timeout **)
+  CASE commandCode OF
+    16#0000: (** CMD_OPERATION **)
+      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, GVL_Constant.CMD_OPERATION, UINT_TO_BYTE(commandData));
+    16#0100: (** CMD_DIRECTION_CTRL **)
+      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, UINT_TO_BYTE(commandData));
+    16#0020: (** CMD_VOUT_SET **)
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_VOUT_SET, commandData);
+    16#0030: (** CMD_IOUT_SET **)
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_IOUT_SET, commandData);
+    16#0120: (** CMD_REVERSE_VOUT_SET **)
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, commandData);
+    16#0130: (** CMD_REVERSE_IOUT_SET **)
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, commandData);
+    ELSE
+      ApplyCommands := FALSE; (** Invalid command code **)
+      GVL.PollingPaused[devIdx] := FALSE; (** Resume polling on invalid command **)
+      GVL.PollingPauseTimeout[devIdx](IN := FALSE); (** Stop timeout **)
+  END_CASE;
+  IF ApplyCommands THEN
+    LastCommandSentTime[devIdx] := nowTime;
+    (* Force immediate feedback polling after setpoint writes. ReadCommands index: 1=VOUT, 2=IOUT *)
+    CASE commandCode OF
+      16#0020, 16#0120:
+        GVL.ReadCommandIndex[devIdx] := 1;
+      16#0030, 16#0130:
+        GVL.ReadCommandIndex[devIdx] := 2;
+    END_CASE;
+
+    GVL.PollingPaused[devIdx] := FALSE; (** Resume polling after successful write **)
+    GVL.PollingPauseTimeout[devIdx](IN := FALSE); (** Stop timeout **)
+  END_IF;
+ELSE
+  ApplyCommands := FALSE; (** Invalid device index **)
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ProcessInputs" Id="{b2c3d4e5-2345-6789-0123-456789abcdef}">
+      <Declaration><![CDATA[METHOD ProcessInputs
+VAR
+  devIdx : INT;                            (** Device index **)
+  baseIdx : INT;                           (** Base index for device inputs **)
+  flags : WORD;                            (** Device-specific input flags **)
+  systemFlags : WORD;                      (** System flags **)
+  safetyOK : BOOL;                         (** Safety status **)
+  groupIdx : INT;                          (** Group index **)
+  memberIdx : INT;                         (** Member device index **)
+  masterIdx : INT;                         (** Master device index **)
+  groupBase : INT;                         (** Base index for group devices **)
+  maintenanceMode : BOOL;                  (** Maintenance mode status **)
+  isGroupMaster : BOOL;                    (** Group master flag **)
+  clampedVout : UINT;                      (** Clamped voltage setpoint **)
+  clampedIout : UINT;                      (** Clamped current setpoint **)
+  i : INT;                                 (** Loop index for channel mapping **)
+  factorNibble : UINT;                     (** Factor nibble from scaling-factor fields **)
+  setpointIout : REAL;                     (** Clamped Iout setpoint before scaling **)
+  setpointVout : REAL;                     (** Clamped Vout setpoint before scaling **)
+	j: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+
+(** Comment Section: GVL.NumericInput Mapping for ProcessInputs **)
+(** This method processes system, group, and device inputs from GVL.NumericInput, setting **)
+(** setpoints, flags, and maintenance mode. In normal mode (maintenanceMode = FALSE), **)
+(** group flags (Direction, OperationOn, OutputOn) are set for all devices in the group **)
+(** (4-19), but DeviceMode (Voltage, Current, Standby) and setpoints (VoutSetpoint, **)
+(** IoutSetpoint) are set only for the group master. In maintenance mode or for devices **)
+(** 0-3, all flags and setpoints are set per device. Group limits are applied to all **)
+(** devices in the group, with IoutSetMax constrained by the minimum of GroupIoutSetMax **)
+(** and GVL.GroupCapacity (set by GroupManager.UpdateGroupCapacity using input voltage **)
+(** feedback, GVL.Vin > 100). GroupMaster is updated by GroupManager.UpdateGroupMasters **)
+(** using input voltage feedback. Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19. **)
+(** Flags for groups and devices use identical bit assignments. **)
+
+(** GVL.NumericInput Mapping **)
+(** 0-4: System-Level Inputs **)
+(**   0: GVL.SystemAlarms (WORD to UINT) **)
+(**      - System-wide alarms, read into GVL.SystemAlarms **)
+(**   1: System Flags (WORD) **)
+(**      - Bit 0 (16#0001): GVL.SystemFlags (sets maintenanceMode) **)
+(**      - Bit 1 (16#0002): GVL.EthercatAliveFromMaster **)
+(**      - Bit 2 (16#0004): GVL.RemoteMasterAlive **)
+(**   2: Morphee Initialization Signal **)
+(**      - Used in UpdateOutputs, not processed here **)
+(**   3-4: Reserved **)
+(** 5-9: Unallocated **)
+(** 10-37: Group Inputs (4 groups x 7 inputs) **)
+(**   - For groupIdx = 0 TO 3, baseIdx = 10 + (groupIdx * 7): **)
+(**     baseIdx: GroupVoutSetpoint **)
+(**     baseIdx + 1: GroupIoutSetpoint **)
+(**     baseIdx + 2: Group Flags **)
+(**       - Bit 0 (16#0001): Direction **)
+(**       - Bit 1 (16#0002): OperationOn **)
+(**       - Bit 2 (16#0004): DeviceMode Current **)
+(**       - Bit 3 (16#0008): DeviceMode Voltage **)
+(**       - Bit 4 (16#0010): OutputOn **)
+(**     baseIdx + 3: GroupVoutSetMin **)
+(**     baseIdx + 4: GroupVoutSetMax **)
+(**     baseIdx + 5: GroupIoutSetMin **)
+(**     baseIdx + 6: GroupIoutSetMax **)
+(**   - GroupVoutSetpoint, GroupIoutSetpoint, and DeviceMode applied to master device only in normal mode **)
+(**   - GroupVoutSetMin, GroupVoutSetMax, GroupIoutSetMin, GroupIoutSetMax applied to all devices in group **)
+(**   - Group Flags (Direction, OperationOn, OutputOn) set for all devices in group in normal mode **)
+(** 38-177: Device Inputs (20 devices x 7 inputs) **)
+(**   - For devIdx = 0 TO 19, baseIdx = 38 + (devIdx * 7): **)
+(**     baseIdx: VoutSetpoint (Read here) **)
+(**     baseIdx + 1: IoutSetpoint (Read here) **)
+(**     baseIdx + 2: Flags (Read here) **)
+(**       - Bit 0 (16#0001): Direction **)
+(**       - Bit 1 (16#0002): OperationOn **)
+(**       - Bit 2 (16#0004): DeviceMode Current **)
+(**       - Bit 3 (16#0008): DeviceMode Voltage **)
+(**       - Bit 4 (16#0010): OutputOn **)
+(**       - Bit 5 (16#0020): OrangeStop **)
+(**       - Bit 6 (16#0040): RedStop **)
+(**       - Bit 7 (16#0080): EStop **)
+(**     baseIdx + 3: VoutSetMin (Set in ReadLimits) **)
+(**     baseIdx + 4: VoutSetMax **)
+(**     baseIdx + 5: IoutSetMin **)
+(**     baseIdx + 6: IoutSetMax **)
+(** 178+: Unallocated **)
+
+(** Read limits first **)
+THIS^.ReadLimits();
+
+(** Read system alarms **)
+GVL.SystemAlarms := GVL.NumericInput[0]; (** Index 0: System alarms **)
+
+(** Read system flags **)
+systemFlags := GVL.NumericInput[1]; (** Index 1: System flags **)
+GVL.SystemFlags := TO_BYTE(systemFlags AND 16#0001);
+GVL.EthercatAliveFromMaster := (systemFlags AND 16#0002) <> 0;
+GVL.RemoteMasterAlive := (systemFlags AND 16#0004) <> 0;
+maintenanceMode := (systemFlags AND 16#0001) <> 0; (** Maintenance mode flag **)
+
+(** Process EL2809 and EL2798 inputs **)
+FOR j:=0 TO 2 DO
+GVL.EL2809_InputFlags[j] := GVL.NumericInput[5+j]; (** Index 5: EL2809 flags **)
+	FOR i := 0 TO 15 DO
+	  GVL.EL2809_Output[j,i] := (GVL.EL2809_InputFlags[j] AND SHL(TO_WORD(1), i)) <> 0;
+	END_FOR;
+END_FOR;
+
+GVL.EL2798_InputFlags := TO_BYTE(GVL.NumericInput[6]); (** Index 6: EL2798 flags **)
+FOR i := 0 TO 7 DO
+  GVL.EL2798_Output[i] := (GVL.EL2798_InputFlags AND SHL(TO_BYTE(1), i)) <> 0;
+END_FOR;
+
+(** Process group inputs for 4 groups **)
+FOR groupIdx := 0 TO 3 DO
+  baseIdx := 10 + (groupIdx * 7); (** Group inputs start at 10 **)
+  
+  (** Read group inputs **)
+  IF baseIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
+    (** Read master setpoints/flags from temp test input when enabled, else from live NumericInput **)
+    IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
+      setpointVout := UINT_TO_REAL(GVL.TempGroupInput[baseIdx - 10]);
+      setpointIout := UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 1]);
+      flags := GVL.TempGroupInput[(baseIdx - 10) + 2];
+    ELSE
+      setpointVout := UINT_TO_REAL(GVL.NumericInput[baseIdx]);
+      setpointIout := UINT_TO_REAL(GVL.NumericInput[baseIdx + 1]);
+      flags := GVL.NumericInput[baseIdx + 2];
+    END_IF;
+    
+    (** Identify master device for the group **)
+    masterIdx := GVL.GroupMaster[groupIdx]; (** Use GVL.GroupMaster for master device index **)
+    
+    (** Apply setpoints and DeviceMode to master device in normal mode **)
+    IF NOT maintenanceMode AND masterIdx >= 4 AND masterIdx <= 19 THEN
+      (** Set DeviceMode for master **)
+      GVL.Voltage[masterIdx] := (flags AND 16#0008) <> 0;     (** Bit 3: DeviceMode Voltage **)
+      GVL.Current[masterIdx] := (flags AND 16#0004) <> 0;     (** Bit 2: DeviceMode Current **)
+      GVL.Standby[masterIdx] := NOT (GVL.Voltage[masterIdx] OR GVL.Current[masterIdx]); (** Standby when neither Voltage nor Current **)
+
+      (** Set OutputOn for master BEFORE sending setpoint so ApplyCommands guard uses current value **)
+      (** Also reset last setpoint cache when OutputOn transitions FALSE->TRUE to force resend **)
+      IF (flags AND 16#0010) <> 0 AND NOT GVL.OutputOn[masterIdx] THEN
+        THIS^.LastVoutSetpoint[masterIdx] := 0;
+        THIS^.LastIoutSetpoint[masterIdx] := 0;
+      END_IF;
+      GVL.OutputOn[masterIdx] := (flags AND 16#0010) <> 0;
+
+      (** Clamp setpoints within group limits **)
+      IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
+        setpointVout := MIN(MAX(setpointVout / 100, UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 3])), UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 4]));
+        setpointIout := MIN(MAX(setpointIout / 100, UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 5])), UINT_TO_REAL(MIN(GVL.TempGroupInput[(baseIdx - 10) + 6], GVL.GroupCapacity[groupIdx])));
+      ELSE
+        setpointVout := MIN(MAX(setpointVout / 100, UINT_TO_REAL(GVL.NumericInput[baseIdx + 3])), UINT_TO_REAL(GVL.NumericInput[baseIdx + 4])); (** Clamp Vout to GroupVoutSetMin/Max **)
+        setpointIout := MIN(MAX(setpointIout / 100, UINT_TO_REAL(GVL.NumericInput[baseIdx + 5])), UINT_TO_REAL(MIN(GVL.NumericInput[baseIdx + 6], GVL.GroupCapacity[groupIdx]))); (** Clamp Iout to GroupIoutSetMin/min(GroupIoutSetMax, GroupCapacity) **)
+      END_IF;
+      
+      (** Scale and apply to master **)
+      clampedVout := REAL_TO_UINT(setpointVout * 100.0);
+      clampedIout := REAL_TO_UINT(setpointIout * 100.0);
+      
+      IF clampedVout <> THIS^.LastVoutSetpoint[masterIdx] THEN
+        IF THIS^.ApplyCommands(masterIdx, GVL_Constant.CMD_VOUT_SET, clampedVout) THEN (** CMD_VOUT_SET **)
+          THIS^.LastVoutSetpoint[masterIdx] := clampedVout;
+        END_IF;
+      END_IF;
+      
+      IF clampedIout <> THIS^.LastIoutSetpoint[masterIdx] THEN
+        IF THIS^.ApplyCommands(masterIdx, GVL_Constant.CMD_IOUT_SET, clampedIout) THEN (** CMD_IOUT_SET **)
+          THIS^.LastIoutSetpoint[masterIdx] := clampedIout;
+        END_IF;
+      END_IF;
+    END_IF;
+    
+    (** Set group flags (excluding DeviceMode) and limits for all devices in group in normal mode **)
+    IF NOT maintenanceMode THEN
+      FOR devIdx := 0 TO 19 DO
+        IF GVL.GroupMembership[devIdx] = groupIdx THEN
+          (** Set group flags **)
+          GVL.Direction[devIdx] := (flags AND 16#0001) <> 0;   (** Bit 0: Direction **)
+          GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
+          GVL.OutputOn[devIdx] := (flags AND 16#0010) <> 0;    (** Bit 4: OutputOn **)
+          
+          (** Set limits to all devices in the group **)
+          IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
+            THIS^.VoutSetMin[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 3];
+            THIS^.VoutSetMax[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 4];
+            THIS^.IoutSetMin[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 5];
+            THIS^.IoutSetMax[devIdx] := MIN(GVL.TempGroupInput[(baseIdx - 10) + 6], GVL.GroupCapacity[groupIdx]);
+          ELSE
+            THIS^.VoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 3]; (** GroupVoutSetMin **)
+            THIS^.VoutSetMax[devIdx] := GVL.NumericInput[baseIdx + 4]; (** GroupVoutSetMax **)
+            THIS^.IoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 5]; (** GroupIoutSetMin **)
+            THIS^.IoutSetMax[devIdx] := MIN(GVL.NumericInput[baseIdx + 6], GVL.GroupCapacity[groupIdx]); (** GroupIoutSetMax, constrained by min(GroupIoutSetMax, GroupCapacity) **)
+          END_IF;
+          
+          (** Queue commands for group flags if changed **)
+          IF GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx] THEN
+            IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
+              THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
+            END_IF;
+          END_IF;
+          
+          IF GVL.OperationOn[devIdx] <> THIS^.LastOperationOn[devIdx] THEN
+            IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, BOOL_TO_UINT(GVL.OperationOn[devIdx])) THEN (** CMD_OPERATION **)
+              THIS^.LastOperationOn[devIdx] := GVL.OperationOn[devIdx];
+            END_IF;
+          END_IF;
+        END_IF;
+      END_FOR;
+    END_IF;
+  END_IF;
+END_FOR;
+
+(** Process device inputs and queue control commands **)
+FOR devIdx := 0 TO 19 DO
+  baseIdx := 38 + (devIdx * 7); (** Device inputs start at 38 **)
+  
+  (** Read device setpoints and flags **)
+  IF baseIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
+    (** Set setpoints for non-master devices or in maintenance mode **)
+    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
+      GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1VoutSetpoint[devIdx]); (** Temp Bus1 VoutSetpoint **)
+      GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1IoutSetpoint[devIdx]); (** Temp Bus1 IoutSetpoint **)
+    ELSIF maintenanceMode OR devIdx < 4 OR GVL.GroupMembership[devIdx] = -1 OR NOT (GVL.GroupMaster[GVL.GroupMembership[devIdx]] = devIdx) THEN
+      GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx]); (** VoutSetpoint **)
+      GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx + 1]); (** IoutSetpoint **)
+    END_IF;
+    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
+      flags := GVL.TempBus1Flags[devIdx]; (** Temp Bus1 device flags **)
+    ELSE
+      flags := GVL.NumericInput[baseIdx + 2]; (** Device flags **)
+    END_IF;
+    
+    (** Set device flags in maintenance mode or for devices 0-3 or non-master devices **)
+    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
+      GVL.Voltage[devIdx] := (flags AND 16#0008) <> 0; (** Bit 3: DeviceMode Voltage **)
+      GVL.Current[devIdx] := (flags AND 16#0004) <> 0; (** Bit 2: DeviceMode Current **)
+      GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]); (** Standby when neither Voltage nor Current **)
+      GVL.Direction[devIdx] := (flags AND 16#0001) <> 0; (** Bit 0: Direction **)
+      GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
+      GVL.OutputOn[devIdx] := (flags AND 16#0010) <> 0; (** Bit 4: OutputOn **)
+    ELSIF maintenanceMode OR devIdx < 4 OR GVL.GroupMembership[devIdx] = -1 OR NOT (GVL.GroupMaster[GVL.GroupMembership[devIdx]] = devIdx) THEN
+      GVL.Voltage[devIdx] := (flags AND 16#0008) <> 0; (** Bit 3: DeviceMode Voltage **)
+      GVL.Current[devIdx] := (flags AND 16#0004) <> 0; (** Bit 2: DeviceMode Current **)
+      GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]); (** Standby when neither Voltage nor Current **)
+      GVL.Direction[devIdx] := (flags AND 16#0001) <> 0; (** Bit 0: Direction **)
+      GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
+      GVL.OutputOn[devIdx] := (flags AND 16#0010) <> 0; (** Bit 4: OutputOn **)
+    END_IF;
+    GVL.OrangeStop[devIdx] := (flags AND 16#0020) <> 0; (** Bit 5: OrangeStop **)
+    GVL.RedStop[devIdx] := (flags AND 16#0040) <> 0; (** Bit 6: RedStop **)
+    GVL.EStop[devIdx] := (flags AND 16#0080) <> 0; (** Bit 7: EStop **)
+  END_IF;
+
+  (** Queue direction command if requested direction differs from device feedback **)
+  IF (GVL.UseTempBus1Direct AND devIdx <= 3 AND GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx]) OR
+     (NOT (GVL.UseTempBus1Direct AND devIdx <= 3) AND (GVL.Direction[devIdx] <> ((GVL.DeviceSystemFlags[devIdx] AND 16#0008) <> 0) OR 
+     GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx])) THEN
+    IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
+      THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
+    END_IF;
+  END_IF;
+
+  (** Queue operation command **)
+  IF GVL.OperationOn[devIdx] <> THIS^.LastOperationOn[devIdx] THEN
+    IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, BOOL_TO_UINT(GVL.OperationOn[devIdx])) THEN (** CMD_OPERATION **)
+      THIS^.LastOperationOn[devIdx] := GVL.OperationOn[devIdx];
+    END_IF;
+  END_IF;
+
+  (** Queue setpoint commands based on DeviceMode and Direction **)
+  IF GVL.Standby[devIdx] THEN
+    (** Standby mode **)
+    IF THIS^.LastVoutSetpoint[devIdx] <> 0 THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, 0) THEN (** CMD_REVERSE_VOUT_SET, 0 **)
+          GVL.VoutSetRev[devIdx] := 0.0; (** Clear reverse Vout setpoint **)
+          THIS^.LastVoutSetpoint[devIdx] := 0;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_VOUT_SET, 0) THEN (** CMD_VOUT_SET, 0 **)
+          GVL.VoutSetpoint[devIdx] := 0.0; (** Clear forward Vout setpoint **)
+          THIS^.LastVoutSetpoint[devIdx] := 0;
+        END_IF;
+      END_IF;
+    END_IF;
+    IF THIS^.LastIoutSetpoint[devIdx] <> 0 THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, 0) THEN (** CMD_REVERSE_IOUT_SET, 0 **)
+          GVL.IoutSetRev[devIdx] := 0.0; (** Clear reverse Iout setpoint **)
+          THIS^.LastIoutSetpoint[devIdx] := 0;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, 0) THEN (** CMD_IOUT_SET, 0 **)
+          GVL.IoutSetpoint[devIdx] := 0.0; (** Clear forward Iout setpoint **)
+          THIS^.LastIoutSetpoint[devIdx] := 0;
+        END_IF;
+      END_IF;
+    END_IF;
+  ELSIF GVL.Current[devIdx] THEN
+    (** Current mode **)
+    setpointIout := MIN(MAX(GVL.IoutSetpoint[devIdx]/100, UINT_TO_REAL(THIS^.IoutSetMin[devIdx])), UINT_TO_REAL(THIS^.IoutSetMax[devIdx])); (** Clamp in native units **)
+    IF devIdx <= 3 THEN
+      clampedIout := REAL_TO_UINT(setpointIout * 10.0);   (** DPU F=0.1 **)
+    ELSE
+      factorNibble := SHR((GVL.VoutScale[devIdx] AND 16#00F0), 4);
+      CASE factorNibble OF
+        16#4: clampedIout := REAL_TO_UINT(setpointIout * 1000.0);
+        16#5: clampedIout := REAL_TO_UINT(setpointIout * 100.0);
+        16#6: clampedIout := REAL_TO_UINT(setpointIout * 10.0);
+        16#7: clampedIout := REAL_TO_UINT(setpointIout);
+        16#8: clampedIout := REAL_TO_UINT(setpointIout * 0.1);
+        16#9: clampedIout := REAL_TO_UINT(setpointIout * 0.01);
+        ELSE clampedIout := REAL_TO_UINT(setpointIout * 100.0);
+      END_CASE;
+    END_IF;
+    IF clampedIout <> THIS^.LastIoutSetpoint[devIdx] THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, clampedIout) THEN (** CMD_REVERSE_IOUT_SET **)
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, clampedIout) THEN (** CMD_IOUT_SET **)
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+        END_IF;
+      END_IF;
+    END_IF;
+  ELSIF GVL.Voltage[devIdx] THEN
+    (** Voltage mode **)
+    setpointVout := MIN(MAX(GVL.VoutSetpoint[devIdx]/100, UINT_TO_REAL(THIS^.VoutSetMin[devIdx])), UINT_TO_REAL(THIS^.VoutSetMax[devIdx])); (** Clamp in native units **)
+    IF devIdx <= 3 THEN
+      clampedVout := REAL_TO_UINT(setpointVout * 10.0);   (** DPU F=0.1 **)
+    ELSE
+      factorNibble := GVL.VoutScale[devIdx] AND 16#000F;
+      CASE factorNibble OF
+        16#4: clampedVout := REAL_TO_UINT(setpointVout * 1000.0);
+        16#5: clampedVout := REAL_TO_UINT(setpointVout * 100.0);
+        16#6: clampedVout := REAL_TO_UINT(setpointVout * 10.0);
+        16#7: clampedVout := REAL_TO_UINT(setpointVout);
+        16#8: clampedVout := REAL_TO_UINT(setpointVout * 0.1);
+        16#9: clampedVout := REAL_TO_UINT(setpointVout * 0.01);
+        ELSE clampedVout := REAL_TO_UINT(setpointVout * 100.0);
+      END_CASE;
+    END_IF;
+    IF clampedVout <> THIS^.LastVoutSetpoint[devIdx] THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, clampedVout) THEN (** CMD_REVERSE_VOUT_SET **)
+          THIS^.LastVoutSetpoint[devIdx] := clampedVout;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_VOUT_SET, clampedVout) THEN (** CMD_VOUT_SET **)
+          THIS^.LastVoutSetpoint[devIdx] := clampedVout;
+        END_IF;
+      END_IF;
+    END_IF;
+  END_IF;
+END_FOR;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReadLimits" Id="{0cee76ab-620c-4b89-985e-d5b10c795a48}">
+      <Declaration><![CDATA[METHOD ReadLimits
+VAR
+  devIdx : INT;                            (* Device index *)
+  baseIdx : INT;                           (* Base index for device inputs *)
+  inputIdx : INT;                          (* Base index for group inputs *)
+  groupIdx : INT;                          (* Group index *)
+  masterIdx : INT;                         (* Master device index *)
+  maintenanceMode : BOOL;                  (* Maintenance mode status *)
+  tempBase : INT;                          (* Temp: offset into TempGroupInput array *)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+(* Comment Section: GVL.NumericInput Mapping for ReadLimits *)
+(* This method reads individual setpoints/limits for all devices and applies *)
+(* group-level setpoints/limits to the master device in normal mode. Group limits *)
+(* (e.g., GroupIoutSetMax) are constrained by GVL.GroupCapacity, set by GroupManager *)
+(* based on healthy units. GVL.GroupMaster serves as the group device index, *)
+(* enabling groups when valid (4-19). *)
+
+(* GVL.NumericInput Mapping *)
+(* 0-4: System-Level Inputs *)
+(*   0: GVL.SystemAlarms *)
+(*   1: System Flags (maintenanceMode read here) *)
+(*   2: Morphee Signal *)
+(*   3-4: Reserved *)
+(* 5-9: Unallocated *)
+(* 10-37: Group Inputs (4 groups x 7 inputs) *)
+(*   - For groupIdx = 0 TO 3, baseIdx = 10 + (groupIdx * 7): *)
+(*     baseIdx: GroupVoutSetpoint *)
+(*     baseIdx + 1: GroupIoutSetpoint *)
+(*     baseIdx + 2: Group Flags *)
+(*     baseIdx + 3: GroupVoutSetMin *)
+(*     baseIdx + 4: GroupVoutSetMax *)
+(*     baseIdx + 5: GroupIoutSetMin *)
+(*     baseIdx + 6: GroupIoutSetMax *)
+(*   - Applied to master device here if valid *)
+(* 38-177: Device Inputs (20 devices x 7 inputs) *)
+(*   - For devIdx = 0 TO 19, baseIdx = 38 + (devIdx * 7): *)
+(*     baseIdx: VoutSetpoint *)
+(*     baseIdx + 1: IoutSetpoint *)
+(*     baseIdx + 2: Flags *)
+(*     baseIdx + 3: VoutSetMin *)
+(*     baseIdx + 4: VoutSetMax *)
+(*     baseIdx + 5: IoutSetMin *)
+(*     baseIdx + 6: IoutSetMax *)
+(* 178+: Unallocated *)
+
+(* Read maintenance mode *)
+maintenanceMode := (GVL.NumericInput[1] AND 16#0001) <> 0; (* Index 1, bit 0 *)
+
+(* Set individual device setpoints and limits *)
+FOR devIdx := 0 TO 19 DO
+  baseIdx := 38 + (devIdx * 7);
+  IF baseIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
+    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
+      VoutSetpoint[devIdx] := GVL.TempBus1VoutSetpoint[devIdx];
+      IoutSetpoint[devIdx] := GVL.TempBus1IoutSetpoint[devIdx];
+      VoutSetMin[devIdx] := GVL.TempBus1VoutSetMin[devIdx] / 100;
+      VoutSetMax[devIdx] := GVL.TempBus1VoutSetMax[devIdx] / 100;
+      IoutSetMin[devIdx] := GVL.TempBus1IoutSetMin[devIdx] / 100;
+      IoutSetMax[devIdx] := GVL.TempBus1IoutSetMax[devIdx] / 100;
+    ELSE
+      VoutSetpoint[devIdx] := GVL.NumericInput[baseIdx];
+      IoutSetpoint[devIdx] := GVL.NumericInput[baseIdx + 1];
+      VoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 3];
+      VoutSetMax[devIdx] := GVL.NumericInput[baseIdx + 4];
+      IoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 5];
+      IoutSetMax[devIdx] := GVL.NumericInput[baseIdx + 6];
+    END_IF;
+  END_IF;
+
+  (* Apply group-level setpoints and limits to master in normal mode *)
+  IF NOT maintenanceMode AND devIdx >= 4 THEN
+    FOR groupIdx := 0 TO 3 DO
+      masterIdx := GVL.GroupMaster[groupIdx];
+      IF masterIdx >= 4 AND masterIdx <= 19 AND NOT GVL.SafetyShutdown[masterIdx] THEN
+        CASE groupIdx OF
+          0: inputIdx := 10; (* LVLA1 *)
+          1: inputIdx := 17; (* LVLA2 *)
+          2: inputIdx := 24; (* LVLA3 *)
+          3: inputIdx := 31; (* LVLA4 *)
+        END_CASE;
+        IF devIdx = masterIdx THEN
+          IF inputIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
+            IF GVL.UseTempGroupInputs THEN
+              tempBase := inputIdx - 10; (* Map group base (10..) to TempGroupInput (0..) *)
+              IF tempBase >= 0 AND tempBase + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
+                VoutSetpoint[masterIdx] := GVL.TempGroupInput[tempBase];
+                IoutSetpoint[masterIdx] := GVL.TempGroupInput[tempBase + 1];
+                VoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 3];
+                VoutSetMax[masterIdx] := GVL.TempGroupInput[tempBase + 4];
+                IoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 5];
+                IoutSetMax[masterIdx] := MIN(GVL.TempGroupInput[tempBase + 6], GVL.GroupCapacity[groupIdx]); (* Constrain by capacity *)
+              END_IF;
+            ELSE
+              VoutSetpoint[masterIdx] := GVL.NumericInput[inputIdx];
+              IoutSetpoint[masterIdx] := GVL.NumericInput[inputIdx + 1];
+              VoutSetMin[masterIdx] := GVL.NumericInput[inputIdx + 3];
+              VoutSetMax[masterIdx] := GVL.NumericInput[inputIdx + 4];
+              IoutSetMin[masterIdx] := GVL.NumericInput[inputIdx + 5];
+              IoutSetMax[masterIdx] := MIN(GVL.NumericInput[inputIdx + 6], GVL.GroupCapacity[groupIdx]); (* Constrain by capacity *)
+            END_IF;
+          END_IF;
+        END_IF;
+      END_IF;
+    END_FOR;
+  END_IF;
+END_FOR;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateOutputs" Id="{c3d4e5f6-3456-7890-1234-56789abcdef0}">
+      <Declaration><![CDATA[METHOD UpdateOutputs
+VAR
+  devIdx : INT;                            (* Device index *)
+  baseIdx : INT;                           (* Base index for output array *)
+  systemAlarms : DWORD;                    (* System alarms for output *)
+  maintenanceMode : BOOL;                  (* Maintenance mode status *)
+  cmdId : BYTE;                            (* Command ID for init data *)
+  cmdOffset : INT;                         (* Command offset for init frame *)
+  i : INT;                                 (* Loop variable for commands *)
+  j : INT;                                 (* Loop variable for data pairs *)
+  idx : INT;                               (* Output array index *)
+  watchDog : BOOL;                         (* Watchdog toggle for output *)
+  updatingInMorpheeTableInprogress : Bool := FALSE;
+  groupIdx : INT;                          (* Group index *)
+  masterIdx : INT;                         (* Master device index *)
+  groupBase : INT;                         (* Base index for group devices *)
+  opCount : UINT;                          (* Count of devices with OperationOn *)
+  outCount : UINT;                         (* Count of devices with OutputOn *)
+  initTimeoutCounter : UINT;               (* Counter for forced init exit *)
+  commandCount : UINT;                     (* Commands per cycle *)
+  commandArray : ARRAY[0..8] OF BYTE := [16#80, 16#81, 16#82, 16#83, 16#84, 16#85, 16#86, 16#87, 16#88];
+  commandIndex : INT;
+  upperBound : INT;                        (* Upper bound for FOR loop *)
+	scaledVin: INT; (** Scaled input voltage **)
+	scaledVout: UINT; (** Scaled output voltage **)
+	scaledIout: UINT; (** Scaled current **)
+	scaledTemp: UINT; (** Scaled temperature **)
+	scaledFanSpeed1: INT; (** Scaled fan speed 1 **)
+	scaledFanSpeed2: INT; (** Scaled fan speed 2 **)
+	scaledIin: INT; (** Scaled input current **)
+	tempScale: UINT; (** Temporary variable for scaling factor extraction **)
+	scaleValue: UINT; (** Extracted 4-bit scaling value **)
+ 
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* One-time reset of GVL variables *)
+IF GVL.FirstRun THEN
+    FOR devIdx := 0 TO 19 DO
+        GVL.Voltage[devIdx] := FALSE;
+        GVL.Current[devIdx] := FALSE;
+        GVL.Standby[devIdx] := FALSE;
+        GVL.OperationOn[devIdx] := FALSE;
+        GVL.Direction[devIdx] := FALSE;
+        GVL.OutputOn[devIdx] := FALSE;
+        GVL.OrangeStop[devIdx] := FALSE;
+        GVL.RedStop[devIdx] := FALSE;
+        GVL.EStop[devIdx] := FALSE;
+        GVL.Vin[devIdx] := 0;
+        GVL.Vout[devIdx] := 0;
+        GVL.Iout[devIdx] := 0;
+        GVL.Temperature[devIdx] := 0;
+        GVL.FanSpeed1[devIdx] := 0;
+        GVL.FanSpeed2[devIdx] := 0;
+        GVL.Iin[devIdx] := 0;
+        GVL.FaultStatus[devIdx] := 0;
+        GVL.TemperatureFaultHigh[devIdx] := FALSE;
+        CanCtrlConfigured[devIdx] := FALSE;
+    END_FOR;
+    GVL.FirstRun := FALSE;
+END_IF;
+
+watchDog := NOT watchDog;
+
+
+// Detect Morphee initialization request (GVL.NumericInput[2] changes)
+IF GVL.NumericInput[2] <> LastMorpheeSignal AND NOT updatingInMorpheeTableInprogress THEN
+    LastMorpheeSignal := DWORD_TO_UINT(GVL.NumericInput[2]);
+    CASE GVL.NumericInput[2] OF
+        1..6: // Morphee requests initialization cycles 1 to 6
+            IsInitPhase := TRUE;
+            InitCycle := DWORD_TO_UINT(GVL.NumericInput[2]);
+            initTimeoutCounter := 0;
+            InitTimeout(IN := FALSE);
+        100: // Morphee signals completion
+            IsInitPhase := FALSE;
+            InitCycle := 0;
+            initTimeoutCounter := 0;
+            InitTimeout(IN := FALSE);
+    END_CASE;
+END_IF;
+
+(* In temporary setpoint test mode, keep normal output update path active. *)
+IF GVL.UseTempGroupInputs THEN
+  IsInitPhase := FALSE;
+  InitCycle := 0;
+END_IF;
+
+// Initialization phase logic
+IF IsInitPhase THEN
+    initTimeoutCounter := initTimeoutCounter + 1;
+    // Remove strict timeout to ensure all cycles complete
+    // IF initTimeoutCounter > 1000 THEN
+    //     IsInitPhase := FALSE;
+    //     InitCycle := 0;
+    //     initTimeoutCounter := 0;
+    //     InitTimeout(IN := FALSE);
+    // END_IF;
+
+    InitTimeout(IN := TRUE, PT := T#100MS);
+
+    IF InitCycle > 0 AND IsInitPhase THEN
+        updatingInMorpheeTableInprogress := TRUE;
+        FOR devIdx := 0 TO 19 DO
+            idx := devIdx * 6; // Base index for the device
+            IF idx + 5 < 120 THEN // Ensure within array bounds
+                CASE InitCycle OF
+                    1: // 0x80 and 0x81 (bytes 0-11)
+                        cmdId := 16#80;
+                        baseIdx := 0;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                        cmdId := 16#81;
+                        baseIdx := 6;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx + 3] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 4] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 5] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                    2: // 0x82 and 0x83 (bytes 12-23)
+                        cmdId := 16#82;
+                        baseIdx := 12;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                        cmdId := 16#83;
+                        baseIdx := 18;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx + 3] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 4] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 5] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                    3: // 0x84 (bytes 24-29)
+                        cmdId := 16#84;
+                        baseIdx := 24;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                    4: // 0x85 (bytes 30-35)
+                        cmdId := 16#85;
+                        baseIdx := 30;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                    5: // 0x86 (bytes 36-41)
+                        cmdId := 16#86;
+                        baseIdx := 36;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                    6: // 0x87 and 0x88 (bytes 42-53)
+                        cmdId := 16#87;
+                        baseIdx := 42;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 1] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 2] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                        cmdId := 16#88;
+                        baseIdx := 48;
+                        IF baseIdx + 1 < 54 THEN
+                            GVL.NumericOutput[idx + 3] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 1]);
+                            GVL.NumericOutput[idx + 4] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 2]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 3]);
+                            GVL.NumericOutput[idx + 5] := SHL(TO_DWORD(cmdId), 24) OR SHL(TO_DWORD(devIdx), 16) OR SHL(TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 4]), 8) OR TO_DWORD(GVL.MfrSerialPersistent[devIdx][baseIdx + 5]);
+                        END_IF;
+                END_CASE;
+            END_IF;
+        END_FOR;
+        updatingInMorpheeTableInprogress := FALSE;
+    END_IF;
+ELSE
+    updatingInMorpheeTableInprogress := FALSE;
+    InitTimeout(IN := FALSE);
+    systemAlarms := UINT_TO_DWORD(GVL.SystemAlarms);
+    maintenanceMode := (GVL.NumericInput[1] AND 16#0001) <> 0;
+
+    FOR devIdx := 0 TO 19 DO
+        baseIdx := devIdx * 5;
+        // IF baseIdx < SIZEOF(GVL.NumericOutput) / SIZEOF(GVL.NumericOutput[0]) THEN
+            (* Check for RedStop condition *)
+            IF GVL.RedStop[devIdx] THEN
+                GVL.Voltage[devIdx] := FALSE;
+                GVL.Current[devIdx] := FALSE;
+                GVL.Standby[devIdx] := TRUE;
+                GVL.OperationOn[devIdx] := FALSE;
+                GVL.Direction[devIdx] := FALSE;
+                GVL.OutputOn[devIdx] := FALSE;
+                GVL.OrangeStop[devIdx] := FALSE;
+            END_IF;
+
+            IF devIdx <= 3 THEN
+              (* DPU fixed scaling from manual: VIN F=1, VOUT/IOUT/TEMP F=0.1, FAN F=1 *)
+              scaledVin := GVL.Vin[devIdx];
+              scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 0.1);
+            ELSE
+              (* Scale GVL.Vin[devIdx] using VIN scaling factor, byte 1 bits 0-3 *)
+              tempScale := GVL.VinScale[devIdx] AND 16#0F; (* Extract bits 0-3 *)
+              IF tempScale = 16#4 THEN
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 0.001);
+              ELSIF tempScale = 16#5 THEN
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 0.01);
+              ELSIF tempScale = 16#6 THEN
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 0.1);
+              ELSIF tempScale = 16#7 THEN
+                scaledVin := GVL.Vin[devIdx];
+              ELSIF tempScale = 16#8 THEN
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 10.0);
+              ELSIF tempScale = 16#9 THEN
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 100.0);
+              ELSE
+                scaledVin := REAL_TO_UINT(UINT_TO_REAL(GVL.Vin[devIdx]) * 0.1);
+              END_IF;
+
+              (* Scale GVL.Vout[devIdx] using VOUT scaling factor, byte 0 bits 0-3 *)
+              tempScale := GVL.VoutScale[devIdx] AND 16#0F; (* Extract bits 0-3 *)
+              IF tempScale = 16#4 THEN
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 0.001);
+              ELSIF tempScale = 16#5 THEN
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 0.01);
+              ELSIF tempScale = 16#6 THEN
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 0.1);
+              ELSIF tempScale = 16#7 THEN
+                scaledVout := GVL.Vout[devIdx];
+              ELSIF tempScale = 16#8 THEN
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 10.0);
+              ELSIF tempScale = 16#9 THEN
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 100.0);
+              ELSE
+                scaledVout := REAL_TO_UINT(UINT_TO_REAL(GVL.Vout[devIdx]) * 0.1);
+              END_IF;
+            END_IF;
+
+            IF GVL.Vin[devIdx] > 0 OR GVL.Vout[devIdx] > 0 THEN
+              GVL.NumericOutput[baseIdx] := SHL(TO_DWORD(scaledVin), 16) OR TO_DWORD(scaledVout);
+            ELSE
+                GVL.NumericOutput[baseIdx] := 0;
+            END_IF;
+
+            IF devIdx <= 3 THEN
+              scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+              scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.1);
+            ELSE
+              (* Scale GVL.Iout[devIdx] using IOUT scaling factor, byte 0 bits 4-7 *)
+              tempScale := GVL.VoutScale[devIdx] AND 16#F0; (* Mask bits 4-7 *)
+              scaleValue := SHR(tempScale, 4); (* Shift right by 4 to get IOUT bits *)
+              IF scaleValue = 16#4 THEN
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.001);
+              ELSIF scaleValue = 16#5 THEN
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.01);
+              ELSIF scaleValue = 16#6 THEN
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+              ELSIF scaleValue = 16#7 THEN
+                scaledIout := GVL.Iout[devIdx];
+              ELSIF scaleValue = 16#8 THEN
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 10.0);
+              ELSIF scaleValue = 16#9 THEN
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 100.0);
+              ELSE
+                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+              END_IF;
+
+              (* Scale GVL.Temperature[devIdx] using TEMPERATURE_1 scaling factor, byte 2 bits 0-3 *)
+              tempScale := GVL.TempScale[devIdx] AND 16#0F; (* Extract bits 0-3 *)
+              IF tempScale = 16#4 THEN
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.001);
+              ELSIF tempScale = 16#5 THEN
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.01);
+              ELSIF tempScale = 16#6 THEN
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.1);
+              ELSIF tempScale = 16#7 THEN
+                scaledTemp := GVL.Temperature[devIdx];
+              ELSIF tempScale = 16#8 THEN
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 10.0);
+              ELSIF tempScale = 16#9 THEN
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 100.0);
+              ELSE
+                scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.1);
+              END_IF;
+            END_IF;
+
+            (* Scale GVL.FanSpeed1[devIdx] and GVL.FanSpeed2[devIdx] using FAN_SPEED scaling factor, byte 1 bits 4-7 *)
+            tempScale := GVL.VinScale[devIdx] AND 16#F0; (* Mask bits 4-7 *)
+            scaleValue := SHR(tempScale, 4); (* Shift right by 4 to get FAN_SPEED bits *)
+            IF scaleValue = 16#4 THEN
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 0.001);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 0.001);
+            ELSIF scaleValue = 16#5 THEN
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 0.01);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 0.01);
+            ELSIF scaleValue = 16#6 THEN
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 0.1);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 0.1);
+            ELSIF scaleValue = 16#7 THEN
+                scaledFanSpeed1 := GVL.FanSpeed1[devIdx];
+                scaledFanSpeed2 := GVL.FanSpeed2[devIdx];
+            ELSIF scaleValue = 16#8 THEN
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 10.0);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 10.0);
+            ELSIF scaleValue = 16#9 THEN
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 100.0);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 100.0);
+            ELSE
+                scaledFanSpeed1 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed1[devIdx]) * 0.1);
+                scaledFanSpeed2 := REAL_TO_UINT(UINT_TO_REAL(GVL.FanSpeed2[devIdx]) * 0.1);
+            END_IF;
+
+            (* Scale GVL.Iin[devIdx] using IIN scaling factor, byte 3 bits 0-3 *)
+            tempScale := GVL.IinScale[devIdx] AND 16#0F; (* Extract bits 0-3 *)
+            IF tempScale = 16#4 THEN
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 0.001);
+            ELSIF tempScale = 16#5 THEN
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 0.01);
+            ELSIF tempScale = 16#6 THEN
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 0.1);
+            ELSIF tempScale = 16#7 THEN
+                scaledIin := GVL.Iin[devIdx];
+            ELSIF tempScale = 16#8 THEN
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 10.0);
+            ELSIF tempScale = 16#9 THEN
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 100.0);
+            ELSE
+                scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 0.1);
+            END_IF;
+
+            GVL.NumericOutput[baseIdx + 1] := SHL(TO_DWORD(scaledIout), 16) OR TO_DWORD(scaledTemp);
+            GVL.NumericOutput[baseIdx + 2] := SHL(TO_DWORD(scaledFanSpeed1), 16) OR TO_DWORD(scaledFanSpeed2);
+            GVL.NumericOutput[baseIdx + 3] := SHL(TO_DWORD(GVL.FaultStatus[devIdx]), 16) OR 
+                                              SHL(TO_DWORD(GVL.Direction[devIdx]), 0) OR 
+                                              SHL(TO_DWORD(GVL.OperationOn[devIdx]), 1) OR 
+                                              SHL(TO_DWORD(GVL.Current[devIdx]), 2) OR 
+                                              SHL(TO_DWORD(GVL.Voltage[devIdx]), 3) OR 
+                                              SHL(TO_DWORD(GVL.OutputOn[devIdx]), 4) OR 
+                                              SHL(TO_DWORD(GVL.OrangeStop[devIdx]), 5) OR 
+                                              SHL(TO_DWORD(GVL.RedStop[devIdx]), 6) OR 
+                                              SHL(TO_DWORD(GVL.EStop[devIdx]), 7) OR 
+                                              SHL(TO_DWORD(GVL.TemperatureFaultHigh[devIdx]), 8);
+              GVL.NumericOutput[baseIdx + 4] := SHL(TO_DWORD(GVL.DeviceSystemFlags[devIdx]), 16);
+        //END_IF;
+    END_FOR;
+
+    GVL.NumericOutput[100] := systemAlarms;
+	 EL3174_Channel1_Alarm:=  EL3174_Channel1_value>(2.5*10)/32768;
+ 	 EL3174_Channel2_Alarm:=  EL3174_Channel2_value>(2.5*10)/32768;
+ 	 EL3174_Channel3_Alarm:=  EL3174_Channel3_value>(2.5*10)/32768;
+	 EL3174_Channel4_Alarm:=  EL3174_Channel4_value>(2.5*10)/32768;
+    GVL.NumericOutput[101] := SHL(TO_DWORD(GVL.SystemFlags), 0) OR 
+                              SHL(TO_DWORD(GVL.EthercatAliveFromMaster), 2) OR 
+                              SHL(TO_DWORD(GVL.RemoteMasterAlive), 3) OR 
+                              SHL(TO_DWORD(watchDog), 4) OR 
+                              SHL(TO_DWORD(DataRefreshRequired), 5) OR
+                              SHL(TO_DWORD(IsInitPhase), 6) OR 
+							  SHL(TO_DWORD(EL3174_Channel1_Alarm), 7) OR 
+							  SHL(TO_DWORD(EL3174_Channel2_Alarm), 8) OR 
+							  SHL(TO_DWORD(EL3174_Channel3_Alarm), 9) OR 
+							  SHL(TO_DWORD(EL3174_Channel4_Alarm), 10);
+    GVL.NumericOutput[102] := SHL(TO_DWORD(GVL.GroupMaster[0]), 16) OR TO_DWORD(GVL.GroupMaster[1]);
+    GVL.NumericOutput[103] := SHL(TO_DWORD(GVL.GroupMaster[2]), 16) OR TO_DWORD(GVL.GroupMaster[3]);
+
+   // GVL.NumericOutput[100] := systemAlarms;
+    GVL.NumericOutput[108] := UINT_TO_DWORD(GVL.GroupCapacity[0]);
+    GVL.NumericOutput[109] := UINT_TO_DWORD(GVL.GroupCapacity[1]);
+    GVL.NumericOutput[110] := UINT_TO_DWORD(GVL.GroupCapacity[2]);
+    GVL.NumericOutput[111] := UINT_TO_DWORD(GVL.GroupCapacity[3]);
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="EthercatManager">
+      <LineId Id="42" Count="27" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="70" Count="63" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="134" Count="17" />
+      <LineId Id="241" Count="3" />
+      <LineId Id="152" Count="17" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="193" Count="0" />
+    </LineIds>
+    <LineIds Name="EthercatManager.ApplyCommands">
+      <LineId Id="220" Count="47" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="EthercatManager.ProcessInputs">
+      <LineId Id="7985" Count="76" />
+      <LineId Id="8249" Count="4" />
+      <LineId Id="8065" Count="165" />
+      <LineId Id="127" Count="0" />
+    </LineIds>
+    <LineIds Name="EthercatManager.ReadLimits">
+      <LineId Id="134" Count="74" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="79" Count="10" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="EthercatManager.UpdateOutputs">
+      <LineId Id="9533" Count="25" />
+      <LineId Id="9880" Count="0" />
+      <LineId Id="9559" Count="270" />
+      <LineId Id="9883" Count="2" />
+      <LineId Id="9882" Count="0" />
+      <LineId Id="9830" Count="5" />
+      <LineId Id="9881" Count="0" />
+      <LineId Id="9886" Count="2" />
+      <LineId Id="9836" Count="7" />
+      <LineId Id="110" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="SetpointTest" Id="{a1b2c3d4-1234-5678-abcd-ef0123456789}" SpecialFunc="None">
+    <Declaration><![CDATA[
+(* ============================================================
+   SetpointTest  –  TEMPORARY TEST PROGRAM
+   Purpose:
+     Inject group setpoints via GVL.TempGroupInput without
+     touching live EtherCAT master inputs (GVL.NumericInput).
+
+   Usage:
+     1. Set GVL.UseTempGroupInputs := TRUE  to activate.
+     2. Fill in the group parameters below (VoutTarget, IoutTarget,
+        min/max limits, Flags) for whichever group you want to test.
+     3. Call SetpointTest.Run() from Main or watch SetpointApplied.
+     4. When finished, set GVL.UseTempGroupInputs := FALSE and
+        clear GVL.TempGroupInput (Run() sets both automatically
+        when Enable is set back to FALSE).
+
+   REVERT NOTE:
+     This POU together with GVL.UseTempGroupInputs / GVL.TempGroupInput
+     and the ReadLimits conditional branch in EthercatManager must be
+     removed once testing is complete.
+
+   TempGroupInput layout (28 WORDs, groups 0-3 x 7 WORDs each):
+     Offset 0  (group 0 base) : VoutSetpoint  (desired V * 100)
+     Offset 1                 : IoutSetpoint  (desired A * 100)
+     Offset 2                 : Flags         (bit 0=OutputOn, bit 1=OperationOn, bit 2=Voltage, bit 3=Current)
+     Offset 3                 : VoutSetMin    (min V * 100)
+     Offset 4                 : VoutSetMax    (max V * 100)
+     Offset 5                 : IoutSetMin    (min A * 100)
+     Offset 6                 : IoutSetMax    (max A * 100)
+     Offset 7  (group 1 base) : same layout ...
+   ============================================================ *)
+PROGRAM SetpointTest
+VAR
+  Enable         : BOOL := FALSE;      (* Rising edge triggers injection; falling edge clears *)
+  Enable_Prev    : BOOL := FALSE;      (* Previous value for edge detection *)
+
+  EnableBus1Direct : BOOL := FALSE;    (* TRUE: directly drive devices 0..3 setpoints/flags *)
+  Bus1DeviceMask   : BYTE := 16#0F;    (* bit0..bit3 select Bus1 devices to drive *)
+  Bus1Direction    : BOOL := FALSE;    (* FALSE = AC->DC charge direction for DPU *)
+  Bus1VoutTarget   : REAL := 28.0;     (* Direct voltage setpoint [V] for devices 0..3 *)
+  Bus1IoutTarget   : REAL := 10.0;     (* Direct current setpoint [A] for devices 0..3 *)
+  Bus1VoutSetMin   : REAL := 0.0;
+  Bus1VoutSetMax   : REAL := 500.0;
+  Bus1IoutSetMin   : REAL := 0.0;
+  Bus1IoutSetMax   : REAL := 300.0;
+  Bus1OutputOn     : BOOL := TRUE;
+  Bus1OperationOn  : BOOL := TRUE;
+  Bus1VoltageMode  : BOOL := TRUE;
+  Bus1CurrentMode  : BOOL := FALSE;
+
+  UseCommonAllGroups : BOOL := TRUE;   (* TRUE: push one shared profile to all 4 groups on enable *)
+  CommonVoutTarget   : REAL := 28.0;   (* Shared voltage target [V] *)
+  CommonIoutTarget   : REAL := 10.0;   (* Shared current target [A] *)
+  CommonFlags        : WORD := 16#001A;(* bit1=OperationOn, bit3=Voltage, bit4=OutputOn *)
+  CommonVoutSetMin   : REAL := 0.0;
+  CommonVoutSetMax   : REAL := 500.0;
+  CommonIoutSetMin   : REAL := 0.0;
+  CommonIoutSetMax   : REAL := 300.0;
+
+  (* Group 0 test parameters (indices 0-6 in TempGroupInput) *)
+  G0_VoutTarget  : REAL := 28.0;       (* Desired voltage [V] – will be stored as WORD(value*100) *)
+  G0_IoutTarget  : REAL := 10.0;       (* Desired current [A] – stored as WORD(value*100) *)
+  G0_Flags       : WORD := 16#001A;    (* bit1=OperationOn, bit3=Voltage, bit4=OutputOn *)
+  G0_VoutSetMin  : REAL := 0.0;
+  G0_VoutSetMax  : REAL := 500.0;
+  G0_IoutSetMin  : REAL := 0.0;
+  G0_IoutSetMax  : REAL := 300.0;
+
+  (* Group 1 test parameters (indices 7-13 in TempGroupInput) *)
+  G1_VoutTarget  : REAL := 28.0;
+  G1_IoutTarget  : REAL := 10.0;
+  G1_Flags       : WORD := 16#001A;
+  G1_VoutSetMin  : REAL := 0.0;
+  G1_VoutSetMax  : REAL := 500.0;
+  G1_IoutSetMin  : REAL := 0.0;
+  G1_IoutSetMax  : REAL := 300.0;
+
+  (* Group 2 test parameters (indices 14-20 in TempGroupInput) *)
+  G2_VoutTarget  : REAL := 28.0;
+  G2_IoutTarget  : REAL := 10.0;
+  G2_Flags       : WORD := 16#001A;
+  G2_VoutSetMin  : REAL := 0.0;
+  G2_VoutSetMax  : REAL := 500.0;
+  G2_IoutSetMin  : REAL := 0.0;
+  G2_IoutSetMax  : REAL := 300.0;
+
+  (* Group 3 test parameters (indices 21-27 in TempGroupInput) *)
+  G3_VoutTarget  : REAL := 28.0;
+  G3_IoutTarget  : REAL := 10.0;
+  G3_Flags       : WORD := 16#001A;
+  G3_VoutSetMin  : REAL := 0.0;
+  G3_VoutSetMax  : REAL := 500.0;
+  G3_IoutSetMin  : REAL := 0.0;
+  G3_IoutSetMax  : REAL := 300.0;
+
+  SetpointApplied : BOOL := FALSE;     (* TRUE while temp inputs are active *)
+  busDev          : INT;
+  bus1Applied     : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+(* ---- While enabled: continuously refresh temp group inputs ---- *)
+IF Enable THEN
+  IF UseCommonAllGroups THEN
+    G0_VoutTarget := CommonVoutTarget;
+    G0_IoutTarget := CommonIoutTarget;
+    G0_Flags := CommonFlags;
+    G0_VoutSetMin := CommonVoutSetMin;
+    G0_VoutSetMax := CommonVoutSetMax;
+    G0_IoutSetMin := CommonIoutSetMin;
+    G0_IoutSetMax := CommonIoutSetMax;
+
+    G1_VoutTarget := CommonVoutTarget;
+    G1_IoutTarget := CommonIoutTarget;
+    G1_Flags := CommonFlags;
+    G1_VoutSetMin := CommonVoutSetMin;
+    G1_VoutSetMax := CommonVoutSetMax;
+    G1_IoutSetMin := CommonIoutSetMin;
+    G1_IoutSetMax := CommonIoutSetMax;
+
+    G2_VoutTarget := CommonVoutTarget;
+    G2_IoutTarget := CommonIoutTarget;
+    G2_Flags := CommonFlags;
+    G2_VoutSetMin := CommonVoutSetMin;
+    G2_VoutSetMax := CommonVoutSetMax;
+    G2_IoutSetMin := CommonIoutSetMin;
+    G2_IoutSetMax := CommonIoutSetMax;
+
+    G3_VoutTarget := CommonVoutTarget;
+    G3_IoutTarget := CommonIoutTarget;
+    G3_Flags := CommonFlags;
+    G3_VoutSetMin := CommonVoutSetMin;
+    G3_VoutSetMax := CommonVoutSetMax;
+    G3_IoutSetMin := CommonIoutSetMin;
+    G3_IoutSetMax := CommonIoutSetMax;
+  END_IF;
+
+  (* Group 0: TempGroupInput[0..6] *)
+  GVL.TempGroupInput[0]  := REAL_TO_UINT(G0_VoutTarget * 100.0);
+  GVL.TempGroupInput[1]  := REAL_TO_UINT(G0_IoutTarget * 100.0);
+  GVL.TempGroupInput[2]  := G0_Flags;
+  GVL.TempGroupInput[3]  := REAL_TO_UINT(G0_VoutSetMin * 100.0);
+  GVL.TempGroupInput[4]  := REAL_TO_UINT(G0_VoutSetMax * 100.0);
+  GVL.TempGroupInput[5]  := REAL_TO_UINT(G0_IoutSetMin * 100.0);
+  GVL.TempGroupInput[6]  := REAL_TO_UINT(G0_IoutSetMax * 100.0);
+
+  (* Group 1: TempGroupInput[7..13] *)
+  GVL.TempGroupInput[7]  := REAL_TO_UINT(G1_VoutTarget * 100.0);
+  GVL.TempGroupInput[8]  := REAL_TO_UINT(G1_IoutTarget * 100.0);
+  GVL.TempGroupInput[9]  := G1_Flags;
+  GVL.TempGroupInput[10] := REAL_TO_UINT(G1_VoutSetMin * 100.0);
+  GVL.TempGroupInput[11] := REAL_TO_UINT(G1_VoutSetMax * 100.0);
+  GVL.TempGroupInput[12] := REAL_TO_UINT(G1_IoutSetMin * 100.0);
+  GVL.TempGroupInput[13] := REAL_TO_UINT(G1_IoutSetMax * 100.0);
+
+  (* Group 2: TempGroupInput[14..20] *)
+  GVL.TempGroupInput[14] := REAL_TO_UINT(G2_VoutTarget * 100.0);
+  GVL.TempGroupInput[15] := REAL_TO_UINT(G2_IoutTarget * 100.0);
+  GVL.TempGroupInput[16] := G2_Flags;
+  GVL.TempGroupInput[17] := REAL_TO_UINT(G2_VoutSetMin * 100.0);
+  GVL.TempGroupInput[18] := REAL_TO_UINT(G2_VoutSetMax * 100.0);
+  GVL.TempGroupInput[19] := REAL_TO_UINT(G2_IoutSetMin * 100.0);
+  GVL.TempGroupInput[20] := REAL_TO_UINT(G2_IoutSetMax * 100.0);
+
+  (* Group 3: TempGroupInput[21..27] *)
+  GVL.TempGroupInput[21] := REAL_TO_UINT(G3_VoutTarget * 100.0);
+  GVL.TempGroupInput[22] := REAL_TO_UINT(G3_IoutTarget * 100.0);
+  GVL.TempGroupInput[23] := G3_Flags;
+  GVL.TempGroupInput[24] := REAL_TO_UINT(G3_VoutSetMin * 100.0);
+  GVL.TempGroupInput[25] := REAL_TO_UINT(G3_VoutSetMax * 100.0);
+  GVL.TempGroupInput[26] := REAL_TO_UINT(G3_IoutSetMin * 100.0);
+  GVL.TempGroupInput[27] := REAL_TO_UINT(G3_IoutSetMax * 100.0);
+
+  GVL.UseTempGroupInputs := TRUE;
+  SetpointApplied := TRUE;
+END_IF;
+
+(* ---- Optional direct Bus1 (DPU) test path ---- *)
+IF Enable AND EnableBus1Direct THEN
+  GVL.UseTempBus1Direct := TRUE;
+  FOR busDev := 0 TO 3 DO
+    IF (Bus1DeviceMask AND SHL(16#01, busDev)) <> 0 THEN
+      GVL.TempBus1VoutSetpoint[busDev] := REAL_TO_UINT(Bus1VoutTarget * 100.0);
+      GVL.TempBus1IoutSetpoint[busDev] := REAL_TO_UINT(Bus1IoutTarget * 100.0);
+      GVL.TempBus1Flags[busDev] := SEL(Bus1Direction, 16#0000, 16#0001)
+                                OR SEL(Bus1OperationOn, 16#0000, 16#0002)
+                                OR SEL(Bus1CurrentMode, 16#0000, 16#0004)
+                                OR SEL(Bus1VoltageMode, 16#0000, 16#0008)
+                                OR SEL(Bus1OutputOn, 16#0000, 16#0010);
+      GVL.TempBus1VoutSetMin[busDev] := REAL_TO_UINT(Bus1VoutSetMin * 100.0);
+      GVL.TempBus1VoutSetMax[busDev] := REAL_TO_UINT(Bus1VoutSetMax * 100.0);
+      GVL.TempBus1IoutSetMin[busDev] := REAL_TO_UINT(Bus1IoutSetMin * 100.0);
+      GVL.TempBus1IoutSetMax[busDev] := REAL_TO_UINT(Bus1IoutSetMax * 100.0);
+    END_IF;
+  END_FOR;
+  bus1Applied := TRUE;
+  SetpointApplied := TRUE;
+ELSE
+  GVL.UseTempBus1Direct := FALSE;
+END_IF;
+
+(* ---- Falling edge: clear temp inputs and deactivate ---- *)
+IF NOT Enable AND Enable_Prev THEN
+  GVL.UseTempGroupInputs := FALSE;
+  GVL.UseTempBus1Direct := FALSE;
+  MEMSET(ADR(GVL.TempGroupInput), 0, SIZEOF(GVL.TempGroupInput));
+  MEMSET(ADR(GVL.TempBus1VoutSetpoint), 0, SIZEOF(GVL.TempBus1VoutSetpoint));
+  MEMSET(ADR(GVL.TempBus1IoutSetpoint), 0, SIZEOF(GVL.TempBus1IoutSetpoint));
+  MEMSET(ADR(GVL.TempBus1Flags), 0, SIZEOF(GVL.TempBus1Flags));
+  MEMSET(ADR(GVL.TempBus1VoutSetMin), 0, SIZEOF(GVL.TempBus1VoutSetMin));
+  MEMSET(ADR(GVL.TempBus1VoutSetMax), 0, SIZEOF(GVL.TempBus1VoutSetMax));
+  MEMSET(ADR(GVL.TempBus1IoutSetMin), 0, SIZEOF(GVL.TempBus1IoutSetMin));
+  MEMSET(ADR(GVL.TempBus1IoutSetMax), 0, SIZEOF(GVL.TempBus1IoutSetMax));
+  IF bus1Applied THEN
+    FOR busDev := 0 TO 3 DO
+      IF (Bus1DeviceMask AND SHL(16#01, busDev)) <> 0 THEN
+        GVL.OutputOn[busDev] := FALSE;
+        GVL.OperationOn[busDev] := FALSE;
+        GVL.Voltage[busDev] := FALSE;
+        GVL.Current[busDev] := FALSE;
+      END_IF;
+    END_FOR;
+    bus1Applied := FALSE;
+  END_IF;
+  SetpointApplied := FALSE;
+END_IF;
+
+Enable_Prev := Enable;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

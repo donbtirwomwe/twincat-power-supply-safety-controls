@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <GVL Name="GVL_Persistent" Id="{5505a214-3e96-4847-8dab-11609711d071}">
+    <Declaration><![CDATA[VAR_GLOBAL PERSISTENT
+  MfrSerialInitDone : ARRAY[0..19] OF BOOL;                   // Flag indicating serial data initialization complete
+  MfrSerialPersistent : ARRAY[0..19] OF ARRAY[0..53] OF BYTE; // Persistent storage for manufacturer serial data
+  MfrSerialShared :BOOL;
+  MfrSerialUpdated : BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

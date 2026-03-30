@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="Main" Id="{ee3c1ed2-f41d-42b2-b13e-df1dcce46824}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Main
+VAR
+  CycleCounter : INT := 0;                    // Counter for 100ms update cycle (10ms * 10)
+  EthercatMgr : EthercatManager;              // EtherCAT manager instance
+  SafetyMgr : SafetyMgr;                      // Safety manager instance
+  GroupMgr : GroupManager;                    // Group manager instance
+  Devices : ARRAY[0..19] OF DeviceManager;    // Array of device managers for CAN communication
+  i : INT;                                    // Loop variable
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Safety_Tags.Run := True;
+
+IF  gvl.EthercatAslaveStatus>=4 THEN
+	GVL.EthercatAlive:= TRUE;
+ELSE
+	GVL.EthercatAlive:= FALSE;
+END_IF
+// Initialize system on first run
+IF GVL.FirstRun THEN
+  FOR i := 0 TO 19 DO
+    GVL.DeviceFlags[i] := 0;                  // Clear device flags
+    IF i < 4 THEN
+      GVL.Direction[i] := FALSE;              // Set initial direction: 0-3 AC-to-DC
+    ELSE
+      GVL.Direction[i] := TRUE;               // Set initial direction: 4-19 DC-to-AC
+    END_IF;
+   // GVL.DeviceMode[i] := GVL_Constant.MODE_STANDBY; // Start in standby mode
+    Devices[i](DeviceIndex := i, Reset := TRUE);    // Initialize device manager with reset
+    Devices[i].Poll();                        // Start polling CAN devices
+  END_FOR;
+  GVL.FirstRun := FALSE;                      // Mark initialization complete
+END_IF;
+
+// Main update loop (every 100ms)
+CycleCounter := CycleCounter + 1;
+IF CycleCounter >= 10 THEN
+  FOR i := 0 TO 19 DO
+    Devices[i](DeviceIndex := i, Reset := FALSE); // Update device managers without reset
+    Devices[i].Poll();                        // Poll CAN devices for data
+  END_FOR;
+  SafetyMgr.UpdateSafety();                   // Update safety conditions
+  GroupMgr.UpdateGroupMasters();              // Update group master assignments
+  GroupMgr.UpdateGroupCapacity();             // Update group capacities and demands
+  EthercatMgr.ProcessInputs();                // Process EtherCAT inputs
+  EthercatMgr.UpdateOutputs();                // Update EtherCAT outputs
+  // Commands are already sent inside EthercatMgr.ProcessInputs() via THIS^.ApplyCommands(...)
+  SetpointTest();                             // TEMP: run setpoint test (remove when done)
+  CycleCounter := 0;                          // Reset cycle counter
+END_IF;
+]]></ST>
+    </Implementation>
+    <LineIds Name="Main">
+      <LineId Id="3" Count="37" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

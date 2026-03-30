@@ -1,0 +1,447 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="DeviceManager" Id="{0f892ba4-1e3c-494e-adf4-c17a9179e462}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK DeviceManager
+VAR_INPUT
+  DeviceIndex : INT;                          // Index of device (0-19)
+  Reset : BOOL;                               // Reset polling state
+  Command : INT;                              // Unused input (for compatibility)
+END_VAR
+VAR
+  CANBusIndex : INT;                          // CAN bus number (1-3)
+  DeviceOffset : INT;                         // Offset within bus (0-7)
+  rxData : RxData;                            // Received CAN data
+  txData : TxData;                            // Transmitted CAN data
+  PollCounter : INT := 0;                     // Counter for polling interval
+  ResponseTrigger : R_TRIG;                   // Trigger for response detection
+  LastExpectedCommand : UINT;                 // Last command sent
+  InitDone : BOOL;                            // Initialization complete flag
+  CommandIndex : INT := 0;                    // Current command index during init
+  DeviceChanged : BOOL;                       // Flag for detected device change
+  
+  i : INT;                                    // Loop variable
+  currentTime : TIME;                         // Current PLC time
+  rawValue : UINT;                            // 2-byte value from CAN response
+  statusLow : BYTE;                           // Low byte of SYSTEM_STATUS
+  factorNibble : UINT;                        // Factor nibble from scaling-factor fields
+  serialMismatch : BOOL;                      // Flag for serial number mismatch
+	watchDog: INT;
+END_VAR
+VAR CONSTANT
+  PollInterval : INT := 3;                    // Poll every 3 cycles (~30ms at 10ms cycle)
+  ReadCommands : ARRAY[0..13] OF UINT := [GVL_Constant.CMD_READ_VIN,
+                                          GVL_Constant.CMD_READ_VOUT,
+                                          GVL_Constant.CMD_READ_IOUT,
+                                          GVL_Constant.CMD_SCALING_FACTOR,
+                                          GVL_Constant.CMD_SYSTEM_STATUS,
+                                          GVL_Constant.CMD_READ_TEMPERATURE_1,
+                                          GVL_Constant.CMD_READ_FAN_SPEED1,
+                                          GVL_Constant.CMD_READ_FAN_SPEED2,
+                                          GVL_Constant.CMD_FAULT_STATUS,
+                                          GVL_Constant.CMD_OPERATION,
+                                          GVL_Constant.CMD_DIRECTION_CTRL,
+                                          GVL_Constant.CMD_REVERSE_VOUT_SET,
+                                          GVL_Constant.CMD_REVERSE_IOUT_SET];
+  ReadCommandCount : INT := 13;               // Number of read commands
+  TotalInitCommands : INT := 22;              // Total commands in init (13 read + 9 MFR)
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Poll" Id="{b95ac77b-8708-4e69-8826-f97349cc5421}">
+      <Declaration><![CDATA[METHOD Poll : BOOL
+VAR
+  pollIntervalLocal : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(** Initialize CAN bus and device offset mapping based on DeviceIndex (0-19) **)
+CASE DeviceIndex OF
+  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex; (** Map devices 0-3 to CAN Bus 1, offset 0-3 **)
+  4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4; (** Map devices 4-11 to CAN Bus 2, offset 0-7 **)
+  12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12; (** Map devices 12-19 to CAN Bus 3, offset 0-7 **)
+  ELSE Poll := FALSE; RETURN; (** Disable polling and exit for invalid DeviceIndex **)
+END_CASE;
+
+(** Assign receive (rxData) and transmit (txData) structures based on CAN bus **)
+CASE CANBusIndex OF
+  1: rxData := GVL.Bus1_Devices_Rx[DeviceOffset]; txData := GVL.Bus1_Devices[DeviceOffset]; (** Use Bus 1 data structures **)
+  2: rxData := GVL.Bus2_Devices_Rx[DeviceOffset]; txData := GVL.Bus2_Devices[DeviceOffset]; (** Use Bus 2 data structures **)
+  3: rxData := GVL.Bus3_Devices_Rx[DeviceOffset]; txData := GVL.Bus3_Devices[DeviceOffset]; (** Use Bus 3 data structures **)
+END_CASE;
+
+currentTime := TIME(); (** Capture current time for timeout and update tracking **)
+
+(** Reset all polling and initialization state if Reset is triggered **)
+IF Reset THEN
+  PollCounter := 0; (** Reset polling counter **)
+  InitDone := FALSE; (** Mark initialization as not complete **)
+  CommandIndex := 0; (** Reset command index to start of sequence **)
+  DeviceChanged := FALSE; (** Clear device change flag **)
+  LastExpectedCommand := 0; (** Clear last expected command **)
+  GVL.ReadCommandIndex[DeviceIndex] := 0; (** Reset read command index **)
+  // Remove persistent init flag since we're not using persistent storage
+END_IF;
+
+(** Check if polling pause has timed out **)
+IF GVL.PollingPaused[DeviceIndex] AND GVL.PollingPauseTimeout[DeviceIndex].Q THEN
+  GVL.PollingPaused[DeviceIndex] := FALSE; (** Resume polling after timeout **)
+  GVL.PollingPauseTimeout[DeviceIndex](IN := FALSE); (** Stop timeout **)
+END_IF;
+
+PollCounter := PollCounter + 1; (** Increment polling counter **)
+
+pollIntervalLocal := PollInterval;
+IF DeviceIndex <= 3 THEN
+  pollIntervalLocal := 5; (** DPU minimum request period is 50 ms; task loop is 10 ms **)
+END_IF;
+
+(** Trigger polling action if counter reaches interval and polling is not paused **)
+IF PollCounter >= pollIntervalLocal AND NOT GVL.PollingPaused[DeviceIndex] THEN
+  PollCounter := 0; (** Reset counter for next interval **)
+  IF NOT InitDone OR DeviceChanged THEN (** Enter initialization or reinitialization phase **)
+    IF CommandIndex < TotalInitCommands THEN (** Continue if more commands to process **)
+      IF CommandIndex < ReadCommandCount THEN
+        LastExpectedCommand := ReadCommands[CommandIndex]; (** Use operational commands first **)
+        IF DeviceIndex <= 3 AND (LastExpectedCommand = GVL_Constant.CMD_SCALING_FACTOR OR LastExpectedCommand = GVL_Constant.CMD_SYSTEM_STATUS) THEN
+          LastExpectedCommand := GVL_Constant.CMD_READ_VIN; (** DPU devices do not use BIC-only factor/status commands **)
+        END_IF;
+      ELSE
+        // Ensure ID commands are polled first
+        CASE CommandIndex - ReadCommandCount OF
+          0: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B0B5; (** Poll ID bytes 0-5 **)
+          1: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B6B11; (** Poll ID bytes 6-11 **)
+          2: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B0B5; (** Poll model bytes 0-5 **)
+          3: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B6B11; (** Poll model bytes 6-11 **)
+          4: LastExpectedCommand := GVL_Constant.CMD_MFR_REVISION_B0B5; (** Poll revision bytes 0-5 **)
+          5: LastExpectedCommand := GVL_Constant.CMD_MFR_LOCATION_B0B2; (** Poll location bytes 0-2 **)
+          6: LastExpectedCommand := GVL_Constant.CMD_MFR_DATE_B0B5; (** Poll date bytes 0-5 **)
+          7: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B0B5; (** Poll serial bytes 0-5 **)
+          8: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B6B11; (** Poll serial bytes 6-11 **)
+          ELSE LastExpectedCommand := GVL_Constant.MfrCommands[CommandIndex - ReadCommandCount]; (** Fallback to original MfrCommands **)
+        END_CASE;
+      END_IF;
+      txData.Command := UINT_TO_INT(LastExpectedCommand); (** Assign command **)
+      txData.Data[0] := 0; (** No data for read commands **)
+      txData.Data[1] := 0;
+      txData.Data[2] := 0;
+      txData.Data[3] := 0;
+    ELSE
+      InitDone := TRUE; (** Mark initialization complete **)
+      DeviceChanged := FALSE; (** Clear change flag **)
+      Poll := FALSE; (** Stop polling **)
+      RETURN; (** Exit method **)
+    END_IF;
+  ELSE (** Normal operation phase after initialization **)
+    LastExpectedCommand := ReadCommands[GVL.ReadCommandIndex[DeviceIndex]]; (** Use next operational command **)
+    IF DeviceIndex <= 3 AND (LastExpectedCommand = GVL_Constant.CMD_SCALING_FACTOR OR LastExpectedCommand = GVL_Constant.CMD_SYSTEM_STATUS) THEN
+      LastExpectedCommand := GVL_Constant.CMD_READ_VIN; (** DPU devices do not use BIC-only factor/status commands **)
+    END_IF;
+    IF GVL.ReadCommandIndex[DeviceIndex] = ReadCommandCount - 1 THEN (** Last command in cycle **)
+      LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B6B11; (** Poll serial command periodically **)
+    END_IF;
+    txData.Command := UINT_TO_INT(LastExpectedCommand); (** Assign command **)
+    txData.Data[0] := 0; (** No data for read commands **)
+    txData.Data[1] := 0;
+    txData.Data[2] := 0;
+    txData.Data[3] := 0;
+    GVL.ReadCommandIndex[DeviceIndex] := GVL.ReadCommandIndex[DeviceIndex] + 1; (** Move to next command **)
+    IF GVL.ReadCommandIndex[DeviceIndex] >= ReadCommandCount THEN
+      GVL.ReadCommandIndex[DeviceIndex] := 0; (** Cycle back if at end **)
+    END_IF;
+  END_IF;
+
+  (** Send command to appropriate CAN bus **)
+  CASE CANBusIndex OF
+    1: GVL.Bus1_Devices[DeviceOffset] := txData; (** Send command to Bus 1 **)
+    2: GVL.Bus2_Devices[DeviceOffset] := txData; (** Send to Bus 2 **)
+    3: GVL.Bus3_Devices[DeviceOffset] := txData; (** Send to Bus 3 **)
+  END_CASE;
+  Poll := TRUE; (** Signal polling action **)
+END_IF;
+
+(** Check if received command matches the last sent command to trigger response processing **)
+ResponseTrigger(CLK := (rxData.Command = UINT_TO_INT(LastExpectedCommand)));
+IF ResponseTrigger.Q THEN (** Response received and matches expected command **)
+  rawValue := rxData.Data[0] + SHL(rxData.Data[1], 8); (** Combine first two bytes into a 16-bit value **)
+  CASE LastExpectedCommand OF
+
+	GVL_Constant.CMD_READ_VIN: GVL.Vin[DeviceIndex] := rawValue; (** Update VIN **)
+	GVL_Constant.CMD_READ_VOUT: GVL.Vout[DeviceIndex] := rawValue; (** Update VOUT **)
+	GVL_Constant.CMD_READ_IOUT:  GVL.Iout[DeviceIndex] := rawValue; (** Default to raw value **)
+    GVL_Constant.CMD_SCALING_FACTOR:
+      GVL.VoutScale[DeviceIndex] := rawValue; (** Low nibble=VOUT factor, high nibble=IOUT factor, byte1 holds VIN/FAN factors **)
+      GVL.VinScale[DeviceIndex] := SHR(rawValue, 8);
+    GVL_Constant.CMD_SYSTEM_STATUS:
+      statusLow := UINT_TO_BYTE(rawValue AND 16#00FF);
+      GVL.Ms[DeviceIndex] := (statusLow AND 16#01) <> 0;           (** Bit0 M/S **)
+      GVL.DcOk[DeviceIndex] := (statusLow AND 16#02) <> 0;         (** Bit1 DC_OK **)
+      GVL.PfcOk[DeviceIndex] := (statusLow AND 16#04) <> 0;        (** Bit2 PFC_OK **)
+      GVL.AdlOn[DeviceIndex] := (statusLow AND 16#08) <> 0;        (** Bit3 ADL_ON **)
+      GVL.InitialState[DeviceIndex] := (statusLow AND 16#10) <> 0; (** Bit4 INITIAL_STATE **)
+      GVL.Eeper[DeviceIndex] := (statusLow AND 16#20) <> 0;        (** Bit5 EEPER **)
+    GVL_Constant.CMD_READ_TEMPERATURE_1: GVL.Temperature[DeviceIndex] := rawValue; (** Update temperature **)
+    GVL_Constant.CMD_READ_FAN_SPEED1: GVL.FanSpeed1[DeviceIndex] := rawValue; (** Update fan speed 1 **)
+    GVL_Constant.CMD_READ_FAN_SPEED2: GVL.FanSpeed2[DeviceIndex] := rawValue; (** Update fan speed 2 **)
+    GVL_Constant.CMD_FAULT_STATUS: GVL.FaultStatus[DeviceIndex] := rawValue; (** Update fault status **)
+    GVL_Constant.CMD_OPERATION: GVL.OperationOn[DeviceIndex] := (rawValue > 0); (** Update operation state **)
+    GVL_Constant.CMD_VOUT_SET:
+      IF DeviceIndex <= 3 THEN
+        GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) / 10.0;   (** DPU F=0.1 **)
+      ELSE
+        factorNibble := GVL.VoutScale[DeviceIndex] AND 16#000F;
+        CASE factorNibble OF
+          16#4: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.001;
+          16#5: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.01;
+          16#6: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.1;
+          16#7: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue);
+          16#8: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 10.0;
+          16#9: GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 100.0;
+          ELSE GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.01;
+        END_CASE;
+      END_IF;
+    GVL_Constant.CMD_IOUT_SET:
+      IF DeviceIndex <= 3 THEN
+        GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) / 10.0;   (** DPU F=0.1 **)
+      ELSE
+        factorNibble := SHR((GVL.VoutScale[DeviceIndex] AND 16#00F0), 4);
+        CASE factorNibble OF
+          16#4: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.001;
+          16#5: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.01;
+          16#6: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.1;
+          16#7: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue);
+          16#8: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 10.0;
+          16#9: GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 100.0;
+          ELSE GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) * 0.01;
+        END_CASE;
+      END_IF;
+
+    GVL_Constant.CMD_MFR_ID_B0B5: (** Manufacturer ID bytes 0-5 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][i] := rxData.Data[i]; (** Store first 6 bytes in non-persistent array **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_ID_B6B11: (** Manufacturer ID bytes 6-11 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][6 + i] := rxData.Data[i]; (** Store next 6 bytes in non-persistent array **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_MODEL_B0B5: (** Manufacturer model bytes 0-5 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][12 + i] := rxData.Data[i]; (** Store model bytes 12-17 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_MODEL_B6B11: (** Manufacturer model bytes 6-11 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][18 + i] := rxData.Data[i]; (** Store model bytes 18-23 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_REVISION_B0B5: (** Manufacturer revision bytes 0-5 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][24 + i] := rxData.Data[i]; (** Store revision bytes 24-29 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_LOCATION_B0B2: (** Manufacturer location bytes 0-2 **)
+      FOR i := 0 TO 2 DO
+        GVL.MfrSerialPersistent[DeviceIndex][30 + i] := rxData.Data[i]; (** Store location bytes 30-32 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_DATE_B0B5: (** Manufacturer date bytes 0-5 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][33 + i] := rxData.Data[i]; (** Store date bytes 33-38 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_SERIAL_B0B5: (** Manufacturer serial bytes 0-5 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][39 + i] := rxData.Data[i]; (** Store serial bytes 39-44 **)
+      END_FOR;
+    GVL_Constant.CMD_MFR_SERIAL_B6B11: (** Manufacturer serial bytes 6-11 **)
+      FOR i := 0 TO 5 DO
+        GVL.MfrSerialPersistent[DeviceIndex][45 + i] := rxData.Data[i]; (** Store serial bytes 45-50 **)
+        IF GVL.MfrSerialPersistent[DeviceIndex][39 + i] <> rxData.Data[i] THEN (** Check for serial mismatch **)
+          serialMismatch := TRUE;
+        END_IF;
+      END_FOR;
+      IF serialMismatch AND InitDone THEN (** Trigger reinitialization if mismatch after init **)
+        DeviceChanged := TRUE;
+        CommandIndex := 0;
+        InitDone := FALSE;
+      END_IF;
+  END_CASE;
+
+  GVL.CommTimeouts[DeviceIndex] := 0; (** Reset timeout counter on successful response **)
+  GVL.SuccessCounts[DeviceIndex] := GVL.SuccessCounts[DeviceIndex] + 1; (** Increment success count **)
+  IF GVL.SuccessCounts[DeviceIndex] >= GVL_Constant.MINSUCCESSCLEAR THEN (** Clear faults after sufficient successes **)
+    GVL.CommFault[DeviceIndex] := FALSE;
+    GVL.FaultLevel[DeviceIndex] := 0;
+    GVL.RecoveryPending[DeviceIndex] := FALSE;
+    GVL.SuccessCounts[DeviceIndex] := GVL_Constant.MINSUCCESSCLEAR;
+  END_IF;
+  GVL.LastUpdateTime[DeviceIndex] := currentTime; (** Update last successful time **)
+  GVL.DataValid[DeviceIndex] := TRUE; (** Mark data as valid **)
+  Poll := TRUE; (** Continue polling **)
+
+  IF NOT InitDone THEN (** Advance command index during initialization **)
+    CommandIndex := CommandIndex + 1;
+  END_IF;
+ELSE (** No response received **)
+  IF PollCounter = 0 AND LastExpectedCommand <> 0 THEN (** Check timeout at interval start **)
+    IF (currentTime - GVL.LastUpdateTime[DeviceIndex]) > GVL_Constant.MAXCOMMSTALE THEN
+      GVL.CommTimeouts[DeviceIndex] := GVL.CommTimeouts[DeviceIndex] + pollIntervalLocal; (** Increment timeout **)
+      GVL.SuccessCounts[DeviceIndex] := 0; (** Reset success count on timeout **)
+      IF GVL.CommTimeouts[DeviceIndex] >= GVL_Constant.MAXCOMMTIMEOUT THEN (** Trigger fault if timeout exceeds **)
+        GVL.CommFault[DeviceIndex] := TRUE;
+        GVL.RecoveryPending[DeviceIndex] := TRUE;
+        GVL.FaultLevel[DeviceIndex] := 1;
+      END_IF;
+      IF NOT InitDone THEN (** Advance command on timeout during init **)
+        CommandIndex := CommandIndex + 1;
+      END_IF;
+    END_IF;
+  END_IF;
+END_IF;
+
+(** Invalidate data if stale **)
+IF (currentTime - GVL.LastUpdateTime[DeviceIndex]) > GVL_Constant.MAXCOMMSTALE THEN
+  GVL.DataValid[DeviceIndex] := FALSE;
+END_IF;
+
+(** Ensure full initialization on first run **)
+IF GVL.FirstRun AND NOT InitDone THEN
+  CommandIndex := 0; (** Reset to start initialization **)
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteDLC3" Id="{d7c58609-b00d-4819-99d7-460b092f3db3}">
+      <Declaration><![CDATA[METHOD WriteDLC3 : BOOL
+VAR_INPUT
+  DeviceIndex : INT;                       (* Device index *)
+  WriteCommandIndex : UINT;                (* Command to send *)
+  Data : BYTE;                             (* Single-byte data *)
+END_VAR
+VAR
+  txDataLocal : TxData;                    (* Transmit data structure *)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+CASE DeviceIndex OF
+  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex;
+  4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4;
+  12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12;
+  ELSE WriteDLC3 := FALSE; RETURN;
+END_CASE;
+
+txDataLocal.Command := UINT_TO_INT(WriteCommandIndex);
+txDataLocal.Data[0] := Data;
+txDataLocal.Data[1] := 0;
+txDataLocal.Data[2] := 0;
+txDataLocal.Data[3] := 0;
+
+CASE CANBusIndex OF
+  1: GVL.Bus1_Devices_DLC3[DeviceOffset] := txDataLocal; WriteDLC3 := TRUE;
+  2: GVL.Bus2_Devices_DLC3[DeviceOffset] := txDataLocal; WriteDLC3 := TRUE;
+  3: GVL.Bus3_Devices_DLC3[DeviceOffset] := txDataLocal; WriteDLC3 := TRUE;
+END_CASE;
+
+IF WriteCommandIndex = GVL_Constant.CMD_OPERATION THEN
+  GVL.OperationOn[DeviceIndex] := FALSE; (* Reset to avoid latching *)
+  GVL.OperationOn[DeviceIndex] := (Data > 0) AND NOT GVL.Standby[DeviceIndex];
+ELSIF WriteCommandIndex = GVL_Constant.CMD_DIRECTION_CTRL THEN
+  GVL.Direction[DeviceIndex] := (Data > 0);
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteDLC4" Id="{203e7469-7c60-46b4-9d39-65efccde989f}">
+      <Declaration><![CDATA[METHOD WriteDLC4 : BOOL
+VAR_INPUT
+  DeviceIndex : INT;                       (** Device index **)
+  WriteCommandIndex : INT;                 (** Command to send **)
+  Data : UINT;                             (** 2-byte data **)
+END_VAR
+VAR
+  txDataLocal : TxData;                    (** Transmit data structure **)
+END_VAR
+       ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+         
+(** Map DeviceIndex to CAN bus and offset **)
+CASE DeviceIndex OF
+  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex; (** Devices 0-3 map to Bus 1, offset 0-3 **)
+  4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4; (** Devices 4-11 map to Bus 2, offset 0-7 **)
+  12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12; (** Devices 12-19 map to Bus 3, offset 0-7 **)
+  ELSE WriteDLC4 := FALSE; RETURN; (** Invalid DeviceIndex, exit **)
+END_CASE;
+
+
+  (** Output enabled, proceed with normal data **)
+  txDataLocal.Command := WriteCommandIndex;
+  txDataLocal.Data[0] := UINT_TO_BYTE(Data AND 16#FF); (** Low byte **)
+  txDataLocal.Data[1] := UINT_TO_BYTE(SHR(Data, 8)); (** High byte **)
+  txDataLocal.Data[2] := 0; (** Clear unused bytes **)
+  txDataLocal.Data[3] := 0;
+
+(** Write to appropriate CAN bus output **)
+CASE CANBusIndex OF
+  1: 
+    IF DeviceOffset >= 0 AND DeviceOffset <= 3 THEN
+      GVL.Bus1_Devices_DLC4[DeviceOffset] := txDataLocal; (** Update Bus 1 DLC4 for devices 0-3 **)
+      WriteDLC4 := TRUE;
+    ELSE
+      WriteDLC4 := FALSE; (** Invalid offset for Bus 1 **)
+    END_IF;
+  2: 
+    IF DeviceOffset >= 0 AND DeviceOffset <= 7 THEN
+      GVL.Bus2_Devices_DLC4[DeviceOffset] := txDataLocal; (** Update Bus 2 DLC4 **)
+      WriteDLC4 := TRUE;
+    ELSE
+      WriteDLC4 := FALSE; (** Invalid offset for Bus 2 **)
+    END_IF;
+  3: 
+    IF DeviceOffset >= 0 AND DeviceOffset <= 7 THEN
+      GVL.Bus3_Devices_DLC4[DeviceOffset] := txDataLocal; (** Update Bus 3 DLC4 **)
+      WriteDLC4 := TRUE;
+    ELSE
+      WriteDLC4 := FALSE; (** Invalid offset for Bus 3 **)
+    END_IF;
+END_CASE;
+
+(** Update GVL variables based on command **)
+IF WriteDLC4 THEN
+  IF WriteCommandIndex = GVL_Constant.CMD_VOUT_SET THEN
+    GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(Data); (** Update Vout setpoint **)
+  ELSIF WriteCommandIndex = GVL_Constant.CMD_IOUT_SET THEN
+    GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(Data); (** Update Iout setpoint **)
+  ELSIF WriteCommandIndex = GVL_Constant.CMD_REVERSE_VOUT_SET THEN
+    GVL.VoutSetRev[DeviceIndex] := UINT_TO_REAL(Data); (** Update reverse Vout **)
+  ELSIF WriteCommandIndex = GVL_Constant.CMD_REVERSE_IOUT_SET THEN
+    GVL.IoutSetRev[DeviceIndex] := UINT_TO_REAL(Data);(** Update reverse Iout **)
+  END_IF;
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="DeviceManager">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="DeviceManager.Poll">
+      <LineId Id="958" Count="98" />
+      <LineId Id="1190" Count="0" />
+      <LineId Id="1157" Count="1" />
+      <LineId Id="1173" Count="0" />
+      <LineId Id="1060" Count="3" />
+      <LineId Id="1196" Count="1" />
+      <LineId Id="1066" Count="0" />
+      <LineId Id="1156" Count="0" />
+      <LineId Id="1067" Count="85" />
+      <LineId Id="189" Count="0" />
+    </LineIds>
+    <LineIds Name="DeviceManager.WriteDLC3">
+      <LineId Id="109" Count="24" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="DeviceManager.WriteDLC4">
+      <LineId Id="99" Count="9" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="165" Count="4" />
+      <LineId Id="115" Count="36" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

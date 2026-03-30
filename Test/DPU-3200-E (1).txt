@@ -1,0 +1,798 @@
+    DPU-3200
+Communication Note
+      DPU-3200 Communication Note
+
+                                           Index
+
+1.Communication Protocol ........................................................................ 1
+  1.1 PMBus Addressing and CAN ID setting ............................................ 1
+  1.2 PMBus Communication Interface ..................................................... 2
+        1.2.1 PMBus Command list .............................................................. 2
+        1.2.2 PMBus Data Range and Tolerance .......................................... 3
+        1.2.3 Notes on PMBus...................................................................... 4
+        1.2.4 Communication Example ......................................................... 6
+  1.3 CANBus Communication Interface ................................................... 8
+        1.3.1 CANBus Command list ............................................................ 9
+        1.3.2 Definition and contents of CANBus Command list .................... 10
+        1.3.3 CANBus Value Range and Tolerance ....................................... 13
+        1.3.4 Communication example ......................................................... 14
+
+
+
+
+                                                                       Sep. 2023 Version 0
+1.Communication Protocol
+  Users can use three different methods to control outputs of DPU-3200. The control priority
+  between the methods is as follows: Communication (PMBus or CAN bus) > PV/PC > SVR. These
+  three control methods can be used interchangeably. When using communication control, it is
+  essential to communicate with the device within 4 seconds. Otherwise, the program will reset the
+  control priority and set the communication parameters back to the factory default values.
+  NOTE: When communication function is used, some of the parameters will return to the factory
+          default values if any of the conditions happens, AC recycling and communication timeout.
+          Take DPU-3200-24 as an example, command OPERATION becomes ON, Vo and Io change
+          to 24V and 146.25A.
+
+ 1.1 PMBus Addressing and CAN ID setting
+ ◎Each DPU-3200 unit should have their unique and own device address to communicate over the bus.
+    *PMbus 7-bit addressing definition:
+     MSB                                      LSB
+      1        0   0       0   A2    A1        A0
+
+    *CAN message ID definition :
+      Message ID               Description
+      0xC00XX                  DPU-3200 to Controller Message ID
+      0xC01XX                  Controller to DPU-3200 Message ID
+      0xC01FF                  Controller broadcasts to DPU-3200
+     XX means the CAN ID of DPU-3200
+     A0-A2 allows users to designate an address or ID for the DPU-3200 unit; these three bits are
+     defined through PIN7 (A0), PIN8 (A1) and PIN9 (A2) on CN1. There are up to 8 different
+     addresses are available to be assigned. When connecting one of these pins, for example, PIN8
+     with PIN14 (-V(Signal)), the corresponding bit, A1, is set to logic “0”; when it is kept opened, for
+     example, PIN7, the corresponding bit, A0, is set to logic “1”. Please refer to Table 1-1 for detailed
+     setup.
+
+        Module          Device address/ID
+         No.           A0      A1       A2
+           0           0        0         0
+           1           1        0         0
+           2           0        1         0
+           3           1        1         0
+           4           0        0         1
+           5           1        0         1
+           6           0        1         1
+           7           1        1         1
+
+                       Table 1-1
+                                                    1
+1.2 PMBus Communication Interface
+◎DPU-3200 is compliant with PMBus Rev.1.1, the maximum communication speed is 100KHz and
+ the maximum number of assignable addresses is up to 8 units on a bus.
+◎PMBus communication interface is able to provide the current operating status and information as
+  follows:
+  1.Output voltage, current and internal temperature.
+  2.Alarm and status.
+  3.Manufacturer's and model data.
+1.2.1 PMBus Command list
+◎PMBus commands: The command list of the DPU-3200 is shown in Table 1-2. It is compliant
+   with the standard protocol of PMBus Rev. 1.1. For more detailed information, please refer to
+   PMBus ofﬁcial website (http://pmbus.org/specs.html)
+                                          Table 1-2
+   Command            Command         Transaction       # of data
+                                                                                   Description
+     Code              Name              Type             Bytes
+     01h     OPERATION                R/W Byte             1        Remote ON/OFF control
+     02h     ON_OFF_CONFIG            Read Byte            1        ON/OFF function conﬁguration
+     19h     CAPABILITY               Read Byte            1        Capabilities of a PMBus device
+                                                                    Deﬁne data format for output voltage
+     20h     VOUT_MODE                R Byte               1
+                                                                    (format: Linear 16, N= -9)
+                                                                    Output voltage setting value
+     21h     VOUT_COMMAND             R Word               2
+                                                                    (format: Linear 16, N= -9)
+                                                                    Output voltage trimmed value
+     22h     VOUT_TRIM                R/W Word             2
+                                                                    (format: Linear 16, N= -9)
+                                                                    Output overcurrent setting value
+     46h     IOUT_OC_FAULT_LIMIT      R/W Word             2
+                                                                    (format: Linear 11, N= -2)
+                                                                    Deﬁne protection and response when an
+     47h     IOUT_OC_FAULT_RESPONSE   R Byte               1
+                                                                    output overcurrent fault occurred
+     79h     STATUS_WORD              R Word               2        Summary status reporting
+     7Ah     STATUS_VOUT              R Byte               1        Output voltage status reporting
+     7Bh     STATUS_IOUT              R Byte               1        Output current status reporting
+     7Ch     STATUS_INPUT             R Byte               1        AC inpit voltage statusreporting
+     7Dh     STATUS_TEMPERATURE       R Byte               1        Temperature status reporting
+                                                                    Communication, logic,
+     7Eh     STATUS_CML               R Byte               1
+                                                                    Memory status reporting
+     80h     STATUS_MFR_SPECIFIC      R Byte               1        Manufacture speciﬁc status reporting
+     81h     STATUS_FANS_1_2          R Byte               1        Fan1 and 2 status reporting
+                                                                    AC input voltage reading value
+     88h     READ_VIN                 R Word               2
+                                                                    (format: Linear 11, N=-1)
+                                                                    Output voltage reading value
+     8Bh     READ_VOUT                R Word               2
+                                                                    (format: Linear 16, N= -9)
+                                                                    Output current reading value
+     8Ch     READ_IOUT                R Word               2
+                                                                    (format: Linear 11, N= -2)
+                                                                    Fan speed 1 reading value
+     90h     READ_FAN_SPEED_1         R Word               2
+                                                                    (format: Linear 11, N= 5)
+                                                                    Fan speed 2 reading value
+     91h     READ_FAN_SPEED_2         R Word               2
+                                                                    (format: Linear 11, N= 5)
+                                                                    The compliant revision of the PMBus
+     98h     PMBUS_REVISION           R Byte               1
+                                                                    (default: 11h for Rev. 1.1)
+     99h     MFR_ID                   Block Read           12       Manufacturer's name
+     9Ah     MFR_MODEL                Block Read           12       Manufacturer's model name
+     9Bh     MFR_REVISION             Block Read           6        Firmware revision
+     9Ch     MFR_LOCATION             Block R/W            3        Manufacturer's factory location
+     9Dh     MFR_DATE                 Block R/W            6        Manufacture date. (format: YYMMDD)
+     9Eh     MFR_SERIAL               Block R/W            12       Product serial number
+
+                                                    2
+ 1.2.2 PMBus Data Range and Tolerance
+ ◎Display parameters
+            PMBus command          Model              Range       Tolerance
+              READ_VIN              ALL           80 ~ 264V         ±10V
+                                    24V               0 ~ 30V      ±0.36V
+             READ_VOUT
+                                    48V               0 ~ 60V      ±0.48V
+
+             READ_IOUT              24V               0 ~ 160A     ±5.32A
+              (Note. 1)             48V               0 ~ 80A      ±2.68A
+       READ_FAN_SPEED_1             ALL         0 ~ 26500RPM      ±2000RPM
+       READ_FAN_SPEED_2             ALL         0 ~ 26500RPM      ±2000RPM
+
+                                          Table 1-3
+
+◎ Control parameter
+        PMBus command             Model      Adjustable range    Tolerance    Default
+            OPERATION              ALL      00h(OFF) / 80h(ON)     N/A        80h(ON)
+                                   24V                24V          N/A         24V
+       VOUT_COMMAND
+          (Note. 2)                48V                48V          N/A         48V
+                                   24V            -12 ~ 6V        ±0.36V        0V
+            VOUT_TRIM
+             (Note. 2)             48V           -24 ~ 12V        ±0.48V        0V
+                                   24V        26.75 ~ 146.25A     ±5.32A      146.25A
+    IOUT_OC_FAULT_LIMIT
+         CURVE_CC                  48V         13.5 ~ 73.5A       ±2.68A       73.5A
+
+                                          Table 1-4
+
+
+  Note:
+  1.READ_IOUT will display ZERO amp when output current is less than values in the table below:
+     Model    Minimum readable current
+      24V             5.3A±1A                 Table 1-5
+      48V             2.7A±1A
+
+  2.When using PMBus to adjust output voltage, VOUT_COMMAND only can be used to display the rated
+    voltage of the unit and cannot be written. It is VOUT_TRIM that sets up the amount of trimmed voltage.
+    Taking DPU-3200-24 as an example, to get a 9V output, please set value of VOUT_TRIM to -3V.
+    Adjustable voltage range for each model is shown as below:
+     Model     Adjustable voltage range
+      24V              18 ~ 30V               Table 1-6
+      48V              36 ~ 60V
+
+
+
+
+                                                            3
+1.2.3 Notes on PMBus
+1.Insert a at least 50msec delay between commands
+2.Examples for Format Conversion :
+ (1)LINEAR16 format：VOUT_COMMAND、VOUT_TRIM、READ_VOUT.
+    Actual voltage = communication reading V × 2 N . There are two definitions in the VOUT_MODE
+    command that refer to N requirements.
+
+                                                            VOUT_COMMAND Data Bvtes
+               VOUT_MODE                                         For Linear Mode
+               Data Byte For
+                                                Data Byte High                              Data Byte Low
+               Linear Mode
+
+
+     7     6    5   4   3   2   1   0       7   6   5       4   3   2   1   0       7   6    5   4   3   2   1   0
+
+
+                            N                                                   V
+     Mode               Exponent                                        Mantissa
+     =000b
+
+
+
+
+  Linear Format Data Bytes
+
+  The Mode bits are set to 000b.
+  The Voltage, in volts, is calculated from the equation:
+
+  Voltage = V 2N
+
+  Where:
+  Voltage is the parameter of interest in volts;
+  V is a 16 bit unsigned binary integer; and
+  N is a 5 bit two's complement binary integer.
+
+  EX: Vo_real (actual output voltage) = V x 2 N , V is from READ_VOUT. N If VOUT_MODE = 0x17,
+         meaning N is -9. READ_VOUT is 0x3000 12288, then Vo_real =12288 × 2 - 9 =24.0V.
+
+
+
+
+                                                        4
+(2)LINEAR11 format：IOUT_OC_FAULT_LIMIT、READ_VIN、READ_IIN、READ_IOUT、
+  READ_TEMPERATURE_1、READ_FAN_SPEED_1、READ_FAN_SPEED_2、CURVE_CC .
+  Actual value X = communication read value Y x 2 N . Among them, the definition of the description
+  column for each aircraft type is referred to
+
+
+         Data Byte High            Data Byte Low
+
+     7 6 5 4 3        2 1 0 7 6 5 4 3 2 1 0
+
+           N                         Y
+     MSB              MSB
+    Linear Data Format Data Bytes Y, N and the "real world" value is:
+
+    The relation between
+    X =Y 2N
+    Where, as described above:
+    X is the "real world" value;
+    Y is an 11 bit, two's complement integer; and
+    N is a 5 bit, two's complement integer.
+    Devices that use the Linear format must accept and be able to process any value of N.
+    EX: Io_real (actual output current) = Y× 2 N , Y is from READ_IOUT. N If READ_IOUT is 0xF188h, meaning N
+        is -2 and Y is 0x0188. Y is 0x0188 → 392, then Io_real = 392 × 2 - 2 = 98.0A.
+
+
+
+
+                                                    5
+1.2.4 Communication Example
+The following steps will describe how to set the DPU-3200-48 to 56V.
+
+1.Set the address of the supply to “0” .
+
+
+           7
+                 A0(CN1)
+           8
+                 A1(CN1)
+           9                 DPU-3200
+                 A2(CN1)
+           14
+                 -V-signal(CN1)
+
+
+
+2.Connect the SDA, SCL and GND pins of the master to the corresponding SDA (PIN7) and SCL
+  (PIN8) of CN500 and GND-AUX (PIN2) of CN1 on the supply.
+  ◎Set speed: 100KHz
+
+                                                               7
+                       SDA                                          SDA(CN500)
+                                                               8
+        Controllor     SCL                                          SCL(CN500)     DPU-3200
+                                                               2
+                       GND                                          GND-AUX(CN1)
+
+
+
+
+3.Communication function can be accessed immediately after DPU-3200 is connected to AC. Set
+  output voltage at 56V.
+
+      Address(7 bit)         Operation      Command Code               Data
+
+          0x40                    Write          0x22              0x00, 0x10
+
+  Command code: 0x22(VOUT_TRIM)
+  Data: 56V → 0x00(Lo) + 0x10(Hi)
+  NOTE: CHURVE_VBST is LINEAR16 forma
+
+
+
+
+                                                 6
+4.It is recommended to review all of the settings and parameters using the appropriate commands. In
+ the event that they do not meet your requirements, you may rewrite them as needed. EX: Read
+ VOUT_TRIM to check whether output voltage was set to a proper level.
+
+  Read VOUT_TRIM
+
+      Address(7 bit)           Operation         Command Code
+
+           0x40                  Read                  0x22
+
+
+  The unit returns data below
+
+      Address(7 bit)              Data
+
+           0x40                0x00, 0x10
+
+  Data: 0x00(Lo) + 0x10(Hi) → 0x1000 → 4096 × 2 -9 = 8V。
+  48V +8V = 56V, the result is correct
+
+
+
+5.Finally, check whether Remote ON-OFF (PIN4) and +5-AUX (PIN3) pins of the CN1 connector are
+  short-circuited if there is no output voltage. Also please make sure command sending/reading is in
+  an interval of below 4 sec in order not to trigger communcation timeout.
+
+
+                                             3
+                       CN1         +5V-AUX
+
+   DPU-3200
+
+                                             4
+                             Remote ON-OFF
+
+
+
+
+                                                   7
+1.3 CANBus Communication Interface
+    ◎Physical layer speciﬁcation
+      This protocol follows CAN ISO-11898 with Baud rate of 250Kbps.
+    ◎Data Frame
+      This protocol uses Extended CAN 29-bit identiﬁer frame format or CAN 2.0B.
+
+
+
+
+    ◎Communication Timing
+      Min. request period (Controller to DPU-3200): 50mSec。
+      Max. response time (DPU-3200 to Controller): 12.5mSec。
+      Min. packet margin time (Controller to DPU-3200): 12.5mSec。
+                                          Request period
+                                      (Controller to PSU/CHG)
+
+
+        PSU CAN-RX
+      (form Controller)
+                                RX data                                       RX data
+
+
+
+                              Response time                           Packet Margin time
+       PSU CAN-TX         (PSU/CHG to Controller)                   (Controller to PSU/CHG)
+
+
+                                                          TX data
+
+
+
+
+   ◎Data Field Format
+
+     Controller to DPU-3200
+     Write :
+
+       Data filed bytes
+                  0                                  1                           2                  3
+
+         COMD. low byte                   COMD. high byte            Data low byte            Data high byte
+
+
+       Read:
+
+       Data filed bytes
+
+                  0                                  1
+
+         COMD. low byte                   COMD. high byte
+
+
+
+
+                                                                8
+   DPU-3200 to Controller
+
+     Response:
+
+     Data filed bytes
+
+                0                       1                        2                                  7
+
+       COMD. low byte           COMD. high byte           Data low 1          .....        Data high 6
+
+  NOTE: DPU-3200 will not send data back when writing parameters, such as VOUT_SET
+
+1.3.1 CANBus Command list
+      Command            Command            Transaction   # of data
+                                                                                      Description
+        Code              Name                 Type         Bytes
+                                                                      ON/OFF control
+       0x0000       OPERATION                  R/W           1        ON: 01h
+                                                                      OFF: 00h
+                                                                      Output voltage set
+       0x0020       VOUT_SET                   R/W           2
+                                                                      (format: value, F=0.1)
+                                                                      Output current set
+       0x0030       IOUT_SET                   R/W           2
+                                                                      (format: value, F=0.1)
+
+       0x0040       FAULT_STATUS                R            2        Abnormal status
+
+                                                                      Input voltage read value
+       0x0050       READ_VIN                    R            2
+                                                                      (format: value, F=1)
+                                                                      Output voltage read value
+       0x0060       READ_VOUT                   R            2
+                                                                      (format: value, F=0.1)
+                                                                      Output current read value
+       0x0061       READ_IOUT                   R            2
+                                                                      (format: value, F=0.1)
+                    READ_                                             Internal ambient temperature
+       0x0062                                   R            2
+                    TEMPERATURE_1                                     (format: value, F=0.1)
+                                                                      Fan speed 1 reading value
+       0x0070       READ_FAN_SPEED_1            R            2
+                                                                      (Format: value, F=1, unit: RPM)
+                                                                      Fan speed 2 reading value
+       0x0071       READ_FAN_SPEED_2            R            2
+                                                                      (Format: value, F=1, unit: RPM)
+
+       0x0080       MFR_ID_B0B5                 R            6        Manufacture's name
+
+       0x0081       MFR_ID_B6B11                R            6        Manufacture's name
+
+       0x0082       MFR_MODEL_B0B5              R            6        Manufacture model name
+
+       0x0083       MFR_MODEL_B6B11             R            6        Manufacture model name
+
+       0x0084       MFR_REVISION_B0B5           R            6        Firmware version
+
+       0x0085       MFR_LOCATION_B0B2           R            3        Manufacture place
+
+       0x0086       MFR_DATE_B0B5               R            6        Manufacture date
+
+
+                                               9
+       Command           Command          Transaction   # of data
+                                                                              Description
+         Code             Name               Type         Bytes
+
+          0x0087   MFR_SERIAL_B0B5            R            6        Manufacture serial number
+
+          0x0088   MFR_SERIAL_B6B11           R            6        Manufacture serial number
+
+
+                                           Table 1-8
+
+1.3.2 Deﬁnition and contents of CANBus Command list
+      ◎Definition of Command FAULT_STATUS(0x0040)：
+
+                      Bit7         Bit6      Bit5       Bit4        Bit3   Bit2    Bit1         Bit0
+
+      Low byte     HI_TEMP     OP_OFF AC_FAIL SHORT                 OLP    OVP     OTP      FAN_FAIL
+
+
+     Bit 0 FAN_FAIL：Fan locked flag
+              0
+               ＝Working normally
+             1＝Fan locked
+
+
+     Bit 1    OTP：Over temperature protection
+              0
+               ＝Internal temperature normal
+             1＝Internal temperature abnormal
+
+
+     Bit 2    OVP：DC over voltage protection
+             0＝DC voltage normal
+             1＝DC over voltage protected
+
+
+     Bit 3    OLP：DC over current protection
+              0
+               ＝DC current normal
+             1＝DC over current protected
+
+
+     Bit 4    SHORT：Short circuit protection
+             0＝Shorted circuit do not exist
+             1＝Shorted circuit protected
+
+
+
+     Bit 5    AC_FAIL：AC abnormal flag
+             0＝AC input range normal
+             1＝AC input range abnormal
+
+
+     Bit 6    OP_OFF：DC status
+             0＝DC output turned on
+              1
+               ＝DC output turned off
+
+
+
+                                             10
+Bit 7    HI_TEMP：Internal high temperature protection
+         0＝Internal temperature normal
+        1＝Internal temperature abnormal
+
+
+Note: Unsupported settings displays with "0"
+
+
+◎MFR_ID_B0B5 (0x0080) is the first 6 codes of the manufacturer's name (ASCII);
+  MFR_ID_B6B11 (0x0081) is the last 6 codes of the manufacturer's name (ASCII)
+EX: Manufacturer's name is MEANWELL MFR_ID_B0B5 is MEANWE；MFR_ID_B6B11
+   is LL
+
+                                MFR_ID_B0B5
+
+   Byte 0        Byte 1      Byte 2        Byte 3     Byte 4       Byte 5
+
+   0x4D           0x45       0x41          0x4E        0x57         0x45
+
+
+                              MFR_ID_B6B11
+
+   Byte 0        Byte 1      Byte 2        Byte 3     Byte 4       Byte 5
+
+       0x4C      0x4C        0x20          0x20        0x20         0x20
+
+
+◎MFR_MODEL_B0B5 (0x0082) is the first 6 codes of the manufacturer's model name
+  (ASCII); MFR_MODEL_B6B11 (0x0083) is the last 6 codes of the manufacturer's
+  model name (ASCII)
+EX: Model names is DPU-3200-48 → MFR_MODEL_B0B5 is DPU-32；MFR_MODEL_
+   B6B11 is 00-48
+
+                             MFR_MODEL_B0B5
+
+   Byte 0        Byte 1      Byte 2        Byte 3     Byte 4       Byte 5
+
+       0x44       0x50       0x55          0x2D        0x33         0x32
+
+
+                               MFR_ID_B6B11
+
+   Byte 6        Byte 7      Byte 8        Byte 9     Byte 10      Byte 11
+
+       0x30       0x30       0x2D          0x34        0x38         0x20
+
+
+
+
+                                      11
+◎MFR_REVISION_B0B5 (0x0084) is the firmware revision (hexadecimal).
+ A range of 0x00 (R00.0)~0xFE (R25.4) represents the firmware version of an MCU;
+ 0xFF represents no MCU existed.
+EX: The supply has two MCUs, the firmware version of the MCU number 1 is version
+   R25.4 (0xFE), the MCU number 2 is version R10.5 (0x69)
+
+  Byte 0      Byte 1       Byte 2        Byte 3     Byte 4      Byte 5
+
+   0xFE        0x69         0xFF         0xFF        0xFF       0xFF
+
+
+◎MFR_DATE_B0B5 (0x0086) is manufacture date (ASCII)
+EX: MFR_DATE_B0B5 is 180101, meaning 2018/01/01
+
+  Byte 0      Byte 1       Byte 2        Byte 3     Byte 4      Byte 5
+
+   0x31        0x38        0x30          0x31        0x30       0x31
+
+
+◎MFR_SERIAL_B0B5 (0x0087) and MFR_SERIAL_B6B11 (0x0088) are defined as
+ manufacture date and manufacture serial number (ASCII)
+EX: The first unit manufactured on 2018/01/01→MFR_SERIAL_B0B5: 180101；
+ MFR_SERIAL_B6B11: 000001
+
+  Byte 0       Byte 1      Byte 2        Byte 3     Byte 4      Byte 5
+
+   0x31        0x38         0x30         0x31        0x30        0x31
+
+
+  Byte 6       Byte 7      Byte 8        Byte 9     Byte 10    Byte 11
+
+   0x30        0x30         0x30         0x30        0x30        0x31
+
+
+
+
+                                    12
+1.3.3 CANBus Value Range and Tolerance
+
+      (1)Display parameters
+
+
+              CANBus command               Model       Display value range       Tolerance
+
+
+                  READ_VIN                 ALL             80~264V                  ±10V
+
+                                           24V                 0~30V              ±0.36V
+                 READ_VOUT
+                                           48V                 0~60V              ±0.48V
+
+                                           24V                 0~160A             ±5.32A
+                 READ_IOUT
+                                           48V                 0~80A              ±2.68A
+
+                  READ_
+                                           ALL             -40~100℃                 ±5℃
+              TEMPERATURE_1
+
+            READ_FAN_SPEED_1               ALL           0~26500 RPM             ±2000RPM
+
+            READ_FAN_SPEED_2               ALL           0~26500 RPM             ±2000RPM
+
+
+      (2)C ontrol parameters
+
+
+
+           CANBus command          Model     Display value range        Tolerance      Default
+
+
+
+              OPERATION             ALL       00h(OFF)/01h(ON)             N/A             ON
+
+
+                                    24V               12~30V             ±0.36V            24V
+               VOUT_SET
+                                    48V               24~60V             ±0.48V            48V
+
+
+                                    24V          26.75~146.25A           ±5.32A       146.25A
+               IOUT_SET
+                                    48V            13.5~73.5A            ±2.68A           73.5A
+
+
+
+
+                                                 13
+       Note:
+       1.READ_IOUT will display ZERO amp when output current is less than values in the table below.
+
+
+               Model                  Minimum readable current
+
+
+                 24V                         2.7A±1A
+
+
+                 48V                         1.3A±1A
+
+
+
+
+1.3.4 Communication example
+       1 . 3 . 4 . 1 Sending comman
+               The master adjusts output voltage of the unit with address "01" to 30V
+
+                         CAN ID              DLC (data length)    Command code          Parameters
+
+                        0xC0101                    0x4                0x2000              0x2C01
+
+                 Command code: 0x0020 (VOUT_SET) → 0x20(Lo) + 0x00(Hi)
+                 Parameters: 30V → 300 → 0x012C → 0x2C(Lo) + 0x01(Hi)
+                 NOTE: Conversion factor for VOUT_SET is 0.1, so 30V   =300
+                                                                 F=0.1
+
+       1.3.4.2 Reading data or status
+               The master reads operation setting from the unit with address "00".
+
+
+                         CAN ID              DLC (data length)    Command code
+
+                        0xC0100                    0x2                0x0000
+
+
+
+                 The unit with address "00" returns data below
+
+
+                         CAN ID             DLC (data length)    Command code           Parameters
+
+                       0xC0000                     0x3               0x0000               0x01
+
+
+                 The unit with address "00" returns data below
+
+
+
+
+                                                      14
+1.3.4.3 Practical Operation
+The following steps will describe how to set the DPU-3200-48 to 56V.
+1.Set the ID of the supply to “0”.
+
+           7
+                 A0(CN1)
+           8
+                 A1(CN1)
+           9                  DPU-3200
+                 A2(CN1)
+           14
+                 -V-signal(CN1)
+
+
+
+2.Connect the CANH/CANL pins of the master to the corresponding CANH(PIN7) and
+  CANL(PIN8)pins of the CN500 connector on the supply. It is recommended to establish a common
+  ground for the communication system to increases its communication reliability by using GND-AUX
+  (PIN2) of CN1.
+  ◎Set baud rate: 250kbps, type: extended
+  ◎Adding a 120Ω terminal resistor to both the controller and rack shelf ends can increase
+    communication stability
+
+                                                               7
+                       CANH                                        CANH(CN500)
+
+          Controllor                     120Ω        120Ω                    DPU-3200
+                                                               8
+                       CANL                                        CANL(CN500)
+
+
+
+
+3.Communication function can be accessed immediately after DPU-3200 is connected to AC. Set
+  output voltage at 56V.
+
+         CANID             DLC(data length)     Command Code          Parameters
+
+        0xC0100                   0x04             0x2000              0x3002
+
+ Command code: 0x0020(VOUT_SET)
+ Data: 56V → 560 → 0x0230 → 0x30(Lo) + 0x02(Hi)
+                                                         56V
+ NOTE: Conversion factor for CURVE_CV is 0.1, so              = 560
+                                                        F=0.1
+
+
+
+
+                                                   15
+4.It is recommended to review all of the settings and parameters using the appropriate commands. In
+ the event that they do not meet your requirements, you may rewrite them as needed.
+  EX: Read VOUT_SET to check whether output voltage was set to a proper level.
+
+  Read VOUT_SET
+
+         CANID          DLC(data length)       Command Code
+
+        0xC0100                 0x04              0x2000
+
+
+  The unit returns data below
+
+         CANID          DLC(data length)       Command Code       Parameters
+
+        0xC0100                 0x04              0x2000            0x3002
+
+  Data: 0x02(Lo) + 0x30(Hi) → 0x0230 → 560 = 56V.
+
+
+7.Finally, check whether Remote ON-OFF (PIN4) and +5-AUX (PIN3) pins of the CN1 connector are
+  short-circuited if there is no output voltage. Also please make sure command sending/reading is in
+  an interval of below 4 sec in order not to trigger communcation timeout.
+
+                                           3
+                  CN1           +5V-AUX
+
+   DPU-3200
+
+                                           4
+                        Remote ON-OFF
+
+
+
+
+                                                 16
+N o . 2 8 , W u q u a n 3 r d R d . , W u g u D i s t . , N e w Ta i p e i C i t y 2 4 8 , Ta i w a n
+

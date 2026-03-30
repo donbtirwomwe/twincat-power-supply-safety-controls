@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <DUT Name="TxData" Id="{6555a2c0-1aac-43e7-8eec-be4e4571dbab}">
+    <Declaration><![CDATA[TYPE TxData :
+STRUCT
+  Command : INT;                     // Command index (2 bytes: )
+  Data : ARRAY[0..3] OF BYTE;        // Data payload as 4 bytes (Command + Data + padding if needed)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

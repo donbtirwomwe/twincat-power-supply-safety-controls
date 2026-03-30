@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <DUT Name="panel302" Id="{00f08647-b718-4aac-a6c9-afcebee8b64e}">
+    <Declaration><![CDATA[TYPE panel302 :
+STRUCT
+	rxdata : ARRAY[0..101] OF UINT;
+	txdata : ARRAY[0..89] OF UINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

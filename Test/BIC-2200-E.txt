@@ -1,0 +1,1338 @@
+     BIC - 2200 Series
+     Installation manual
+
+
+
+
+                   <1ms
+
+
+
+
+Bidirectional Power Supply
+ High efficiencyLightweightIntelligent
+The BIC-2200 is a 2.2 KW bidirectional power supply with energy recycle
+function. It is fully digital and 1U height designed. It is designed to
+control the power transferred from AC grid to DC and DC to AC grid for
+energy recycle. The implementation of a bidirectional power supply of
+the BIC-2200 allows battery manufactures to charge the battery from
+AC grid and recycle the DC energy back into AC grid in one single unit.
+With built-in functions such as active current sharing, remote ON/OFF
+control and CAN B us model available , the BIC-2200 provides vast design
+flexibility for battery formation & test equipment, V2G(Vehicle-to-grid)
+system, charging station, laser system and kinetic recovery system.
+Contents
+1.Safety Guidelines                1    6 .Protections and Trouble      36
+                                         Shooting
+2.Introduction                     2
+                                         6.1 Protections                36
+  2.1 Model Encoding               2
+                                         6.2 Trouble Shooting           37
+  2.2 Features                     2
+  2.3 Specification                3
+                                        7.Warranty                      38
+  2.4 Derating curve               5
+  2.5 Mechanical specification     6
+
+3.Installation & Wiring            7
+  3.1 Precautions                  7
+  3.2 Installation Procedures      7
+  3.3 DC Cable Size Selection      8
+  3.4 External filter              9
+
+4.User Interface                  10
+  4.1 Panel Description           10
+  4.2 LED Indicator               11
+  4.3 Pin Assignment of CN46 11
+  4.4 Pin Assignment of CN47 13
+  4.5 Function Description of     13
+      SW50
+  4.6 Function Description of     14
+      DIP Switch
+
+5.Operation                       15
+  5.1 Description of Bidirectional 15
+     Operation
+  5.2 Inrush Current Limiting     20
+  5.3 Power Factor Correction 20
+      (PFC)
+  5.4 Fan Speed control           20
+  5.5 Fault Signal                21
+  5.6 (DC-OK) Signal              21
+  5.7 Remote Control              21
+  5.8 Auxiliary Output            22
+  5.9 Parallel Operation          22
+  5.10 CANBus Protocol            23
+  5.11 Restore Factory Default 35
+       Setting
+                                                                2021 . 09 Ver 1
+1   1 . Safety Guidelines                                                           2 . Introduction
+      n   Risk of electrical shock and energy hazard, all failure should be         2.1 Model Encoding
+          examined by a qualified technician. Please do not remove the case             BIC - 2200 - 12
+          form the bidirectional power supply by yourself.
+                                                                                                                                                                 2
+      n   Please do not install the supply in places with high moisture, high
+                                                                                                                      Communication protocol option
+          ambient temperature or under direct sunlight.
+                                                                                                                      Output voltage (12V/24V/48V/96V)
+      n   The AC voltage range is 180 – 260Vac (47 – 63Hz), please do not
+          connect the supply to AC gird out of the range.                                                             Output wattage
+
+      n   Fans and ventilation holes must be kept free from any obstructions. At                                      Series name
+          least 15 cm clearance must be kept when the adjacent device is a heat
+                                                                                            Type      Communication Protocol              Note
+          source.
+                                                                                            Blank     None protocol                     In Stock
+      n   Please do not stack any object on the unit.                                       CAN       CANBus protocol                   In Stock
+      n   The safety protection level of this supply is class I. The “Frame
+          Ground”( ) of the unit must be well connected to PE (Protective Earth).   2.2 Features
+                                                                                        l 1U low profile design
+                                                                                        l Full digital design with 93% conversion efficiency for both AC/DC
+                                                                                          and DC/AC conversion
+                                                                                        l Ultrafast switching time between AC/DC and DC/AC of 1ms
+                                                                                        l CB/UL/TUV CB/TUV/UL 62368-1 certified, and design refer to IEC
+                                                                                          62477 regulation
+                                                                                        l Active current sharing up to 11000W(4+1)
+                                                                                        l <3% Low THD i in both conversion mod
+                                                                                        l Force charging and discharging mode with CANBus model
+                                                                                        l Complete protections: Anti-islanding protection, AC fail protection,
+                                                                                          DC OVP,OLP, OCP, OTP
+                                                                                        l 5 years warranty
+
+
+
+
+                                           1                                                                             2
+    2.3 Specification
+    MODEL                                                                         BIC-2200-12                BIC-2200-24             BIC-2200-48               BIC-2200-96           MODEL                                              BIC-2200-12                BIC-2200-24                BIC-2200-48                  BIC-2200-96
+                                           DC VOLTAGE                             12V                        24V                     48V                       96V                              WORKING TEMP.                           -30 ~ +70℃ (Refer to "Derating Curve")
+                                           RATED CURRENT                          180A                       90A                     45A                       22.5A                            WORKING HUMIDITY                        20 ~ 90% RH non-condensing
+2                                          RATED POWER                            2160W                                                                                              ENVIRONMENT STORAGE TEMP., HUMIDITY                -40 ~ +85℃, 10 ~ 95% RH non-condensing                                                                               2
+                                           FULL POWER VOLTAGE RANGE               12 ~ 15V                   24 ~ 28V                48 ~ 65V                  96 ~ 112V                        TEMP. COEFFICIENT                       ±0.03%/℃ (0 ~ 45℃)
+                                           RIPPLE & NOISE (max.)        Note.2    160mVp-p                   260mVp-p                300mVp-p                  480mVp-p                         VIBRATION                               10 ~ 500Hz, 2G 10min./1cycle, 60min. each along X, Y, Z axes
+                          OUTPUT
+
+
+
+
+                                           VOLTAGE ADJ. RANGE                     10 ~ 15V                   19 ~ 28V                38 ~ 65V                  76 ~ 112V                                                                UL62368-1, CAN/CSA C22.2 No.62368-1,TUV BS EN/EN62368-1, EAC TP TC 004, IEC62477-1
+                                                                                                                                                                                                SAFETY STANDARDS
+                                           CURRENT ADJ. RANGE                     0 ~ 180A                   0 ~ 90A                 0 ~ 45A                   0 ~ 22.5A                                                                (by request) approved
+                                                                                  ±1.0%                      ±1.0%                   ±1.0%                     ±1.0%                            WITHSTAND VOLTAGE                       I/P-O/P:3KVAC       I/P-FG:2KVAC       O/P-FG:500VAC
+     AC to DC Direction
+
+
+
+
+                                           VOLTAGE TOLERANCE            Note.3                                                                                                                                                 Note.8
+
+                                           LINE REGULATION                        ±0.5%                      ±0.5%                   ±0.5%                     ±0.5%                            ISOLATION RESISTANCE Note.8             I/P-O/P, I/P-FG, O/P-FG:100M Ohms / 500VDC / 25℃/ 70% RH
+                                           LOAD REGULATION                        ±0.5%                      ±0.5%                   ±0.5%                     ±0.5%                                                                    BS EN/EN55032
+                                           SETUP, RISE TIME                       1800ms, 60ms/230VAC at full load                                                                                                                      Parameter                            Standard                            Test Level / Note
+                                           AC VOLTAGE RANGE                       180 ~ 264VAC                                                                                                                                          Conducted                            BS EN/EN55032 (CISPR32)             Class B
+                                                                                                                                                                                                EMC EMISSION
+                                           FREQUENCY RANGE                        47 ~ 63Hz                                                                                                                                             Radiated                             BS EN/EN55032 (CISPR32)             Class A
+                                           POWER FACTOR (Typ.)                    0.98/230VAC at full load                                                                                                                              Harmonic Current                     BS EN/EN61000-3-2                   Class A
+                                                                                                                                                                                     SAFETY &
+                          INPUT
+
+
+
+
+                                           EFFICIENCY (Typ.)             Note.5   90%                        93%                     93%                       93%                                                                      Voltage Flicker                      BS EN/EN61000-3-3                   ------
+                                                                                                                                                                                     EMC
+                                           AC CURRENT (Typ.)                      11A/230VAC                                                                                                                                            BS EN/EN55035, BS EN/EN61000-6-2
+                                                                                                                                                                                     (Note 4)
+                                           INRUSH CURRENT (Typ.)                  COLD START 35A/230VAC                                                                                                                                 Parameter                            Standard                            Test Level / Note
+                                           LEAKAGE CURRENT                        <2mA/230VAC                                                                                                                                           ESD                                  BS EN/EN61000-4-2                   Level 3, 8KV air ; Level 2, 4KV contact
+                                           TOTAL HARMONIC DISTORTION              <3%(@load=100%/230VAC)                                                                                                                                Radiated                             BS EN/EN61000-4-3                   Level 3
+                                                                                                                                                                                                                                        EFT / Burst                          BS EN/EN61000-4-4                   Level 3
+                          INPUT (Note.9)
+
+
+
+
+                                           RATED. INPUT POWER                     1800W                                                                                                         EMC IMMUNITY
+                                           FULL POWER VOLTAGE RANGE               12 ~ 15V                   24 ~ 48V                48 ~ 65V                  96 ~ 112V                                                                Surge                                BS EN/EN61000-6-2                   2KV/Line-Line 4KV/Line-Earth
+                                           DC VOLTAGE RANGE                       10 ~ 15V                   19 ~ 28V                38 ~ 65V                  76 ~ 112V                                                                Conducted                            BS EN/EN61000-4-6                   Level 3
+                                                                                                                                                                                                                                        Magnetic Field                       BS EN/EN61000-4-8                   Level 4
+     DC to AC Direction
+
+
+
+
+                                           MAX. INPUT CURRENT                     150A                       75A                     37.5A                     18.75A
+                                           RATED OUTPUT POWER (Typ.) (@230V, 50Hz) 1725VA                                                                                                                                                                                                                        >95% dip 0.5 periods, 30% dip 25 periods,
+                                                                                                                                                                                                                                        Voltage Dips and Interruptions       BS EN/EN61000-4-11
+                                           VOLTAGE RANGE                          180 ~ 264VAC determined by AC main                                                                                                                                                                                             >95% interruptions 250 periods
+
+                                           FREQUENCY RANGE                        47 ~ 63Hz determined by AC main                                                                               MTBF                                    155.56K hrs min.       Telcordia SR-332 (Bellcore) ; 46K hrs min.       MIL-HDBK-217F (25℃)
+                          OUTPUT
+
+
+
+
+                                           AC CURRENT (Typ.)                      7.5A/230VAC                                                                                        OTHERS     DIMENSION                               330*140*41mm (L*W*H)
+                                           POWER FACTOR (Typ.)                    0.99/230VAC at full load                                                                                      PACKING                                 2.9Kg; 4pcs/12.6Kg/1.25CUFT
+                                                                                                                                                                                     NOTE       1. All parameters NOT specially mentioned are measured at 230VAC input, rated load and 25℃ of ambient temperature.
+                                           EFFICIENCY (Typ.)             Note.5   90.5%                      93%                     93%                       93%                              2. Ripple & noise are measured at 20MHz of bandwidth by using a 12" twisted pair-wire terminated with a 0.1uf & 47uf parallel capacitor.
+                                           TOTAL HARMONIC DISTORTION              <3% (@load>100%/230VAC)                                                                                       3. Tolerance : includes set up tolerance, line regulation and load regulation.
+                                                                                                                                                                                                4. Need additional EMI filter to meet regulations of EMC conducted and radiated emission. Characteristics of EMI filter please refer to the table,
+                                                                                  105 ~ 115% rated output power                                                                                    minimum insertion loss.
+                                                                                                                                                                                                5. The efficiency is measured at 75% load.
+                                                                                                Constant current limiting, shut down DC O/P voltage 5 sec. after DC O/P voltage is              6. The ambient temperature derating of 5℃/1000m with fan models for operating altitude higher than 2000m(6500ft).
+                                           OVER LOAD                              AC to DC
+                                                                                                down low, re-power on to recover                                                                7. CANBus model only.
+                                                                                                                                                                                                8. During withstandards voltage and isolation resistance testing, the screw "A" shall be temporarily removed, and shall be istalled back after the
+                                                                                  DC to AC      Not accurable with constant power design                                                           testing.
+                                                                                                                                                                                                9. As a constant power output, the driver will auto derating the current limitation when voltage raise above rated voltage(12V,24V,48V,96V) in
+                                           SHORT CIRCUIT                          Shut down O/P current, re-power on to recover
+    PROTECTION                                                                                                                                                                                     order to remain 1800W output. On the other hand, when voltage is below rated voltage(12V,24V,48V,96V), the maximum current limitation will
+                                                                                  17.6 ~ 20.8V               33.6 ~ 39.2V            72.6 ~ 86V                134 ~ 157V                          set at Max input current.
+                                           OVER VOLTAGE                                                                                                                                         ※ Product Liability Disclaimer：For detailed information, please refer to https://www.meanwell.com/serviceDisclaimer.aspx
+                                                                                  Protection type : Shut down O/P voltage, re-power on to recover
+                                           OVER TEMPERATURE                       Shut down O/P voltage, recovers automatically after temperature goes down
+                                           ISLANDING PROTECTION                   Shut down AC O/P voltage, re-power on to recover
+                                                                                  By electrical signal or dry contact Short: Power ON        Open: Power OFF
+                                           REMOTE ON-OFF CONTROL
+                                                                                  Please refer to the Function Manual infollowing
+                                           BIDIRECTION SWITCH TIME(Typ.) 1ms
+                                                                                  Isolated TTL signal output for T-Alarm, DC-OK and Fault
+                                           ALARM SIGNAL
+                                                                                  Please refer to the Function Manual in following pages
+    FUNCTION                               AUXILIARY POWER                        12V@0.5A tolerance±5%, ripple 150mVp-p
+                                                                                                160A         80A                     40A                       20A
+                                                                                  AC to DC
+                                           BATTERY MODE RATED                                   Can be adjusted by communication
+                                           CURRENT(default)            Note.7                   120A         64A                     32A                       16A
+                                                                                  DC to AC
+                                                                                                Can be adjusted by communication
+
+
+
+
+                                                                                                         3                                                                                                                                                             4
+    2.4 Derating curve                                                                                         2.5 Mechanical specification
+
+                                                                                                                                                                                                                                                             Unit:mm
+
+2                 100
+                                                                                                                                                                               17.8                                     289
+                                                                                                                                                                                                                                        6.6 6.6
+                                                                                                                                                                                                                                                                              2
+                                                                     others
+
+
+
+
+                                                                                                                                                                                                                                                     8.4
+                                                                                                                                                              20.5
+                                                                                                                   10          2
+                   80
+
+                                                                                                                                                                                         2-M4 L=4.5                                           1.5
+
+
+
+
+                                                                                                                                                                                                                                                     22.65
+                                                                                                                   9           1
+                   60                                      12V                                                          CN47
+                                                                                                                                                                     ON
+       LOAD (%)
+
+
+
+
+                                                                                                                                                  OFF
+                   50
+                                                                                                                                                           SW50
+                                                                                                   2           1                                                                                                         330                                             41
+                   40
+                                                                                                                                10            2
+                                                                                                                                                           LED
+                                                                                                   10          9               2
+                                                                                                                                   9
+
+                                                                                                                                       1
+                                                                                                                                              1
+
+
+
+                                                                                                                                           CN47
+                                                                                                                                                    SW50
+
+
+
+
+                                                                                                                        45
+                                                                                                                               10 9
+                                                                                                                                                           SVR
+                   20                                                                                   CN46
+                                                                                                                               CN46
+
+
+
+                                                                                                                                                                                +V
+
+
+
+
+                                                                                                                        26
+                                                                                                                                                           2-M5                                                                                               Air flow
+                                                                                                                                                                                                                      (TOP View)                             direction
+
+
+
+
+                                                                                                                                                                                                                                                       140
+                                                                                                                                                                                -V
+                    -30   -20        0    15         40   45         60       70    (HORIZONTAL)
+                                                                                                                               19.6                                      TB1
+                                                                                                                                                                                3
+
+
+
+
+                                                                                                                                                                  9 10
+                                AMBIENT TEMPERATURE (℃)                                                                                                     I/P                 2             screw A
+                                                                                                                                                                                1             (Note.8)
+
+
+
+
+                                                                                                                                                           13 max.
+                  100
+
+
+
+
+                                                                                                                                                             20.5
+                                                                                                                                                                    17.8                                                289                         2-M4 L=4.5
+
+
+
+                                                                                                                                                                                      71.55                                    225
+       LOAD (%)
+
+
+
+
+                   50
+
+
+
+
+                                                                                                                                                                                          33.5
+                                                                                                                                                                                                         4-M4 L=4.5
+
+
+
+
+                                                                                                                                                                                          78
+                                                                                                                                                                                                                        (Bottom View)
+
+
+
+
+                    180   190       200        210             220            264
+
+                                INPUT VOLTAGE(VAC) 60Hz
+
+
+
+
+                                                     5                                                                                                                                                                  6
+    3 . Installation & Wiring                                                                          3.3 DC C able S ize S election
+    ３.1 Precautions                                                                                        Wire connections should be as short as possible and less than
+                                                                                                           1 meter is highly recommended. Make sure that suitable wires
+        l Please make sure the system chassis has sufficient strength to
+                                                                                                           are chosen based on safety requirement and rating of current.
+           carry the unit.
+                                                                                                           Small cross section will result in lower efficiency, less output
+        l In order to ensure the lifespan of the unit, you should refrain from
+                                                                                                           power and the wires may also become overheated and cause
+           operating the unit in environment of high dust or moisture.
+3                                                                                                          danger. For selection, please refer to table 3-1.                         3
+        l The bidirectional power supply is designed with built-in DC fans,
+           please make sure the ventilation is not blocked. There should be
+           no barriers within 15cm of the ventilating                                                               AWG       Cross-section Are(mm )
+                                                                                                                                                     2
+                                                                                                                                                              DC current (A)
+                                                                                                                         8               6                      32A ~ 40A
+    3.2 Installation Procedures                                                                                          6              10                      40A ~ 63A
+        1 Choose the right and suitable cable size for connection between                                                4              16                      63A ~ 80A
+          the BIC-2200 and the loads or batteries. Please refer to 3.3 DC cable                                          2              25                     80A ~ 100A
+          size selection.                                                                                                1              35                     100A ~ 125A
+        2 Connect the DC positive polarity of the supply to the positive of the
+                                                                                                                     ---                30                        139A
+          loads/batteries and connect the DC negative polarity of the supply
+                                                                                                                     ---                50                        190A
+          to the negative of the loads/batteries. Make sure there is no reverse
+                                                                                                                     ---                60                        217A
+          polarity or short-circuit on the connection.
+                                                                                                                     ---                80                        257A
+
+                                                                                                                                Table 3-1 Wire recommendations
+
+                               BIC-2200     +            +
+                          bidirectional power                Load/Battery
+                                supply      -            -
+                                                                                                       3.4 External filter
+                                                                                                           To meet regulations of EMC conducted and radiated emission, adding
+                                                                                                           an additional EMI filter is needed. Please refer to configuration below
+                                                                                                           and characteristics for suggested filters.
+                               BIC-2200     +            -
+                          bidirectional power                Load/Battery
+                                supply      -            +                                                 3.4.1 Configration
+
+                                                                                                                                                 BIC-2200
+        3 Connect the supply to the AC grid, FG to the earth, AC/N to the
+          neutral and AC/L to the live.                                                                                       EMI
+                                                                                                                                              AC         DC              LOAD
+          N OT E : T h e b i d i r e c t i o n a l p o w e r s u p p l y i s s i n g l e - p h a s e                         FILTER
+                                                                                                            AC Utility
+          input/output. Please pay attention to the wiring when connecting
+          the supply to a three-phase system.
+
+
+                                                  7                                                                                          8
+    3.4.2 Schematic                                                                            4 . User Interface
+         1                                                                                 3   4.1 Panel Description
+                                                                      Cy
+                    Cx          L                  Cx        R                   L                 A   Ventilation holes for fans:
+        LINE                                                                           LOAD
+                                                                      Cy                               The supply requires suitable ventilation to work properly.
+         2                                                                                 4           Please make sure there is sufficient ventilation and the lifespan
+         5                                                                                             of the supply can preserved.
+3                                                                                                  B   LED indicator:
+                                                                                                       Indicate the status of supply and the load condition.
+              L          Cx     Cy
+                                                                                                   C   SVR:
+          0.6mH       1.0uF   10000pF
+                                                                                                       For DC voltage setting.                                                    4
+                                                                                                   D   DIP switch:
+                                                                                                       For device addressing when using the communication interface.
+    3.4.3 Minimum insertion loss (In dB at 50Ω system) : Filter model 30DPGS5C
+          or equivalent                                                                            E   SW50:
+                                                                                                       Used to stabilize parallel signals when multi-supplies in parallel
+             FREQ. MHz        0.01 0.05 0.10 0.15 0.50 1.0                 5.0   10   30               connection.
+             COM. MODE dB      2     5        8         10       30   35   55    45   30           F   Function pins:
+
+             DIF. MODE dB      4     15       18        18       45   50   40    40   40               They are used for control and monitoring functions. Please refer to 4.3
+                                                                                                       and 4.4.
+                                                                                                   G   DC terminals
+                                                                                                   H   AC terminals
+
+
+
+
+                                                                                                                 A                        B                C          D   G   H
+
+
+
+
+                                                                                                                                      E
+
+
+
+
+                                                                                                                                              2
+                                                                                                                                                   1
+                                                                                                                                      F
+
+
+
+
+                                                                                                                                                               10 9
+                                                                                                                                                       1
+                                                                                                                                              10
+                                                                                                                                                   9
+
+                                                                                                                                                       2
+                                          9                                                                                           10
+    4.2 LED I ndicator
+             The LED indicator is controlled by the microcontroller or the MCU.            Pin No.    Function   Description
+             The MCU will change color of the indicator according to its operation                               The unit can turn the output ON/OFF by electrical
+                                                                                                      Remote
+             status. The indicator lights in constant green when the supply is in             5                  signal or dry contact between Remote ON/OFF and
+                                                                                                      ON-OFF
+                                                                                                                 +5V-AUX(pin 3). (Note.1)
+             operating mode; The indicator's flashing in green when the supply is
+                                                                                                                 High (4.5 ~ 5.5V) : Battery Charging mode
+             in recycle mode; The indicator turns red when the supply is in                          C/D Control
+                                                                                              6                  Low (-0.5 ~ 0.5V) : Battery Discharging mode
+             abnormal conditions or protection mode.                                                  (Note.2)
+                                                                                                                                     (Note.1)
+                                                                                                                 High (4.5 ~ 5.5V) : When the Vout≦80%±5%.
+               LED Indicator                                                   Status
+                                                                                                                 Low (-0.5 ~ 0.5V) : When Vout≧80%±5%.
+                                                                                              7
+4                 Green
+                                         Operating (AC to DC, work as an ordinary                      DC-OK                         The maximum sourcing current
+                                                                                                                                                                        4
+                                         power supply or charger)                                                                    is 4mA and only for output.
+
+                  Green (Flashing)       Recycle (DC to AC, work as a grid tie inverter)                         High (4.5 ~ 5.5V) : When the Vac ≦ 165Vrms, OLP,
+                                                                                                                                     SCP,OTP,OVP,AC Fail,fan
+                  Red                    Abnormal (OTP, OLP, fan-lock, etc … )
+                                                                                                                                     lock,islanding protection.
+                                                                                                                 Low (-0.5 ~ 0.5V) : When Vac≧175Vrms and when
+                                                                                              8         Fault
+                                                                                                                                     power supply work normally.
+    4.3 Pin A ssignment of CN46                                                                                                      The maximum sourcing current is
+                                                                                                                                     4mA and only for output.
+                                                                                                                                     (Note.1)
+                        1        9                                                                               High (4.5 ~ 5.5V) : When the internal temperature
+                                            2
+                                                 1
+
+
+
+
+                                                                                                                                     exceeds the limit of temperature
+                                                         10 9
+                                                     1
+                                            10
+                                                 9
+
+                                                     2
+
+
+
+
+                        2        10                                                                                                  alarm, or when any of the fans
+                                                                                                                                     fails.
+                              Remote
+    1 + 12V - AUX +5V - AUX
+                              ON-OFF
+                                          DC-OK                 T-ALARM   9                                      Low (-0.5 ~ 0.5V) : When the internal temperature
+                                                                                              9       T-ALARM
+                                C/D                                                                                                  is normal, and when fans work
+    2 GND - AUX GND - AUX                  Fault                  NC      10
+                               Control                                                                                               normally.
+                                                                                                                                     The maximum sourcing current
+    Pin No.      Function     Description                                                                                            is 4mA and only for output.
+                                                                                                                                     (Note.1)
+                              Auxiliary voltage output, 11.4~12.6V, referenced
+                              to GND-AUX (pin 2,4). The maximum output                       10          NC      -----
+        1       +12V-AUX
+                              current is 0.5A. This output is not controlled by the        Note 1 : Isolated signal, referenced to GND-AUX.
+                              Remote ON/OFF control.                                       Note 2 : CANBus model only .
+                              Auxiliary voltage output GND. The signal return is
+       2,4      GND-AUX
+                              isolated from the output terminals (+V & -V).
+                              Auxiliary voltage output, 4.5~5.5V, referenced to
+                              GND-AUX (pin 2,4) only for Remote ON/OFF used.
+        3       +5V-AUX
+                              This output is not controlled by the Remote
+                              ON/OFF control.
+
+
+                                                         11                                                                      12
+    4.4 Pin A ssignment of CN47                                                                 4.6 Function D escription of DIP S witch
+            2        1                                                                              Each unit should have their unique and own device address to
+                                                                                                    communicate over CANBus. Please be aware that : This DIP switch
+           DA       DA
+                                                                                                    only takes effect when the communication interface is used. It is not
+           DB       DB
+                              2     1                                                               necessary to set this switch in general use. For details, please refer to
+
+
+
+
+                                            2
+                                                 1
+        GND        GND                                                                              5.10.2 CANBus addressing.
+
+
+
+
+                                                         10 9
+                                                     1
+                                            10
+                                                 9
+
+                                                     2
+                              10    9
+        CANL       CANH
+      (optional) (optional)
+      GND-AUX GND-AUX
+
+
+4          10        9
+                                                                                                                                                                                4
+    Pin No.       Function         Description
+      1,2             DA
+                                   Differential digital signal for parallel control. (Note.1)
+      3,4             DB
+                                   Negative output voltage signal. Cer tain function
+      5,6           GND            reference. It can not be connected directly to the
+                                   load.
+                    CANH       For CANBus model: Data line used in CANBus interface.
+       7
+                (CANBus model) (Note.2)
+                    CANL       For CANBus model: Data line used in CANBus interface.
+       8
+                (CANBus model) (Note.2)
+                                   Auxiliar y voltage output GND. The signal return is
+     9,10         GND-AUX
+                                   isolated from the output terminals (+V & -V).
+    Note 1 : Non-isolated signal, referenced to GND.
+    Note 2 : Isolated signal, referenced to GND-AUX.
+
+
+    4.5 Function D escription of SW50
+            Parallel connection of the BIC-2200 is by digital differential signals.
+            Units in parallel compensate and stabilize their output through the
+            digital parallel signals. SW50 is a termination resistor which is used
+            to prevent signal reflections, then increasing communication
+            quality . For the usage of SW50, please refer to 5.9 Current S haring.
+
+
+
+
+                                                         13                                                                           14
+    5.Operation                                                                                                          AC to DC ( Charge ) ＋
+
+      BIC-2200 possesses AC to DC and DC to AC two way conversion functions.               Utility grid
+
+      The conversion direction can be automatically detected and controlled by               L
+                                                                                                                   L                ＋                            ＋
+      BIC-2200's internal firmware or manually switched by users according to                                      Bidirectional power 10Vdc~15Vdc/19Vdc~28Vdc
+                                                                                                 180Vac ~ 264Vac                                                  Battery/Load
+                                                                                                                          supply       /38Vdc~65Vdc/76Vdc~112Vdc
+      different application requirements. Before entering detailed function                                        N                －                            －
+                                                                                       N                                BIC - 2200
+      explanation. Please refer to following definitions.
+      AC to DC (Energy absorbing and charging/ power supplying):
+                                                                                                            - DC to AC(discharge)
+      The BIC-2200 converts AC energy from the grid into DC energy for the battery
+      or the loads. The operation principle is the same as an ordinary power supply
+      or a charger.
+                                                                                      5.1.2 Bi-direction auto-detect mode
+                Energy absorbing              charging/power supplying                       This is the default factory setting, AC to DC or DC to AC conversion is
+                                                                                             controlled by BIC-2200 automatically according to operation
+5                       AC                                  DC                               mechanism below.                                                                    5
+                                                                                             l    "Target voltage" is the DC voltage setting of the bidirectional
+      DC to AC (Energy recycling and discharging):
+                                                                                                  supply, when the DC end voltage is different from the “target
+      Opposite to the AC to DC conversion, the BIC-2200 converts DC energy from                   voltage”, the internal firmware will switch between two conversion
+      the battery or loads into AC energy, then feeding back to the grid. AC output               functions of AC to DC or DC to AC. "Target voltage" is adjustable
+      synchronization range is 180Vac~264Vac/47Hz~63Hz, the bidirectional power                   by the SVR.
+                                                                                             l    When the "target voltage" is higher than the battery voltage or
+      supply can work normally as long as the AC gird is within the range.
+                                                                                                  application equipment voltage, the BIC-2200 operates in AC to
+                                                                                                  DC conversion.
+                  Energy recycling                    Discharging                            l    When the "target voltage" is lower than the battery voltage or
+                                                                                                  application equipment voltage, the BIC-2200 operates in DC to
+                          AC                                DC                                    AC conversion.
+                                                                                                  NOTE: During this mode, AC to DC or DC to AC conversion is
+                                                                                                  judged by the internal firmware. Active control signal (e.g. C/D
+                                                                                                  control) will not take effect in this mode.
+    5.1 Description of B idirectional O peration
+        5.1.1 Overview
+              The output range of the BIC-2200 covers DC: 10V – 112V;                                              Condition              Conversion
+              AC: 180 – 264Vac / 47-63Hz, which can be used to applications with
+                                                                                                                   VTarget > VDC            AC to DC
+              various voltage requirements, such as battery test equipment. To
+              cope with different application occasions, there are two modes for
+                                                                                                                   VTarget > VDC            DC to AC
+              selection, bi-direction auto-detect mode and programmable bi-
+              direction battery mode.
+
+
+
+
+                                             15                                                                                    16
+                                               "VTarget"(Default: BIC-2200 rated voltage)     5.1.3.1 CANBus command (digital)
+                                         VDC
+                                                                                                     The users can set the supply in AC to DC (charging) or DC to AC
+    Over voltage protection ShutDown                                                                 (discharging) conversion directly through command DIRECTION_CTRL
+                                                                                                     (0x0100). Command VOUT_SET(0x0020) and IOUT_SET(0x0030) are
+                                                                                                     used to adjust values of charge voltage and charge current in AC to DC
+                                                                                                     conversion. Command REVERSE_VOUT_SET(0x0120) REVERSE _
+                                                                   Under voltage protection
+                                                                                                     IOUT_SET(0x0130) are used to adjust values of discharging voltage and
+                                               ShutDown                                              discharging current in DC to AC conversion.
+              -                                                                  +
+                                         0
+                     IDC_IN_MAX                         IDC_OUT_MAX       Direction( IDC )
+                  (Energy recycling)                 (Energy absorbing)                                        Command                          Conversion
+                            Operating characteristic curve
+                                                                                                               DIRECTION_CTRL = 00h             AC to DC(charging)
+
+                                                                                                               DIRECTION_CTRL = 01h            DC to AC(discharging)
+5       5.1.3 Bi-direction battery mode                                                                                                                                                       5
+              This optio only work with CANBus model , and with it ' s
+                                                                                                     NOTE: Please refer to 5.10.4 CANBus value range and tolerance for
+              communication interface. To activate the mode, please follow
+              below:                                                                                 detailed information about adjustable ranges of VOUT_SET, IOUT_SET,
+              1. Set command SYSTEM_CONFIG(0x00C2) at 0x0003 → Activate                              REVERSE_VOUT_SET and REVERSE_IOUT_SET.
+                 CANBus communication mode.
+              2. Set command BIDIRECTIONAL_CONFIG(0x00C2) at 0x0001 →
+                 Set at bi-direction battery mode.                                            5.1.3.2 C/D Control (analogy)
+              3. Repower on the supply to activate the battery mode                                   The users also can control AC to DC (charging) or DC to AC (discharging)
+              NOTE: For detailed CANBus information, please refer to 5.10                             conversion via analogy signals.
+              CANBus Protocol
+                                                                                                                                  6
+                                                                                                               CN46 C/D Control
+              After bi-direction battery mode is activated, users can switch the                                                         C/D control to GND-AUX       Conversion
+              supply between AC to DC or DC to AC conversion by CANBus                                        BIC-2200
+              command (digital) or C/D control (analogy). Please refer to 5.1.3.1                                                        C/D control = 4.5 – 5.5V     AC to DC(charging)
+                                                                                                                                  2,4
+                                                                                                                      GND-AUX
+              CANBus command (digital) and 5.1.3.2 C/D control (analogy)
+                                                                                                                                         C/D control = -0. 5 – 0.5V   DC to AC(discharging)
+
+
+
+                           Vbat    Charge CC+CV     CC recycle
+                                                                                                    NOTE: Analogy signals cannot be used to adjust parameters of charging
+                           Ibat
+                                                                                                    voltage ( VOUT _ SET )/ discharging voltage ( REVERSE _ VOUT _ SET ) and
+                                                                                                    charging current (IOUT_SET)/discharge current (REVERSE_IOUT_SET), but only
+                                                          -Ibat
+                                                                                                    control AC to DC or DC to AC conversion.
+                            C/D
+
+                                                                  Time
+
+                                       Logic control curve
+
+
+                                               17                                                                                       18
+      5.1.3 . 3 Notes on battery mode                                                                 Vbat
+                                                                                                                                          REV_VOUT_SET
+                                                                                                                                                 Vbat
+                 In bi-direction battery mode, although users can determine                    REV_VOUT_SET
+                                                                                                                                     0V                                           0V
+                 direction of the conversions on their demand, however if the                                                                     Ibat
+                 setting voltage does not match the actual DC end voltage, AC to                                                                   5%
+                                                                                                                                     0A                                           0A
+                 DC (charging) or DC to AC (discharging) conversion may not work                      -Ibat
+                 as expected. Here are examples that will cause conversion errors.
+                 1. During AC to DC conversion (C/D control = High or                                                                 0                                           0
+                    DIRECTION_CTRL = 00h), if battery voltage is higher than
+                                                                                                     REV_VOUT_SET lower than Vbat and C/D=0      REV_VOUT_SET higher than Vbat and C/D=0
+                    the value of command VOUT_SET (charge voltage), the
+                    BIC-2200 will perform DC to AC conversion instead, but
+                    limiting discharge current at 5% of rated current. If you
+                                                                                                  5.2 Inrush Current Limiting
+                    want to ensure AC to DC conversion working properly,
+                    please make sure value of command VOUT_ SET is higher                             l   Built-in AC inrush current limiting circuit
+5                   than the battery voltage.
+                                                                                                      l   Since the inrush current limiting circuit mainly consists of a NTC               5
+                                                                                                          thermistor and a relay, inrush current will be much higher than the
+                                                                                                          specified value if the thermistor in AC side is not allowed sufficient
+                 2. During DC to AC conversion (C/D control =Low or
+                                                                                                          time to cool down. After turning off the supply, a 10 second cool down
+                    DIRECTION_CTRL = 01h), if battery voltage is lower than
+                                                                                                          period is recommended before turning on again.
+                    the value of command VOUT_SET_REV, the BIC-2200 will
+                    perform AC to DC conversion instead, but then limiting
+                                                                                                  5.3 Power Factor Correction (PFC)
+                    charge current at 5% of rated current. To ensure DC to AC
+                                                                                                      l   Built-in active power factor correction (PFC) function, power factor (PF)
+                    conversion working properly, please make sure value of
+                                                                                                          will be 0.95 or better at full load condition in AC to DC or DC to AC
+                    command VOUT_ SET_REV is lower than the battery
+                                                                                                          conversion. PF will be less than 0.95 if it is not at full load condition
+                    voltage.                                                                              during AC to DC or DC to AC conversion.
+
+
+
+    VOUT _ SET                                          Vbat                                      5. 4 Fan Speed control
+        Vbat                                        VOUT _ SET                                        l   Built-in fan speed control circuit, fan speed changes automatically
+                                          0V                                           0V
+          Ibat                                                                                            depending on internal temperature.
+                                          0A             -Ibat                         0A
+                                                           5%
+
+          C/D                              1              C/D                           1
+
+
+
+          VOUT SET higher than Vbat and C/D=1             VOUT_SET lower than Vbat and C/D=1
+
+
+
+
+                                               19                                                                                           20
+    5.5 Fault S ignal                                                                      5.8 Auxiliary Output
+        l    Fault signal is used to inform application equipment that whether it is           ●   Built-in 12V/0.5A auxiliary output
+             energy recyclable. When it is OLP, SCP or OTP, BIC-2200 will send a high                                        1
+                                                                                                         CN46 +12V-AUX                   CN46 +12V-AUX to
+             level of fault signal 100ms in advance to notify the application before                                                                              Condition
+                                                                                                                                         GND-AUX
+             shutting down the supply. A fault signal will send out at the same time of                 BIC-2200
+                                                                                                                                        PIN1-PIN2,4               12Vdc
+             shutting down operation in the reset of protection (e.g. AC_fail).                                              2,4
+                                                                                                                   GND-AUX
+        l    Maximum output current 4mA.
+                                       8
+                    CN46       Fault              CN46 Fault to GND-AUX   Condition
+
+                  BIC-2200                        -0. 5 ~0.5V             Normal working   5 . 9 Parallel O peration
+                                       2,4                                Not energy
+                           GND-AUX                4.5~5.5V
+                                                                          recyclable
+                                                                                               BIC-2200 has the built-in active current sharing function and can be
+                                                                                               connected in parallel, up to 5 units, to provide higher output power as
+                                                                                               exhibited below:
+                                                                                               l    The power supplies should be paralleled using short and large diameter
+    5.6 ( DC - OK ) Signal
+5       ●   Built-in DC output voltage detection circuit.
+                                                                                                    wiring and then connected to the load.                                      5
+                                                                                               l    In parallel connection, power supply with the highest output voltage will
+        ●   Maximum output current 4mA.
+                                                                                                    be the master unit and its Vout will be the DC bus voltage.
+                                       7
+                    CN46      DC-OK               CN46 DC-OK to GND-      Condition            l    The total output current must not exceed the value determined by the
+
+                  BIC-2200                        -0. 5 ~0.5V             DC OK                     following equation:
+                                       2,4        4.5~5.5V                Abnormal in DC            Maximum output current at parallel operation=(Rated current per unit)
+                           GND-AUX
+                                                                                                    x (Number of unit) x 0.95
+                                                                                               l    When the total output current is less than 5% of the total rated current,
+    5. 7 Remote Control                                                                             or say (5% of Rated current per unit) x (Number of unit) the current
+                                                                                                    shared among units may not be balanced.
+        l    Built-in remote ON/OFF control circuit, which is used to turn on/off the
+             supply.                                                                           l    Under parallel operation ripple of the output voltage may be higher than
+        l    Please be aware that “remote ON/OFF and “+5V-AUX” on CN46 should                       the SPEC at light load condition, It will go back to normal ripple level
+             be linked together to allow the unit to operate normally; if kept open,                once the output load is more than 5%.
+             there will be no output.
+                                                                                               l    CN47/SW50 Function pin connection
+        l    Maximum input voltage 5.5V.
+
+                    CN46     Remote 5             CN46 Remote ON/OFF to
+                             ON/OFF                                     Condition
+                                                  +5V-AUX
+                  BIC-2200
+                                                  -0. 5 ~0.5V             ON
+                                       3
+                             +5V-AUX              4.5~5.5V                OFF
+
+
+
+
+                                             21                                                                                    22
+                                        PSU1                                   PSU2                                PSU3                                PSU4                               PSU5                  5.10 . 1 CAN Bus Specification
+            Parallel
+                                   CN47     SW50                  CN47            SW50               CN47                SW50          CN47                   SW50      CN47                    SW50                  l     Physical layer specification
+             1 unit
+
+
+
+
+                                                                  ∣
+
+
+
+                                                                                      ∣
+
+
+
+                                                                                                      ∣ ∣
+
+
+
+                                                                                                                          ∣ ∣
+
+
+
+                                                                                                                                        ∣ ∣ ∣
+
+
+
+                                                                                                                                                              ∣ ∣ ∣
+
+
+
+                                                                                                                                                                             ∣ ∣ ∣ ∣
+
+
+
+                                                                                                                                                                                                 ∣ ∣ ∣ ∣
+                                    X            ON
+                                                                                                                                                                                                                           This protocol follows CAN ISO-11898 with Baud rate of
+             2 unit                 V            ON                    V              ON
+                                                                                                                                                                                                                           250Kbps.
+             3 unit                 V            ON                    V              OFF                 V               ON
+                                                                                                                                                                                                                      l Data Frame
+             4 unit                 V            ON                    V              OFF                 V               OFF                 V               ON
+             5 unit                 V            ON                    V              OFF                 V               OFF                 V               OFF              V                  ON
+                                                                                                                                                                                                                           This protocol utilizes Extended CAN 29-bit identifier frame
+                                                                                                                                                                                                                           format or CAN 2.0B.
+           (V : CN47 connected ; X : CN47 not connected)
+
+
+                         BIC-2200                             BIC-2200                                    BIC-2200                                     BIC-2200                             BIC-2200
+                          PSU1                                 PSU2                                        PSU3                                         PSU4                                 PSU5
+    SW50            +V    -V              SW50           +V       -V                   SW50          +V       -V                SW50              +V     -V           SW50                 +V    -V
+             CN47                                 CN47                                        CN47                                     CN47                                        CN47
+
+
+
+
+5                                                                                                                                                                                                                                                                                                                 5
+                                                                                                          +V -V                                                                                                        l Communication Timing
+                                                                                                          LOAD                                                                                                             Min. request period (Controller to BIC-2200): 20mSec
+                                                                                                                                                                                                                           Max. response time (BIC-2200 to Controller): 5mSec
+                                                                                                                                                                                                                           Min. packet margin time (Controller to BIC-2200): 5mSec
+
+                    4          2                              4            2                              4          2                                   4       2                                    4    2
+                                                                                                                                                                                                                                                              Request period
+                    DB         DA                        DB            DA                                 DB        DA                                  DB     DA                                DB        DA                                             (Controller to PSU/CHG)
+                    DB         DA                        DB            DA                                 DB        DA                                  DB     DA                                DB        DA
+                    3          1                              3            1                              3          1                                   3       1                                    3    1
+                                                                                                                                                                                                                            PSU CAN-RX
+                                                                                                                                                                                                                          (form Controller)
+               PSU1 CN47                                                                                                                                                                        PSU5 CN47
+                                                                                                                                                                                                                                                    RX data                                       RX data
+
+                                                         PSU2 CN47                                    PSU3 CN47                                        PSU4 CN47
+                                                                                                                                                                                                                                                  Response time                           Packet Margin time
+                                                                                                                                                                                                                          PSU CAN-TX          (PSU/CHG to Controller)                   (Controller to PSU/CHG)
+                                                                   If the lines of CN47 are too long, they should
+                                                                                                                                                                                                                                                                              TX data
+                                                                   be twisted in pairs to avoid the noise.
+
+                    ◎ DA、DB Connected mutually in parallel
+
+
+            5 . 10 CANBus Protocol
+                               CANBus communication interface provides control and monitoring
+                               functions. It is helpful when users intent to modify the parameters
+                               remotely. Users can read and write the parameters through the bus, which
+                               includes bi-directional battery mode switch, ON/OFF, charge voltage/
+                               current, discharge voltage/ current, temperature, etc.
+
+                                                                                                              23                                                                                                                                              24
+    5.10 . 2 CANBus Addressing                                                 5.10.3 CANBus c ommand list
+          Each BIC-2200 unit should have their unique and own device            Command         Command       Transaction # of data
+          address to communicate over the CANBus. PIN 1 - PIN 3 of the DIP                                                                   Description
+                                                                                  Code            Name           Type       Bytes
+          switch allows users to designate an address for their supply units
+          (with maximum of 8 addresses). Please refer to below for the            0x0000    OPERATION            R/W          1       Remote ON/OFF control
+          detailed setup advice.
+                                                                                                                                      Charge voltage setting
+                                                                                  0x0020    VOUT_SET             R/W          2
+          OFF    ON                                                                                                                   (format: value, F=0.01)
+          1
+          2
+          3                                                                                                                           Charge current setting
+                                                                                  0x0030    IOUT_SET             R/W          2
+                                                                                                                                      (format: value, F=0.01)
+                           DIP switch position                                                                                        Summary status
+              Model No.                                                           0x0040    FAULT_STATUS          R           2
+                                                                                                                                      reporting
+                           1        2         3
+                 0        ON       ON        ON                                                                                       AC voltage reading value
+                                                                                  0x0050    READ_VIN              R           2
+                                                                                                                                      (format: value, F=0.1)
+                 1        ON       ON        OFF
+                                                                                                                                      DC voltage reading value
+5                2        ON       OFF       ON                                   0x0060    READ_VOUT             R           2
+                                                                                                                                      Note. i(format: value, F=0.01)
+                                                                                                                                                                        5
+                 3        ON       OFF       OFF                                                                                      DC current reading value
+                                                                                  0x0061    READ_ I OUT           R           2
+                 4        OFF      ON        ON                                                                                       (format: value, F=0.01)
+
+                 5        OFF      ON        OFF                                            READ_                                     Internal ambient temperature
+                                                                                  0x0062                          R           2
+                                                                                            TEMPERATURE_1                             (format: value, F=0.1)
+                 6        OFF      OFF       ON
+                 7        OFF      OFF       OFF                                  0x0080    MFR_ID_B0B5           R           6       Manufacturer ' s name
+
+
+                                                                                  0x0081    MFR_ID_B6B11          R           6       Manufacturer ' s name
+
+
+                                                                                  0x0082    MFR_MODEL_B0B5        R           6       Manufacturer's model name
+
+                                                                                            MFR_MODEL_
+                                                                                  0x0083                          R           6       Manufacturer's model name
+                                                                                            B6B11
+
+                                                                                            MFR_REVISION_
+                                                                                  0x0084                          R           6       Firmware revision
+                                                                                            B0B5
+
+                                                                                            MFR_LOCATION_
+                                                                                  0x0085                         R/W          3       Manufacturer's factory location
+                                                                                            B0B2
+
+                                                                                  0x0086    MFR_DATE_B0B5        R/ W         6       Manufacturer's date
+
+
+                                                                                  0x0087    MFR_SERIAL_B0B5      R/ W         6       Product serial number
+
+
+
+
+                                     25                                                                                 26
+                                                                                                   FAULT_STATUS:
+
+     Command          Command          Transaction # of data                                        High byte     Bit 7     Bit 6    Bit 5    Bit 4   Bit 3   Bit 2   Bit 1     Bit 0
+                                                                        Description
+       Code             Name              Type       Bytes                                          Definition     ---       ---      ---      ---     ---     ---     ---    HV_OVP
+
+                  MFR_SERIAL_                                                                       Low byte      Bit 7     Bit 6    Bit 5    Bit 4   Bit 3   Bit 2   Bit 1     Bit 0
+       0x0088                             R/ W           6      Product serial number
+                  B6B11                                                                             Definition   HI_TEMP   OP_OFF   AC_FAIL   SHORT   OLP     OVP     OTP     FAN _ FAIL
+
+       0x00C0     SCALING_FACTOR            R            2      Scaling ratio
+                                                                                                   Low byte :
+
+       0x00C1     SYSTEM_STATUS             R            2      System status                      Bit 0    FAN_FAIL：Fan locked flag
+                                                                                                            0＝Fan working normally
+       0x00C2     SYSTEM_CONFIG           R/W            2      System configuration                        1＝Fan locked
+                                                                                                   Bit 1    OTP：Over temperature protection
+       0x0100     DIRECTION_CTRL          R/W            1      A/D or D/A conversion control               0＝Internal temperature normal
+                                                                                                            1＝Internal temperature abnormal
+                  REVERSE_VOUT_                                 Discharge voltage setting
+       0x0120                             R/W            2
+5                 SET                                           (format: value, F=0.01)            Bit 2    OVP：DC over voltage protection                                                 5
+                                                                                                            0＝DC voltage normal
+                  REVERSE_IOUT_                                 Discharge current setting
+       0x0130                             R/W            2                                                  1＝DC over voltage protected
+                  SET                                           (format: value, F=0.01)
+                                                                B i d i re c t i o n a l m o d e   Bit 3    OLP：DC over current protection
+                  BIDIRECTIONAL
+       0x0140                             R/W            2                                                  0＝DC current normal
+                  CONFIG                                        c o n f ig u r a t io n
+                                                                                                            1＝DC over current protected
+    Note :
+                                                                                                   Bit 4    SHORT：Short circuit protection
+    The conversion of setting and reading values is defined as following:
+                                                                                                            0＝Shorted circuit do not exist
+    Actual value = Communication reading value × Factor (F value). Among them,
+                                                                                                            1＝Shorted circuit protected
+    Factor needs to refer to the definition of SCALING_FACTOR in each model list.
+                                                                                                   Bit 5    AC_FAIL：AC abnormal flag
+    EX: VDC_real (actual DC voltage) = READ_VOUT x Factor.
+                                                                                                            0＝AC range normal
+    If the Factor of READ_VOUT of a certain model is 0.01, the communication reading
+                                                                                                            1＝AC range abnormal
+    value is 0x0960 (hexadecimal) → 2400 (decimal), then VDC_real = 2400 × 0.01 =
+                                                                                                   Bit6     OP_OFF：DC status
+    24.00V.
+                                                                                                            0＝DC turned on
+    Message ID definition :                                                                                 1＝DC turned off
+                  Description                            Message ID                                Bit7     HI_TEMP：Internal high temperature protection
+     BIC-2200 to controller Message ID                   0x000C02XX                                         0＝Internal temperature normal
+     Controller to BIC-2200 Message ID                   0x000C03XX                                         1＝Internal temperature abnormal
+     Controller broadcasts to BIC-2200Message ID         0x000C03FF
+                                                                                                   High byte :
+    Note : XX means the address of BIC-2200 ( which can be assigned by the DIP switch,
+                                                                                                   Bit 0    HV_OVP：HV over voltage protection
+    range from 0x00 ~ 0x07)
+                                                                                                            0＝HV voltage normal
+                                                                                                            1＝HV over voltage protected
+
+
+                                            27                                                                                                 28
+    MFR_ID_B0B5 is the first 6 codes of the manufacturer's name (ASCII);                                              MFR_SERIAL_B0B5 and MFR_SERIAL_B6B11 are defined as manufacture
+    MFR_ID_B6B11 is the last 6 codes of the manufacturer's name (ASCII)                                               date and manufacture serial number (ASCII)
+    EX: manufacturer's name is MEANWELL → MFR_ID_B0B5 is MEANWE；                                                      EX: The first unit manufactured on 2018/01/01 → MFR_SERIAL_B0B5:
+    MFR_ID_B6B11 is LL                                                                                                180101；MFR_SERIAL_B6B11: 000001
+                       MFR_ID_B0B5                                                MFR_ID_B6B11                                             MFR_ID_B0B5                                                     MFR_ID_B6B11
+     Byte 0   Byte 1   Byte 2   Byte 3   Byte 4   Byte 5        Byte 0   Byte 1   Byte 2   Byte 3   Byte 4   Byte 5    Byte 0     Byte 1   Byte 2     Byte 3      Byte 4   Byte 5     Byte 6    Byte 7      Byte 8   Byte 9 Byte 10 Byte 11
+     0x4D     0x45     0x41     0x4E     0x57     0x45          0x4C     0x4C     0x20     0x20     0x20     0x20       0x31      0x38        0x30     0x31       0x30     0x31          0x30      0x30     0x30     0x30    0x30      0x31
+
+
+
+                                                                                                                      SCALING_FACTOR :
+    MFR_MODEL_B0B5 is the first 6 codes of the manufacturer ' s model name
+                                                                                                                       Byte 4~5                                            Bit 7~Bit 0
+    (ASCII); MFR_MODEL_B6B11 is the last 6 codes of the manufacturer ' s model
+                                                                                                                      Definition                                               ---
+    name (ASCII);
+                                                                                                                        Byte 3        Bit 7          Bit 6         Bit 5      Bit 4        Bit 3          Bit 2      Bit 1     Bit 0
+    EX: Model name is BIC-2200-24 → MFR_MODEL_B0B5 is BIC-22；
+                                                                                                                      Definition                             --                                             IIN Factor
+5   MFR_MODEL_B6B11 is 00-24
+                                                                                                                        Byte 2        Bit 7          Bit 6         Bit 5      Bit 4        Bit 3          Bit 2      Bit 1     Bit 0
+                                                                                                                                                                                                                                              5
+                                                                                                                      Definition                             --                                    TEMPERATURE_1 Factor
+                     MFR_MODEL_B0B5                                          MFR_MODEL_B6B11
+                                                                                                                        Byte 1        Bit 7          Bit 6         Bit 5      Bit 4        Bit 3          Bit 2      Bit 1     Bit 0
+     Byte 0   Byte 1   Byte 2   Byte 3   Byte 4   Byte 5        Byte 6   Byte 7   Byte 8   Byte 9 Byte 10 Byte 11
+                                                                                                                      Definition                 FAN_SPEED Factor                                           VIN Factor
+     0x42     0x49     0x43     0x2D     0x32     0x32          0x30     0x30     0x2D     0x32     0x34     0x20
+                                                                                                                        Byte 0        Bit 7          Bit 6         Bit 5      Bit 4        Bit 3          Bit 2      Bit 1     Bit 0
+
+                                                                                                                      Definition                      IOUT Factor                                          VOUT Factor
+
+    MFR_REVISION_B0B5 is the firmware revision ( hexadecimal ). A range of 0x00                                       byte 0 :
+    (R00.0)~0xFE (R25.4) represents the firmware version of an MCU; 0xFF                                              Bit 0 : 3       VOUT Factor：The Factor of DC voltage
+    represents no MCU existed                                                                                                         0x0=DC voltage relevant commands not supported
+    EX: The supply has two MCUs, the firmware version of the MCU number 1 is                                                          0x4=0.001
+    version R25.4 (0xFE), the MCU number 2 is version R10.5 (0x69)                                                                    0x5=0.01
+     Byte 0   Byte 1   Byte 2   Byte 3   Byte 4   Byte 5                                                                              0x6=0.1
+     0xFE     0x69     0xFF     0xFF     0xFF     0xFF                                                                                0x7=1.0
+                                                                                                                                      0x8=10
+                                                                                                                                      0x9=100
+    MFR_DATE_B0B5 is manufacture date ( ASCII )                                                                       Bit 4 : 7       IOUT Factor：The Factor of DC current
+    EX: MFR_DATE_B0B5 is 180101, meaning 2018/01/01                                                                                   0x0=DC current relevant commands not supported
+     Byte 0   Byte 1   Byte 2   Byte 3   Byte 4   Byte 5                                                                              0x4=0.001
+     0x31     0x38     0x30     0x31     0x30     0x31                                                                                0x5=0.01
+                                                                                                                                      0x6=0.1
+                                                                                                                                      0x7=1.0
+                                                                                                                                      0x8=10
+                                                                                                                                      0x9=100
+                                                           29                                                                                                                         30
+    byte 1 :                                                             SYSTEM_STATUS:
+    Bit 0 : 3   VIN Factor：The Factor of AC voltage                      High byte    Bit 7    Bit 6     Bit 5     Bit 4   Bit 3    Bit 2    Bit1    Bit 0
+
+                0x0=AC voltage relevant commands not supported           Definition   ---         ---     ---       ---    ---      ---      ---     ---
+
+                0x4=0.001                                                Low byte     Bit 7    Bit 6     Bit 5     Bit 4   Bit 3    Bit 2    Bit1    Bit 0
+
+                0x5=0.01                                                                                INITIAL
+                                                                         Definition   ---     EEPER               ADL_ON   ---     PFC_OK   DC_OK    M/S
+                                                                                                        _STATE
+                0x6=0.1
+                0x7=1.0
+                0x8=10
+                                                                         Low byte :
+                0x9=100
+                                                                         Bit 0        M/S：parallel mode status
+    Bit 4 : 7   FAN_SPEED Factor：The Factor of fan speed
+                                                                                      0＝Current device is Slave
+                0x0=Fan speed relevant commands not supported
+                                                                                      1＝Current device is Master
+                0x4=0.001
+                                                                         Bit 1        DC_OK：Secondary DD output voltage status
+                0x5=0.01
+                                                                                      0＝Secondary DD output voltage status TOO LOW
+5               0x6=0.1
+                                                                                      1＝Secondary DD output voltage status NORMAL
+                                                                                                                                                             5
+                0x7=1.0
+                                                                         Bit 2        PFC_OK：Primary PFC status
+                0x8=10
+                                                                                      0＝Primary PFC OFF or abnormal
+                0x9=100
+                                                                                      1＝Primary PFC ON normally
+    byte 2 :
+                                                                         Bit 4        ADL_ON：Active dummy load control status
+    Bit 0 : 3   TEMPERATURE_1 Factor：The Factor of internal ambient
+                                                                                      0 = Active dummy load off/function not supported
+                temperature
+                                                                                      1＝ Active dummy load on
+                0x0=internal ambient temperature relevant commands not
+                                                                         Bit 5        INITIAL_STATE: Device initialized status
+                    supported
+                                                                                      0＝In initialization status
+                0x4=0.001
+                                                                                      1＝NOT in initialization status
+                0x5=0.01
+                                                                         Bit6         EEPER：EEPROM data access error
+                0x6=0.1
+                                                                                      0＝EEPROM data access normal
+                0x7=1.0
+                                                                                      1＝EEPROM data access error
+                0x8=10
+                                                                                      ※ When an EEPROM data access error occurs, the supply shuts
+                0x9=100
+    byte 3 :                                                                          down and then entering protection mode with the LED indicator off.
+    Bit 0 : 3   IIN Factor：The Factor of AC current                                   It only can be recovered after the EEPROM error condition is
+                0x0=AC current relevant commands not supported                        resolved.
+                0x4=0.001
+                0x5=0.01
+                0x6=0.1
+                0x7=1.0
+                0x8=10
+                0x9=100
+                0xA~0xF= Reserved
+                                          31                                                                          32
+    SYSTEM_CONFIG :                                                                       5.10.4 CANBus value range and tolerance:
+    High byte    Bit 7      Bit 6     Bit 5   Bit 4   Bit 3    Bit 2   Bit1      Bit 0    (1)Display parameters
+    Definition   ---         ---      ---     ---     ---      ---      ---      ---                CANBus Command                Model         Display value range         Tolerance
+    Low byte     Bit 7      Bit 6     Bit 5   Bit 4   Bit 3    Bit 2   Bit1      Bit 0     0x0050           READ_VIN               ALL              180~264V                  ±10V
+    Definition   ---         ---      ---     ---     ---     OPERATION_INIT   CAN_CTRL                                            12V                0~15V                  ±0.12V
+
+                                                                                                                                   24V                0~28V                  ±0.24V
+                                                                                           0x0060          READ_VOUT
+    Low byte :                                                                                                                     48V                0~56V                  ±0.48V
+    Bit 0        CAN_CTRL：CANBus communication control status                                                                      96V               0~112V                  ±0.96V
+
+                 0＝The output voltage/current defined by control over SVR                                                          12V             -180~216A                  ±4A
+
+                 1＝The output voltage, current, ON/OFF control defined by control                                                  24V              -90~108A                  ±2A
+                                                                                           0x0061          READ_IOUT
+                 over CANBus (VOUT_SET, IOUT_SET, OPERATION)                                                                       48V               -45~54A                  ±1A
+
+    Bit1:2       OPERATION_INIT：Pre-set value of power on operation command                                                        96V              -22.5~27A                ±0.5A
+
+                 0b00＝Power OFF, pre-set 0x00(OFF)                                         0x0062     READ_TEMPERATURE_1           ALL              -40~110℃                  ±5℃
+
+5                0b01＝Power ON, pre-set0x01(ON)                                                                                                                                          5
+                 0b10＝Pre-set is previous set value                                       (2)Control parameters (Bi-direction auto-detect mode)
+                 0b11＝not used, reserved
+                                                                                                    CANBus Command         Model     Adjustable range           Tolerance      Default
+
+                                                                                          0x0000       OPERATION            ALL     00h(OFF)/01h(ON)              N/A         01h(ON)
+
+                                                                                                                            12V            10~15V                ±0.12V         12V
+    BIDIR_CONFIG:
+                                                                                                                            24V            19~28V                ±0.24V         24V
+    High byte    Bit 7      Bit 6     Bit 5   Bit 4   Bit 3    Bit 2   Bit1      Bit 0    0x0020        VOUT_SET
+                                                                                                                            48V            38~65V                ±0.48V         48V
+    Definition   ---         ---      ---     ---     ---      ---      ---      ---
+                                                                                                                            96V            76~112V               ±0.96V         96V
+    Low byte     Bit 7      Bit 6     Bit 5   Bit 4   Bit 3    Bit 2   Bit1      Bit 0
+                                                                                                                            12V            10~15V                ±0.12V         12V
+    Definition   ---         ---      ---     ---     ---      ---      ---     MODE
+                                                                                                                            24V            19~28V                ±0.24V         24V
+                                                                                          0x0120    REVERSE_VOUT_SET
+    Low byte :                                                                                                              48V            38~65V                ±0.48V         48V
+    Bit 0        MODE: Bidirectional mode configuration                                                                     96V            76~112V               ±0.96V         96V
+                 0＝Bi-direction auto-detect mode. DIR_CTRL and C/D control                                                  12V           +36~+198A               ±4A          198A
+                       (analogy) UN-controllable.                                                                           24V           +18~+99A                ±2A           99A
+                                                                                          0x0030        IOUT_SET
+                 1＝Bi-direction battery mode. DIR_CTRL and C/D control (analogy)                                            48V           +9~+49.5A               ±1A          49.5A
+                       controllable                                                                                         96V          +4.5~+24.75A            ±0.5A         24.75A
+
+                                                                                                                            12V           -153 ~-36A              ±4A          -153A
+
+                                                                                                                            24V           -76.5~-18A              ±2A          -76.5A
+                                                                                          0x0130     REVERSE_IOUT_SET
+                                                                                                                            48V           -38.3~-9A               ±1A          -38.3A
+
+                                                                                                                            96V           -19.1~-4.5A            ±0.5A         -19.1A
+
+                                                                                          0x0140    BIDIRECTIONAL_CONFIG    ALL    00h(CV)/01h(Battery)           N/A         00h(CV)
+
+                                                                                          0x00C2       SYSTEM_CONFIG        ALL              N/A                  N/A           02h
+
+
+
+
+                                                 33                                                                                        34
+        (3)Control parameters (Bi-direction battery mode)                                         6 .Protections and Trouble Shooting
+                    CANBus Command      Model       Adjustable range    Tolerance    Default
+                                                                                                  6. 1 Protections
+         0x0000         OPERATION        ALL        00h(OFF)/01h(ON)      N/A        01h(ON)
+
+                                                      00h(Charge)/
+                                                                                                      6.1 . 1 Anti-islanding Protections
+         0x0001      DIRECTION_CTRL      ALL                              N/A       00h(Charge)
+                                                     01h(Discharge)                                         BIC-2200 is designed to refer to IEC 62116(2008), the supply shuts off
+                                        12V             10~15V           ±0.12V       12.6V                 within 2 seconds when AC is cut or abnormal. Please be aware that it is
+                                        24V             19~28V           ±0.24V       25.2V                 necessary to install an AC circuit breaker that complies with grid-tie
+         0x0020        VOUT_SET
+                                        48V             38~65V           ±0.48V       50.4V                 standard in your country before the supply.
+                                        96V             76~112V          ±0.96V      100.8V
+
+                                        12V             10~15V           ±0.12V        10V            6.1 . 2 Over Temperature Protection (OTP) and Alarm
+                                        24V             19~28V           ±0.24V        19V
+         0x0120     REVERSE_VOUT_SET                                                                        Built-in thermal detection circuit, once the internal temperature
+                                        48V             38~65V           ±0.48V        38V
+                                                                                                            exceeds a threshold value, the supply will shut down automatically (the
+                                        96V             76~112V          ±0.96V        76V
+                                                                                                            fans will still be running to cool down the supply). Please switch off the
+5                                       12V           +36~+160A           ±4A         160A
+                                                                                                            supply, remove all possible causes and then leave the supply cooling
+                                        24V            +18~+80A           ±2A          80A
+         0x0030          IOUT_SET                                                                           down to a normal working temperature (approximate 10 minutes - 1
+                                        48V             +9~+40A           ±1A          40A
+                                                                                                            hour) before repower on again.
+                                        96V            +4.5~+20A         ±0.5V         20A
+                                                                                                            Maximum output current 4mA.                                                          6
+                                        12V            -120 ~-36A         ±4A         -120A
+
+                                        24V            -64.3~-18A         ±2A         -64.3A
+         0x0130      REVERSE_IOUT_SET                                                                                                      9
+                                                                                                                        CN46     T-ALARM              C N 46 T-ALARM t o GND-AUX Condition
+                                        48V            -32.2~-9A          ±1A         -32.2A
+
+                                        96V           -16.1A~-4.5A       ±0.5V        -16.1A                          BIC-2200                        -0. 5 ~0.5V               Normal Temp.
+
+         0x0140 BIDIRECTIONAL_CONFIG     ALL        00h(AD)/01h(BAT.)     N/A        00h(AD)                                               2,4        4.5~5.5V                  Abnormal temp.
+                                                                                                                                 GND-AUX
+         0x00C2       SYSTEM_CONFIG      ALL              N/A             N/A          02h
+
+                                                                                                      6.1 . 3 AC F ail Protection
+    5.11 Restore Factory Default Setting                                                                   When AC voltage/frequency is abnormal, BIC-2200 will enter
+        Users could set the device into factory default by following steps                                 protection mode to prevent damaging itself or affect quality of the
+        ( command 0x0000, 0x0020, 0x0120, 0x0030, 0x0130, 0x0140, 0x00C2):                                 grid no matter which conversion it is, D/A or A/D. The supply will
+        (1) Set all DIP switch positions (device address) to ON                                            restore automatically when AC voltage/frequency back to normal.
+        (2) Power on in REMOTE OFF mode (no output at this step)
+        (3) After power on, in 15 seconds, switch all DIP switch from ON to
+                                                                                                      6. 1.4 Short Circuit Protection
+             OFF and then switch ALL back to ON position.
+                                                                                                            When there is short circuit at AC/DC end of BIC-2200, the supply will
+        (4) Green LED will blink 3 times if set successfully
+                                                                                                            enter protection mode and shut down. Repower on to restore after
+        (5) Factory default setting will be restored after re-power on.
+                                                                                                            short-circuit condition is resolved.
+             DIP switch diagram is as shown below.
+         OFF   ON
+         1
+         2
+         3
+
+
+
+                                               35                                                                                                36
+       6. 1 .5 Over Current Protection                                                         7.Warranty
+               In AC to DC conversion, when the load current exceeds 110%± 5%
+                                                                                                This product provides five years warranty under normal usage. Do not replace
+            of the rated current, protection mode will be triggered. Repower                    parts or any form of modification to the product in order to keep the warranty
+            on to restore after over-current condition is resolved.                             effectively.
+
+
+                                                                                                ※ MEAN WELL possesses the right to adjust the content of this manual.
+       6. 1 .6 DC Over Voltage Protection                                                         Please refer to the latest version of our manual on our website.
+            When the DC end voltage is too high, the DC over-voltage                              https://www.meanwell.com
+            protection circuit will be triggered. Repower on to restore after
+            over-voltage condition is resolved.                                                    MEAN WELL WEB     User’s Manual        Video
+
+
+
+
+    6.2 Trouble Shooting
+        Failure State       Possible Cause             Suggested Solution
+
+        The supply is not                              Make sure remote ON/OFF is
+                            Remote OFF
+        working                                        connected to +5V
+6       AC/DC or DC/AC      The setting voltage
+                                                       If it is bi-direction auto-detect
+                                                       mode, please refer to 5.1.2. If it
+        conversion is       doesn ' t match actual
+                                                       is bi-direction battery mode,
+        incorrect           DC end voltage
+                                                       please refer to 5.1.3.3
+
+                            The ambient temperature    Re-start the supply after temperature                                                                                     7
+                            too high                   dropped back
+
+                                                       Re-start the supply after reducing
+                            DC load current too high
+                                                       DC load current
+        LED shows abnormal
+                                                       Re-star t the supply af ter AC
+        indication         AC voltage/frequency
+                                                       voltage/frequency is within
+                            abnormal
+                                                       a normal range
+                                                       Re-start the supply after DC
+                            Battery or load voltage
+                                                       end voltage is within a normal
+                            too high
+                                                       range
+
+       If you are unable to clarify the problem you are facing, please contact
+       MEAN WELL or any of our distributors for repair service.
+
+
+
+
+                                           37                                                                                        38
+N o . 2 8 , W u q u a n 3 r d R d . , W u g u D i s t . , N e w Ta i p e i C i t y 2 4 8 , Ta i w a n
+

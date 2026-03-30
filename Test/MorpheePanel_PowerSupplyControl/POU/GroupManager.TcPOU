@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="GroupManager" Id="{db66aec0-6376-4cb6-8e3d-b20bd565db2b}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK GroupManager
+VAR
+  i : INT;                                    // Loop variable for devices
+  groupIdx : INT;                             // Group index
+  groupBase : INT;                            // Base device index for group
+	devIdx: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR devIdx := 0 TO 19 DO
+  IF devIdx < 4 THEN
+    GVL.GroupMembership[devIdx] := -1; (** Devices 0-3 not in groups **)
+  ELSIF devIdx >= 4 AND devIdx <= 7 THEN
+    GVL.GroupMembership[devIdx] := 0; (** Group 0: devices 4-7 **)
+  ELSIF devIdx >= 8 AND devIdx <= 11 THEN
+    GVL.GroupMembership[devIdx] := 1; (** Group 1: devices 8-11 **)
+  ELSIF devIdx >= 12 AND devIdx <= 15 THEN
+    GVL.GroupMembership[devIdx] := 2; (** Group 2: devices 12-15 **)
+  ELSIF devIdx >= 16 AND devIdx <= 19 THEN
+    GVL.GroupMembership[devIdx] := 3; (** Group 3: devices 16-19 **)
+  END_IF;
+END_FOR;]]></ST>
+    </Implementation>
+    <Method Name="UpdateGroupCapacity" Id="{e2d38334-fe87-436e-a8a9-505ce98b0f90}">
+      <Declaration><![CDATA[METHOD UpdateGroupCapacity
+VAR
+  activeDevices : INT;                        (** Count of active devices in group **)
+  devIdx : INT;                              (** Device index **)
+  groupBase : INT;                           (** Base index for group devices **)
+  opCount : UINT;                            (** Count of devices with OperationOn **)
+  outCount : UINT;                           (** Count of devices with OutputOn **)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+FOR groupIdx := 0 TO 3 DO
+  groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
+  activeDevices := 0;
+  opCount := 0;
+  outCount := 0;
+  GVL.GroupCapacity[groupIdx] := 0;
+
+  (** Calculate active devices based on input voltage feedback **)
+  FOR devIdx := groupBase TO groupBase + 3 DO
+    IF devIdx <= 19 THEN
+      IF GVL.Vin[devIdx] > 100 THEN
+        activeDevices := activeDevices + 1;
+      END_IF;
+      IF GVL.OperationOn[devIdx] THEN
+        opCount := opCount + 1;
+      END_IF;
+      IF GVL.OutputOn[devIdx] THEN
+        outCount := outCount + 1;
+      END_IF;
+    END_IF;
+  END_FOR;
+  GVL.GroupCapacity[groupIdx] := activeDevices * GVL_Constant.IoutMax; (** 75A per device **)
+
+  (** Update group status and alarms **)
+  IF GVL.GroupMaster[groupIdx] >= 0 AND GVL.GroupMaster[groupIdx] <= 19 THEN
+    GVL.NumericOutput[104 + groupIdx] := SHL(TO_DWORD(outCount), 16) OR TO_DWORD(opCount);
+    IF opCount < 4 THEN
+      GVL.SystemAlarms := DWORD_TO_UINT(GVL.SystemAlarms OR SHL(TO_DWORD(1), groupIdx));
+    END_IF;
+  ELSE
+    GVL.NumericOutput[104 + groupIdx] := 0;
+    GVL.GroupCapacity[groupIdx] := 0;
+    GVL.SystemAlarms := DWORD_TO_UINT(GVL.SystemAlarms OR SHL(TO_DWORD(1), groupIdx));
+  END_IF;
+END_FOR;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateGroupMasters" Id="{0732d2d1-4d0b-4cfd-acb5-74c385a214fa}">
+      <Declaration><![CDATA[METHOD UpdateGroupMasters
+VAR
+  oldMaster : INT;                            (** Previous master index **)
+  i : INT;                                    (** Loop variable for devices **)
+  groupBase : INT;                           (** Base index for group devices **)
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+FOR groupIdx := 0 TO 3 DO
+  groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
+  oldMaster := GVL.GroupMaster[groupIdx];
+  GVL.GroupMaster[groupIdx] := -1;
+
+  (** Retain current master if still healthy **)
+  IF oldMaster >= groupBase AND oldMaster <= groupBase + 3 AND
+     GVL.Vin[oldMaster] > 100 AND NOT GVL.CommFault[oldMaster] THEN
+    GVL.GroupMaster[groupIdx] := oldMaster;
+  ELSE
+    (** Select first active healthy unit by VIN **)
+    FOR i := groupBase TO groupBase + 3 DO
+      IF i <= 19 AND GVL.Vin[i] > 100 AND NOT GVL.CommFault[i] THEN
+        GVL.GroupMaster[groupIdx] := i;
+        EXIT;
+      END_IF;
+    END_FOR;
+
+    (** Final fallback for compatibility: base unit in group **)
+    IF GVL.GroupMaster[groupIdx] = -1 AND groupBase <= 19 THEN
+      GVL.GroupMaster[groupIdx] := groupBase;
+    END_IF;
+  END_IF;
+
+  (** Set fault code if master changed **)
+  IF oldMaster <> GVL.GroupMaster[groupIdx] AND GVL.GroupMaster[groupIdx] >= 0 THEN
+    GVL.FaultStatus[GVL.GroupMaster[groupIdx]] := 8; (** Fault code 8 = master changed **)
+  END_IF;
+END_FOR;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="GroupManager">
+      <LineId Id="36" Count="11" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="GroupManager.UpdateGroupCapacity">
+      <LineId Id="1425" Count="34" />
+      <LineId Id="71" Count="0" />
+    </LineIds>
+    <LineIds Name="GroupManager.UpdateGroupMasters">
+      <LineId Id="200" Count="28" />
+      <LineId Id="126" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

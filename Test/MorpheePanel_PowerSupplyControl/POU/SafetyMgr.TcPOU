@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+  <POU Name="SafetyMgr" Id="{a8a109f4-0079-4314-8edc-ba599c94dc5d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SafetyMgr
+VAR
+  OrangeFault : BOOL;                         // Orange-level fault detected
+  RedFault : BOOL;                            // Red-level fault detected
+  AlarmBits : UINT;                           // Bitmask of alarmed devices
+  RecoveryTrigger : BOOL;                     // Trigger for recovery attempt
+  Watchdog : TON;                             // EtherCAT watchdog timer
+  AllOutputsOff : BOOL;                       // All outputs are off
+  ShutdownActive : ARRAY[0..19] OF BOOL;      // Shutdown in progress per device
+  FastOffActive : ARRAY[0..19] OF BOOL;       // Fast off in progress per device
+  AnyOutputOn : BOOL;                         // Any output is on
+  EStopTimer : TON;                           // E-Stop delay timer
+  RedStopTimer : TON;                         // Red Stop delay timer
+  OrangeStopTimer : TON;                      // Orange Stop delay timer
+END_VAR
+
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="IsDeviceSafe" Id="{172d67a0-935f-43f9-b8e0-3f5c9ba247dc}">
+      <Declaration><![CDATA[// Check if a device is safe to operate
+METHOD IsDeviceSafe : BOOL
+VAR_INPUT
+  DeviceIndex : INT;                          // Device to check
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsDeviceSafe := DeviceIndex >= 0 AND DeviceIndex <= 19 AND GVL.FaultLevel[DeviceIndex] = 0 AND NOT ShutdownActive[DeviceIndex];
+GVL.SafetyOK[DeviceIndex] := IsDeviceSafe;    // Update safety status
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateSafety" Id="{f08a62f7-94f4-432b-9256-12fcfb147d4b}">
+      <Declaration><![CDATA[// Update safety conditions and system state, handling E-Stop, Red/Orange Stops, and communication faults
+METHOD UpdateSafety
+VAR
+  devIdx : INT;            (* Device index for iteration, 0-19 *)
+  anyEStop : BOOL;         (* Aggregate E-Stop state across all devices *)
+  anyRedStop : BOOL;       (* Aggregate Red Stop state across all devices *)
+  anyOrangeStop : BOOL;    (* Aggregate Orange Stop state across all devices *)
+  systemSafe : BOOL;       (* System-wide safety condition, false if alarms active *)
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* Initialize aggregate safety flags *)
+anyEStop := FALSE;
+anyRedStop := FALSE;
+anyOrangeStop := FALSE;
+
+// Aggregate device-level safety conditions
+FOR devIdx := 0 TO 19 DO
+  anyEStop := anyEStop OR GVL.EStop[devIdx];         (* Check device E-Stop *)
+  anyRedStop := anyRedStop OR GVL.RedStop[devIdx];   (* Check device Red Stop *)
+  anyOrangeStop := anyOrangeStop OR GVL.OrangeStop[devIdx]; (* Check device Orange Stop *)
+END_FOR;
+
+// Update system state based on aggregated conditions
+IF anyEStop THEN
+  GVL.SystemState := 3; // E-Stop state, highest priority
+ELSIF anyRedStop THEN
+  GVL.SystemState := 2; // Red Stop state
+ELSIF anyOrangeStop THEN
+  GVL.SystemState := 1; // Orange Stop state
+ELSE
+  GVL.SystemState := 0; // Normal state, all clear
+END_IF;
+
+// Update SafetyOK per device: safe if no E-Stop, Red, or Orange Stop
+FOR devIdx := 0 TO 19 DO
+  GVL.SafetyOK[devIdx] := NOT (GVL.EStop[devIdx] OR GVL.RedStop[devIdx] OR GVL.OrangeStop[devIdx]);
+END_FOR;
+
+// Check system-wide alarms for safety condition
+IF GVL.AlarmStatus <> 0 THEN // Non-zero AlarmStatus indicates active alarms
+  systemSafe := FALSE;
+ELSE
+  systemSafe := TRUE;
+END_IF;
+
+// Apply system-wide safety and device-specific faults to shutdown
+FOR devIdx := 0 TO 19 DO
+  GVL.SafetyShutdown[devIdx] := NOT systemSafe OR GVL.CommFault[devIdx] OR GVL.TemperatureFaultHigh[devIdx];
+END_FOR;
+
+// Disable outputs for devices in shutdown
+FOR devIdx := 0 TO 19 DO
+  IF GVL.SafetyShutdown[devIdx] THEN
+    GVL.OutputOn[devIdx] := FALSE; // Disable output on shutdown
+  END_IF;
+END_FOR;
+
+// Handle recovery: clear RecoveryPending if SafetyRecovery and device is safe
+FOR devIdx := 0 TO 19 DO
+  IF GVL.SafetyRecovery AND GVL.SafetyOK[devIdx] THEN
+    GVL.RecoveryPending[devIdx] := FALSE;
+  END_IF;
+END_FOR;
+
+// Update fault level per device based on stop conditions
+FOR devIdx := 0 TO 19 DO
+  IF GVL.EStop[devIdx] THEN
+    GVL.FaultLevel[devIdx] := 2; // Red fault level
+  ELSIF GVL.OrangeStop[devIdx] THEN
+    GVL.FaultLevel[devIdx] := 1; // Orange fault level
+  ELSE
+    GVL.FaultLevel[devIdx] := 0; // No fault
+  END_IF;
+END_FOR;
+
+// Update communication faults and polling status
+FOR devIdx := 0 TO 19 DO
+  GVL.CommFault[devIdx] := GVL.CommTimeouts[devIdx] > GVL_constant.MAXCOMMTIMEOUT; (* Fixed: MAXCOMMTIMEOUT *)
+  GVL.PollingPaused[devIdx] := GVL.CommFault[devIdx] AND NOT GVL.DataValid[devIdx]; (* Pause polling if fault and stale *)
+  GVL.RecoveryPending[devIdx] := GVL.RecoveryPending[devIdx] OR (GVL.FaultLevel[devIdx] > 0); (* Set pending if faulted *)
+END_FOR;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SafetyMgr">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="SafetyMgr.IsDeviceSafe">
+      <LineId Id="11" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="SafetyMgr.UpdateSafety">
+      <LineId Id="595" Count="69" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
