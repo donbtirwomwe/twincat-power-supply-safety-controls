@@ -43,7 +43,7 @@ VAR CONSTANT
                                           GVL_Constant.CMD_REVERSE_VOUT_SET,
                                           GVL_Constant.CMD_REVERSE_IOUT_SET];
   ReadCommandCount : INT := 13;               // Number of read commands
-  TotalInitCommands : INT := 22;              // Total commands in init (13 read + 9 MFR)
+  TotalInitCommands : INT := 23;              // Total commands in init (13 read + 1 BIDIR poll + 9 MFR)
 END_VAR
 
 ]]></Declaration>
@@ -59,7 +59,10 @@ END_VAR
       <Implementation>
         <ST><![CDATA[(** Initialize CAN bus and device offset mapping based on DeviceIndex (0-19) **)
 CASE DeviceIndex OF
-  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex; (** Map devices 0-3 to CAN Bus 1, offset 0-3 **)
+  0: CANBusIndex := 1; DeviceOffset := 3; (** Swap DPU1 <-> DPU4 and DPU2 <-> DPU3 on Bus 1 **)
+  1: CANBusIndex := 1; DeviceOffset := 2;
+  2: CANBusIndex := 1; DeviceOffset := 1;
+  3: CANBusIndex := 1; DeviceOffset := 0;
   4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4; (** Map devices 4-11 to CAN Bus 2, offset 0-7 **)
   12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12; (** Map devices 12-19 to CAN Bus 3, offset 0-7 **)
   ELSE Poll := FALSE; RETURN; (** Disable polling and exit for invalid DeviceIndex **)
@@ -111,16 +114,17 @@ IF PollCounter >= pollIntervalLocal AND NOT GVL.PollingPaused[DeviceIndex] THEN
       ELSE
         // Ensure ID commands are polled first
         CASE CommandIndex - ReadCommandCount OF
-          0: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B0B5; (** Poll ID bytes 0-5 **)
-          1: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B6B11; (** Poll ID bytes 6-11 **)
-          2: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B0B5; (** Poll model bytes 0-5 **)
-          3: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B6B11; (** Poll model bytes 6-11 **)
-          4: LastExpectedCommand := GVL_Constant.CMD_MFR_REVISION_B0B5; (** Poll revision bytes 0-5 **)
-          5: LastExpectedCommand := GVL_Constant.CMD_MFR_LOCATION_B0B2; (** Poll location bytes 0-2 **)
-          6: LastExpectedCommand := GVL_Constant.CMD_MFR_DATE_B0B5; (** Poll date bytes 0-5 **)
-          7: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B0B5; (** Poll serial bytes 0-5 **)
-          8: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B6B11; (** Poll serial bytes 6-11 **)
-          ELSE LastExpectedCommand := GVL_Constant.MfrCommands[CommandIndex - ReadCommandCount]; (** Fallback to original MfrCommands **)
+          0: LastExpectedCommand := GVL_Constant.CMD_BIDIRECTIONAL_CONFIG; (** One-time poll of bidirectional config (0x0140) **)
+          1: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B0B5; (** Poll ID bytes 0-5 **)
+          2: LastExpectedCommand := GVL_Constant.CMD_MFR_ID_B6B11; (** Poll ID bytes 6-11 **)
+          3: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B0B5; (** Poll model bytes 0-5 **)
+          4: LastExpectedCommand := GVL_Constant.CMD_MFR_MODEL_B6B11; (** Poll model bytes 6-11 **)
+          5: LastExpectedCommand := GVL_Constant.CMD_MFR_REVISION_B0B5; (** Poll revision bytes 0-5 **)
+          6: LastExpectedCommand := GVL_Constant.CMD_MFR_LOCATION_B0B2; (** Poll location bytes 0-2 **)
+          7: LastExpectedCommand := GVL_Constant.CMD_MFR_DATE_B0B5; (** Poll date bytes 0-5 **)
+          8: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B0B5; (** Poll serial bytes 0-5 **)
+          9: LastExpectedCommand := GVL_Constant.CMD_MFR_SERIAL_B6B11; (** Poll serial bytes 6-11 **)
+          ELSE LastExpectedCommand := GVL_Constant.MfrCommands[CommandIndex - ReadCommandCount - 1]; (** Fallback to original MfrCommands, shifted by BIDIR poll **)
         END_CASE;
       END_IF;
       txData.Command := UINT_TO_INT(LastExpectedCommand); (** Assign command **)
@@ -321,7 +325,10 @@ END_VAR
       <Implementation>
         <ST><![CDATA[
 CASE DeviceIndex OF
-  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex;
+  0: CANBusIndex := 1; DeviceOffset := 3;
+  1: CANBusIndex := 1; DeviceOffset := 2;
+  2: CANBusIndex := 1; DeviceOffset := 1;
+  3: CANBusIndex := 1; DeviceOffset := 0;
   4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4;
   12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12;
   ELSE WriteDLC3 := FALSE; RETURN;
@@ -363,7 +370,10 @@ END_VAR
          
 (** Map DeviceIndex to CAN bus and offset **)
 CASE DeviceIndex OF
-  0..3: CANBusIndex := 1; DeviceOffset := DeviceIndex; (** Devices 0-3 map to Bus 1, offset 0-3 **)
+  0: CANBusIndex := 1; DeviceOffset := 3; (** Swap DPU1 <-> DPU4 and DPU2 <-> DPU3 on Bus 1 **)
+  1: CANBusIndex := 1; DeviceOffset := 2;
+  2: CANBusIndex := 1; DeviceOffset := 1;
+  3: CANBusIndex := 1; DeviceOffset := 0;
   4..11: CANBusIndex := 2; DeviceOffset := DeviceIndex - 4; (** Devices 4-11 map to Bus 2, offset 0-7 **)
   12..19: CANBusIndex := 3; DeviceOffset := DeviceIndex - 12; (** Devices 12-19 map to Bus 3, offset 0-7 **)
   ELSE WriteDLC4 := FALSE; RETURN; (** Invalid DeviceIndex, exit **)

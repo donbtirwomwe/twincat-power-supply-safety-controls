@@ -73,7 +73,7 @@ END_VAR
   (** Calculate active healthy devices for limit calculation **)
   FOR devIdx := groupBase TO groupBase + 3 DO
     IF devIdx <= 19 THEN
-      IF GVL.Vin[devIdx] > 100 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
+      IF GVL.Vin[devIdx] > 0 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
         activeDevices := activeDevices + 1;
       END_IF;
       IF GVL.OperationOn[devIdx] THEN
@@ -121,14 +121,17 @@ END_VAR]]></Declaration>
   oldMaster := GVL.GroupMaster[groupIdx];
   GVL.GroupMaster[groupIdx] := -1;
 
-  (** Retain current master if still healthy **)
-  IF oldMaster >= groupBase AND oldMaster <= groupBase + 3 AND
-     GVL.Vin[oldMaster] > 100 AND NOT GVL.CommFault[oldMaster] THEN
-    GVL.GroupMaster[groupIdx] := oldMaster;
-  ELSE
+  (** Retain current master if still healthy – guard array access explicitly **)
+  IF oldMaster >= groupBase AND oldMaster <= groupBase + 3 THEN
+    IF GVL.Vin[oldMaster] > 0 AND NOT GVL.CommFault[oldMaster] THEN
+      GVL.GroupMaster[groupIdx] := oldMaster;
+    END_IF;
+  END_IF;
+
+  IF GVL.GroupMaster[groupIdx] = -1 THEN
     (** Select first active healthy unit by VIN **)
     FOR i := groupBase TO groupBase + 3 DO
-      IF i <= 19 AND GVL.Vin[i] > 100 AND NOT GVL.CommFault[i] THEN
+      IF i <= 19 AND GVL.Vin[i] > 0 AND NOT GVL.CommFault[i] THEN
         GVL.GroupMaster[groupIdx] := i;
         EXIT;
       END_IF;

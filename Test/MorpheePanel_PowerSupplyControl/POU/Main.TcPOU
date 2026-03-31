@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 PROGRAM Main
 VAR
-  CycleCounter : INT := 0;                    // Counter for 100ms update cycle (10ms * 10)
+  CycleCounter : INT := 0;                    // Counter for update cycle (kept for compatibility)
   EthercatMgr : EthercatManager;              // EtherCAT manager instance
   SafetyMgr : SafetyMgr;                      // Safety manager instance
   GroupMgr : GroupManager;                    // Group manager instance
@@ -36,9 +36,9 @@ IF GVL.FirstRun THEN
   GVL.FirstRun := FALSE;                      // Mark initialization complete
 END_IF;
 
-// Main update loop (every 100ms)
+// Main update loop (every PLC cycle)
 CycleCounter := CycleCounter + 1;
-IF CycleCounter >= 10 THEN
+IF CycleCounter >= 1 THEN
   FOR i := 0 TO 19 DO
     Devices[i](DeviceIndex := i, Reset := FALSE); // Update device managers without reset
     Devices[i].Poll();                        // Poll CAN devices for data

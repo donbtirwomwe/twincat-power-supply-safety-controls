@@ -97,6 +97,21 @@ Alias devices:
 - **Manual mode/test interaction fix**:
   `SetpointTest` no longer forces individual BIC control unless test `Enable` is TRUE, so Morphee maintenance/non-maintenance mode selection is respected.
 
+### March 31, 2026 Update
+
+- **BIC voltage clamp behavior fixed**:
+  In voltage mode, BIC setpoints now always respect hardware voltage bounds (`MIN_VOLTAGE`/`MAX_VOLTAGE`).
+  Morphee operator limits (`VoutSetMin`/`VoutSetMax`) are applied only when non-zero, so missing HMI limits no longer collapse setpoint to zero.
+- **Absolute limits exported to Morphee for operator UI clamping**:
+  `NumericOutput[104..107]` now publish group absolute voltage bounds (x100):
+  high word = absolute min, low word = absolute max.
+- **Direction-aware absolute current limits exported per group**:
+  `NumericOutput[112..115]` now publish group absolute current bounds (x10):
+  high word = forward max, low word = reverse max.
+  Both values are computed from active healthy device count in each group and BIC forward/reverse per-device hard limits.
+- **Group capacity outputs remain at `NumericOutput[108..111]`**:
+  Existing capacity mapping is unchanged and still reflects healthy-group capacity.
+
 ---
 
 ## Build & Deploy
