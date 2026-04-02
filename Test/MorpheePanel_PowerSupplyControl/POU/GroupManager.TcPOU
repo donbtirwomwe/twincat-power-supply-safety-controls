@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
   <POU Name="GroupManager" Id="{db66aec0-6376-4cb6-8e3d-b20bd565db2b}" SpecialFunc="None">
     <Declaration><![CDATA[
@@ -7,15 +7,15 @@ VAR
   i : INT;                                    // Loop variable for devices
   groupIdx : INT;                             // Group index
   groupBase : INT;                            // Base device index for group
-	devIdx: INT;
+  devIdx : INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[FOR devIdx := 0 TO 19 DO
   IF devIdx < 4 THEN
     GVL.GroupMembership[devIdx] := -1; (** Devices 0-3 not in groups **)
-        ELSIF GVL.UseIndividualBicControl THEN
-          GVL.GroupMembership[devIdx] := -1; (** Individual mode: disable grouping for BIC devices 4-19 **)
+  ELSIF GVL.UseIndividualBicControl THEN
+    GVL.GroupMembership[devIdx] := -1; (** Individual mode: disable grouping for BIC devices 4-19 **)
   ELSIF devIdx >= 4 AND devIdx <= 7 THEN
     GVL.GroupMembership[devIdx] := 0; (** Group 0: devices 4-7 **)
   ELSIF devIdx >= 8 AND devIdx <= 11 THEN
@@ -31,25 +31,25 @@ END_FOR;]]></ST>
       <Declaration><![CDATA[METHOD UpdateGroupCapacity
 VAR
   activeDevices : INT;                        (** Count of active devices in group **)
-  devIdx : INT;                              (** Device index **)
-  groupBase : INT;                           (** Base index for group devices **)
-  opCount : UINT;                            (** Count of devices with OperationOn **)
-  outCount : UINT;                           (** Count of devices with OutputOn **)
-  reverseMode : BOOL;                        (** TRUE when group is in reverse direction **)
-  perDeviceLimit : UINT;                     (** Direction-dependent per-device current limit [A] **)
+  devIdx : INT;                               (** Device index **)
+  groupBase : INT;                            (** Base index for group devices **)
+  opCount : UINT;                             (** Count of devices with OperationOn **)
+  outCount : UINT;                            (** Count of devices with OutputOn **)
+  reverseMode : BOOL;                         (** TRUE when group is in reverse direction **)
+  perDeviceLimit : UINT;                      (** Direction-dependent per-device current limit [A] **)
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-        IF GVL.UseIndividualBicControl THEN
-          FOR groupIdx := 0 TO 3 DO
-            GVL.GroupCapacity[groupIdx] := 0;
-            GVL.NumericOutput[104 + groupIdx] := 0;
-          END_FOR;
-          RETURN;
-        END_IF;
+IF GVL.UseIndividualBicControl THEN
+  FOR groupIdx := 0 TO 3 DO
+    GVL.GroupCapacity[groupIdx] := 0;
+    GVL.NumericOutput[104 + groupIdx] := 0;
+  END_FOR;
+  RETURN;
+END_IF;
 
-        FOR groupIdx := 0 TO 3 DO
+FOR groupIdx := 0 TO 3 DO
   groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
   activeDevices := 0;
   opCount := 0;
@@ -65,12 +65,11 @@ END_VAR
   END_FOR;
 
   IF reverseMode THEN
-    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_REV); (** 64.3A -> 64A for UINT capacity channel **)
+    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_REV);
   ELSE
-    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_FWD); (** 80A **)
+    perDeviceLimit := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_FWD);
   END_IF;
 
-  (** Calculate active healthy devices for limit calculation **)
   FOR devIdx := groupBase TO groupBase + 3 DO
     IF devIdx <= 19 THEN
       IF GVL.Vin[devIdx] > 0 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
@@ -84,9 +83,9 @@ END_VAR
       END_IF;
     END_IF;
   END_FOR;
-  GVL.GroupCapacity[groupIdx] := activeDevices * perDeviceLimit; (** Active healthy devices x direction-dependent per-device current limit **)
 
-  (** Update group status and alarms **)
+  GVL.GroupCapacity[groupIdx] := activeDevices * perDeviceLimit;
+
   IF GVL.GroupMaster[groupIdx] >= 0 AND GVL.GroupMaster[groupIdx] <= 19 THEN
     GVL.NumericOutput[104 + groupIdx] := SHL(TO_DWORD(outCount), 16) OR TO_DWORD(opCount);
     IF opCount < 4 THEN
@@ -105,23 +104,22 @@ END_FOR;]]></ST>
 VAR
   oldMaster : INT;                            (** Previous master index **)
   i : INT;                                    (** Loop variable for devices **)
-  groupBase : INT;                           (** Base index for group devices **)
+  groupBase : INT;                            (** Base index for group devices **)
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-        IF GVL.UseIndividualBicControl THEN
-          FOR groupIdx := 0 TO 3 DO
-            GVL.GroupMaster[groupIdx] := -1;
-          END_FOR;
-          RETURN;
-        END_IF;
+IF GVL.UseIndividualBicControl THEN
+  FOR groupIdx := 0 TO 3 DO
+    GVL.GroupMaster[groupIdx] := -1;
+  END_FOR;
+  RETURN;
+END_IF;
 
-        FOR groupIdx := 0 TO 3 DO
-  groupBase := groupIdx * 4 + 4;              (** Groups: 0=4-7, 1=8-11, 2=12-15, 3=16-19 **)
+FOR groupIdx := 0 TO 3 DO
+  groupBase := groupIdx * 4 + 4;
   oldMaster := GVL.GroupMaster[groupIdx];
   GVL.GroupMaster[groupIdx] := -1;
 
-  (** Retain current master if still healthy – guard array access explicitly **)
   IF oldMaster >= groupBase AND oldMaster <= groupBase + 3 THEN
     IF GVL.Vin[oldMaster] > 0 AND NOT GVL.CommFault[oldMaster] THEN
       GVL.GroupMaster[groupIdx] := oldMaster;
@@ -129,7 +127,6 @@ END_VAR]]></Declaration>
   END_IF;
 
   IF GVL.GroupMaster[groupIdx] = -1 THEN
-    (** Select first active healthy unit by VIN **)
     FOR i := groupBase TO groupBase + 3 DO
       IF i <= 19 AND GVL.Vin[i] > 0 AND NOT GVL.CommFault[i] THEN
         GVL.GroupMaster[groupIdx] := i;
@@ -137,15 +134,13 @@ END_VAR]]></Declaration>
       END_IF;
     END_FOR;
 
-    (** Final fallback for compatibility: base unit in group **)
     IF GVL.GroupMaster[groupIdx] = -1 AND groupBase <= 19 THEN
       GVL.GroupMaster[groupIdx] := groupBase;
     END_IF;
   END_IF;
 
-  (** Set fault code if master changed **)
   IF oldMaster <> GVL.GroupMaster[groupIdx] AND GVL.GroupMaster[groupIdx] >= 0 THEN
-    GVL.FaultStatus[GVL.GroupMaster[groupIdx]] := 8; (** Fault code 8 = master changed **)
+    GVL.FaultStatus[GVL.GroupMaster[groupIdx]] := 8;
   END_IF;
 END_FOR;]]></ST>
       </Implementation>

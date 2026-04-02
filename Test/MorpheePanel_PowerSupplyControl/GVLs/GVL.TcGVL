@@ -58,7 +58,9 @@
     IinScale: ARRAY[0..19] OF UINT;
     InitialState: ARRAY[0..19] OF BOOL;   (** Device initialized status: 0 = initializing, 1 = not initializing **)
     Iout: ARRAY[0..19] OF UINT;           (** Output current, raw **)
-    GroupMembership: ARRAY[0..19] OF INT;
+    GroupMembership: ARRAY[0..19] OF INT := [-1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]; (** Correct boot-time defaults: devs 0-3 ungrouped, 4-7=G0, 8-11=G1, 12-15=G2, 16-19=G3 **)
+    GroupInputBase: ARRAY[0..3] OF INT := [10, 17, 24, 31]; (** NumericInput base index for each group's setpoint block (7 words each). Tune at runtime via ADS if Morphee PDO aliasing is detected on groups 3/4. Default: 10+groupIdx*7. **)
+    GroupInputStride: INT := 7; (** NumericInput words per group block; normally 7 (Vout, Iout, Flags, VoutMin, VoutMax, IoutMin, IoutMax) **)
     IoutSetRev: ARRAY[0..19] OF REAL;     (** Reverse current setpoint, F=0.01 **)
     LastUpdateTime: ARRAY[0..19] OF TIME; (** Last valid data timestamp **)
     MfrSerialPersistent: ARRAY[0..19] OF ARRAY[0..53] OF BYTE; (** Persistent storage for manufacturer serial data **)

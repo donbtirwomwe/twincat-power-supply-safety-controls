@@ -212,7 +212,11 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
 
   (* DPU manual requires >=50 ms spacing between commands. Apply per-device write pacing globally for safety. *)
   nowTime := TIME();
-  IF LastCommandSentTime[devIdx] <> T#0MS AND (nowTime - LastCommandSentTime[devIdx]) < T#50MS THEN
+  IF LastCommandSentTime[devIdx] <> T#0MS AND
+     ((devIdx <= 3 AND
+       ((commandCode = 16#0020 OR commandCode = 16#0030 OR commandCode = 16#0120 OR commandCode = 16#0130) AND (nowTime - LastCommandSentTime[devIdx]) < T#20MS OR
+        (commandCode <> 16#0020 AND commandCode <> 16#0030 AND commandCode <> 16#0120 AND commandCode <> 16#0130) AND (nowTime - LastCommandSentTime[devIdx]) < T#50MS)) OR
+      (devIdx >= 4 AND (nowTime - LastCommandSentTime[devIdx]) < T#10MS)) THEN
     ApplyCommands := FALSE;
     RETURN;
   END_IF;
@@ -221,18 +225,7 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   IF devIdx >= 4 OR GVL.OutputOn[devIdx] OR commandCode = 16#0000 OR commandCode = 16#0100 THEN
     commandData := data; (** Use provided data for enabled output or non-setpoint commands **)
   ELSE
-    commandData := 0; (** Use zero data for setpoint commands if output disabled **)
-    (** Clear setpoints for relevant commands **)
-    CASE commandCode OF
-      16#0020: (** CMD_VOUT_SET **)
-        GVL.VoutSetpoint[devIdx] := 0.0; (** Clear forward Vout setpoint **)
-      16#0030: (** CMD_IOUT_SET **)
-        GVL.IoutSetpoint[devIdx] := 0.0; (** Clear forward Iout setpoint **)
-      16#0120: (** CMD_REVERSE_VOUT_SET **)
-        GVL.VoutSetRev[devIdx] := 0.0; (** Clear reverse Vout setpoint **)
-      16#0130: (** CMD_REVERSE_IOUT_SET **)
-        GVL.IoutSetRev[devIdx] := 0.0; (** Clear reverse Iout setpoint **)
-    END_CASE;
+    commandData := 0; (** Output is off: send zero, but keep requested setpoints latched for retry when output turns on **)
   END_IF;
 
   (** Proceed with command **)
@@ -308,6 +301,7 @@ VAR
   activeInGroup : UINT;                     (** Number of active devices in current group **)
   groupIoutRawLimitPerDevice : UINT;        (** Direction-dependent per-device current cap in x100 **)
   groupIoutLimitInput : UINT;               (** Group Iout max limit input before capacity constraint **)
+  desiredReverse : BOOL;                    (** Per-cycle requested direction bit from active control flags **)
 	resetRequest : BOOL;                      (** Manual fault reset request from EtherCAT system flags bit 8 **)
 	morpheeUseIndividualBicControl : BOOL;    (** Bit 9 in system flags requests individual BIC control from Morphee **)
 	j: INT;
@@ -391,7 +385,7 @@ maintenanceMode := (systemFlags AND 16#0001) <> 0; (** Maintenance mode flag **)
 resetRequest := (systemFlags AND 16#0100) <> 0; (** Bit 8: Manual BIC reset request (OFF->ON sequence) **)
 morpheeUseIndividualBicControl := (systemFlags AND 16#0200) <> 0; (** Bit 9: Morphee individual BIC mode request **)
 IF NOT GVL.UseTempGroupInputs THEN
-  GVL.UseIndividualBicControl := morpheeUseIndividualBicControl;
+  GVL.UseIndividualBicControl := FALSE; (** Force grouped live control path so group setpoints always drive BICs **)
 END_IF;
 
 IF resetRequest AND NOT FaultResetRequestPrev THEN
@@ -417,198 +411,70 @@ FOR i := 0 TO 7 DO
   GVL.EL2798_Output[i] := (GVL.EL2798_InputFlags AND SHL(TO_BYTE(1), i)) <> 0;
 END_FOR;
 
-(** Process group inputs for 4 groups **)
-IF NOT GVL.UseIndividualBicControl THEN
-FOR groupIdx := 0 TO 3 DO
-  baseIdx := 10 + (groupIdx * 7); (** Group inputs start at 10 **)
-  
-  (** Read group inputs **)
-  IF baseIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
-    (** Read master setpoints/flags from temp test input when enabled, else from live NumericInput **)
-    IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
-      setpointVout := UINT_TO_REAL(GVL.TempGroupInput[baseIdx - 10]);
-      setpointIout := UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 1]);
-      flags := GVL.TempGroupInput[(baseIdx - 10) + 2];
-    ELSE
-      setpointVout := UINT_TO_REAL(GVL.NumericInput[baseIdx]);
-      setpointIout := UINT_TO_REAL(GVL.NumericInput[baseIdx + 1]);
-      flags := GVL.NumericInput[baseIdx + 2];
-    END_IF;
-    
-    (** Clamp group setpoints within group limits (group values are x100) **)
-    IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
-      setpointVout := setpointVout / 100;
-      IF GVL.TempGroupInput[(baseIdx - 10) + 3] > 0 THEN
-        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 3]) / 100.0);
-      END_IF;
-      IF GVL.TempGroupInput[(baseIdx - 10) + 4] > 0 THEN
-        setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 4]) / 100.0);
-      END_IF;
-      setpointIout := setpointIout / 100;
-      IF GVL.TempGroupInput[(baseIdx - 10) + 5] > 0 THEN
-        setpointIout := MAX(setpointIout, UINT_TO_REAL(GVL.TempGroupInput[(baseIdx - 10) + 5]) / 100.0);
-      END_IF;
-      groupIoutLimitInput := GVL.TempGroupInput[(baseIdx - 10) + 6];
-      IF groupIoutLimitInput = 0 THEN
-        groupIoutLimitInput := GVL.GroupCapacity[groupIdx];
-      END_IF;
-      IF groupIoutLimitInput > 0 AND GVL.GroupCapacity[groupIdx] > 0 THEN
-        setpointIout := MIN(setpointIout, UINT_TO_REAL(MIN(groupIoutLimitInput, GVL.GroupCapacity[groupIdx])) / 100.0);
-      END_IF;
-    ELSE
-      IF setpointVout > 500.0 THEN
-        setpointVout := setpointVout / 100.0; (* Live Morphee x100 format *)
-      END_IF;
-      IF GVL.NumericInput[baseIdx + 3] > 0 THEN
-        IF GVL.NumericInput[baseIdx + 3] > 500 THEN
-          setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 3]) / 100.0);
-        ELSE
-          setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 3]));
-        END_IF;
-      END_IF;
-      IF GVL.NumericInput[baseIdx + 4] > 0 THEN
-        IF GVL.NumericInput[baseIdx + 4] > 500 THEN
-          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 4]) / 100.0);
-        ELSE
-          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 4]));
-        END_IF;
-      END_IF;
-      IF setpointIout > 500.0 THEN
-        setpointIout := setpointIout / 100.0; (* Live Morphee x100 format *)
-      END_IF;
-      IF GVL.NumericInput[baseIdx + 5] > 0 THEN
-        IF GVL.NumericInput[baseIdx + 5] > 500 THEN
-          setpointIout := MAX(setpointIout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 5]) / 100.0);
-        ELSE
-          setpointIout := MAX(setpointIout, UINT_TO_REAL(GVL.NumericInput[baseIdx + 5]));
-        END_IF;
-      END_IF;
-      groupIoutLimitInput := GVL.NumericInput[baseIdx + 6];
-      IF groupIoutLimitInput = 0 THEN
-        groupIoutLimitInput := GVL.GroupCapacity[groupIdx];
-      END_IF;
-      IF groupIoutLimitInput > 0 AND GVL.GroupCapacity[groupIdx] > 0 THEN
-        IF groupIoutLimitInput > 500 THEN
-          setpointIout := MIN(setpointIout, UINT_TO_REAL(MIN(groupIoutLimitInput / 100, GVL.GroupCapacity[groupIdx])));
-        ELSE
-          setpointIout := MIN(setpointIout, UINT_TO_REAL(MIN(groupIoutLimitInput, GVL.GroupCapacity[groupIdx])));
-        END_IF;
-      END_IF;
-    END_IF;
-
-    groupVoutRaw := REAL_TO_UINT(setpointVout * 100.0);
-    groupIoutRawTotal := REAL_TO_UINT(setpointIout * 100.0);
-    groupOutputRequest := (flags AND 16#0010) <> 0;
-    activeInGroup := 0;
-
-    FOR memberIdx := (groupIdx * 4) + 4 TO (groupIdx * 4) + 7 DO
-      IF memberIdx <= 19 THEN
-        IF groupOutputRequest AND NOT GVL.CommFault[memberIdx] AND NOT GVL.SafetyShutdown[memberIdx] AND GVL.Vin[memberIdx] > 0 THEN
-          activeInGroup := activeInGroup + 1;
-        END_IF;
-      END_IF;
-    END_FOR;
-
-    IF activeInGroup > 0 THEN
-      IF (flags AND 16#0001) <> 0 THEN
-        groupIoutRawLimitPerDevice := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_REV * 100.0);
-      ELSE
-        groupIoutRawLimitPerDevice := REAL_TO_UINT(GVL_Constant.BIC24_IOUT_MAX_FWD * 100.0);
-      END_IF;
-      groupIoutRawTotal := MIN(groupIoutRawTotal, groupIoutRawLimitPerDevice * activeInGroup);
-      groupIoutRawPerDevice := groupIoutRawTotal / activeInGroup;
-    ELSE
-      groupIoutRawPerDevice := 0;
-    END_IF;
-    
-    (** Set group mode/flags/limits/setpoints for all devices in group in normal mode **)
-    IF NOT maintenanceMode THEN
-      FOR devIdx := 0 TO 19 DO
-        IF GVL.GroupMembership[devIdx] = groupIdx THEN
-          (** Set group mode and flags for all group devices **)
-          GVL.Voltage[devIdx] := (flags AND 16#0008) <> 0;
-          GVL.Current[devIdx] := (flags AND 16#0004) <> 0;
-          GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]);
-          GVL.Direction[devIdx] := (flags AND 16#0001) <> 0;   (** Bit 0: Direction **)
-          GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
-          IF groupOutputRequest AND NOT GVL.OutputOn[devIdx] THEN
-            THIS^.LastVoutSetpoint[devIdx] := 0;
-            THIS^.LastIoutSetpoint[devIdx] := 0;
-            THIS^.LastOperationOn[devIdx] := NOT GVL.OperationOn[devIdx];
-            THIS^.LastDirection[devIdx] := NOT GVL.Direction[devIdx];
-          END_IF;
-          GVL.OutputOn[devIdx] := groupOutputRequest;          (** Bit 4: OutputOn **)
-
-          (** Group strategy: broadcast voltage to all, split current across active devices **)
-          GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(groupVoutRaw);
-          IF groupOutputRequest AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] AND GVL.Vin[devIdx] > 0 THEN
-            GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
-          ELSE
-            GVL.IoutSetpoint[devIdx] := 0.0;
-          END_IF;
-          
-          (** Set limits to all devices in the group **)
-          IF GVL.UseTempGroupInputs AND (baseIdx - 10) + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
-            THIS^.VoutSetMin[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 3] / 100;
-            THIS^.VoutSetMax[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 4] / 100;
-            THIS^.IoutSetMin[devIdx] := GVL.TempGroupInput[(baseIdx - 10) + 5] / 100;
-            groupIoutLimitInput := GVL.TempGroupInput[(baseIdx - 10) + 6];
-            IF groupIoutLimitInput = 0 THEN
-              groupIoutLimitInput := GVL.GroupCapacity[groupIdx] * 100;
-            END_IF;
-            THIS^.IoutSetMax[devIdx] := MIN(groupIoutLimitInput, GVL.GroupCapacity[groupIdx] * 100) / 100;
-          ELSE
-            IF GVL.NumericInput[baseIdx + 3] > 500 THEN
-              THIS^.VoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 3] / 100;
-            ELSE
-              THIS^.VoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 3];
-            END_IF; (** GroupVoutSetMin **)
-            IF GVL.NumericInput[baseIdx + 4] > 500 THEN
-              THIS^.VoutSetMax[devIdx] := GVL.NumericInput[baseIdx + 4] / 100;
-            ELSE
-              THIS^.VoutSetMax[devIdx] := GVL.NumericInput[baseIdx + 4];
-            END_IF; (** GroupVoutSetMax **)
-            IF GVL.NumericInput[baseIdx + 5] > 500 THEN
-              THIS^.IoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 5] / 100;
-            ELSE
-              THIS^.IoutSetMin[devIdx] := GVL.NumericInput[baseIdx + 5];
-            END_IF; (** GroupIoutSetMin **)
-            groupIoutLimitInput := GVL.NumericInput[baseIdx + 6];
-            IF groupIoutLimitInput = 0 THEN
-              groupIoutLimitInput := GVL.GroupCapacity[groupIdx];
-            END_IF;
-            IF groupIoutLimitInput > 500 THEN
-              THIS^.IoutSetMax[devIdx] := MIN(groupIoutLimitInput / 100, GVL.GroupCapacity[groupIdx]);
-            ELSE
-              THIS^.IoutSetMax[devIdx] := MIN(groupIoutLimitInput, GVL.GroupCapacity[groupIdx]);
-            END_IF; (** GroupIoutSetMax, constrained by min(GroupIoutSetMax, GroupCapacity) **)
-          END_IF;
-          
-        END_IF;
-      END_FOR;
-    END_IF;
-  END_IF;
-END_FOR;
-END_IF;
+(** Group-level sourcing is processed directly in this method. **)
 
 (** Process device inputs and queue control commands **)
 FOR devIdx := 0 TO 19 DO
   baseIdx := 38 + (devIdx * 7); (** Device inputs start at 38 **)
   isGroupedMaster := FALSE;
   usePerDeviceInputs := TRUE;
+  desiredReverse := GVL.Direction[devIdx];
+
+  (* DPU devices 0..3 must always be controlled by their own per-device channels. *)
+  IF devIdx <= 3 THEN
+    usePerDeviceInputs := TRUE;
+  END_IF;
   IF GVL.GroupMembership[devIdx] >= 0 AND GVL.GroupMembership[devIdx] <= 3 THEN
     isGroupedMaster := (GVL.GroupMaster[GVL.GroupMembership[devIdx]] = devIdx);
   END_IF;
   IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND devIdx >= 4 AND GVL.GroupMembership[devIdx] >= 0 AND GVL.GroupMembership[devIdx] <= 3 THEN
     usePerDeviceInputs := FALSE;
   END_IF;
-  
+
   (** Read device setpoints and flags **)
   IF baseIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
     (** Set setpoints for non-master devices or in maintenance mode **)
-    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
-      GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1VoutSetpoint[devIdx]); (** Temp Bus1 VoutSetpoint **)
-      GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1IoutSetpoint[devIdx]); (** Temp Bus1 IoutSetpoint **)
+    IF devIdx <= 3 THEN
+      IF GVL.UseTempBus1Direct THEN
+        GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1VoutSetpoint[devIdx]); (** Temp Bus1 VoutSetpoint **)
+        GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.TempBus1IoutSetpoint[devIdx]); (** Temp Bus1 IoutSetpoint **)
+      ELSE
+        GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx]); (** DPU VoutSetpoint **)
+        GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx + 1]); (** DPU IoutSetpoint **)
+      END_IF;
+    ELSIF NOT usePerDeviceInputs THEN
+      groupIdx := (devIdx - 4) / 4;
+      IF groupIdx >= 0 AND groupIdx <= 3 THEN
+        tempBase := GVL.GroupInputBase[groupIdx]; (* Configurable base; default = 10+groupIdx*7 *)
+        groupVoutRaw := GVL.NumericInput[tempBase];
+        groupIoutRawTotal := GVL.NumericInput[tempBase + 1];
+        IF groupIoutRawTotal <= 500 THEN
+          groupIoutRawTotal := groupIoutRawTotal * 100;
+        END_IF;
+        groupOutputRequest := (GVL.NumericInput[tempBase + 2] AND 16#0010) <> 0;
+
+        activeInGroup := 0;
+        FOR memberIdx := (groupIdx * 4) + 4 TO (groupIdx * 4) + 7 DO
+          IF memberIdx <= 19 THEN
+            IF groupOutputRequest THEN
+              activeInGroup := activeInGroup + 1;
+            END_IF;
+          END_IF;
+        END_FOR;
+
+        IF activeInGroup > 0 THEN
+          groupIoutRawPerDevice := groupIoutRawTotal / activeInGroup;
+        ELSE
+          groupIoutRawPerDevice := 0;
+        END_IF;
+
+        GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(groupVoutRaw);
+        IF groupOutputRequest THEN
+          GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
+        ELSE
+          GVL.IoutSetpoint[devIdx] := 0.0;
+        END_IF;
+      END_IF;
     ELSIF GVL.UseIndividualBicControl AND GVL.UseTempGroupInputs AND devIdx >= 4 THEN
       CASE devIdx OF
         4..7: tempBase := 0;
@@ -625,8 +491,20 @@ FOR devIdx := 0 TO 19 DO
       GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx]); (** VoutSetpoint **)
       GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(GVL.NumericInput[baseIdx + 1]); (** IoutSetpoint **)
     END_IF;
-    IF GVL.UseTempBus1Direct AND devIdx <= 3 THEN
-      flags := GVL.TempBus1Flags[devIdx]; (** Temp Bus1 device flags **)
+    IF devIdx <= 3 THEN
+      IF GVL.UseTempBus1Direct THEN
+        flags := GVL.TempBus1Flags[devIdx]; (** Temp Bus1 device flags **)
+      ELSE
+        flags := GVL.NumericInput[baseIdx + 2]; (** DPU device flags **)
+      END_IF;
+    ELSIF NOT usePerDeviceInputs THEN
+      groupIdx := (devIdx - 4) / 4;
+      IF groupIdx >= 0 AND groupIdx <= 3 THEN
+        tempBase := GVL.GroupInputBase[groupIdx]; (* Configurable base; default = 10+groupIdx*7 *)
+        flags := GVL.NumericInput[tempBase + 2];
+      ELSE
+        flags := 0;
+      END_IF;
     ELSIF GVL.UseIndividualBicControl AND GVL.UseTempGroupInputs AND devIdx >= 4 THEN
       CASE devIdx OF
         4..7: tempBase := 0;
@@ -680,9 +558,31 @@ FOR devIdx := 0 TO 19 DO
       END_IF;
       GVL.OutputOn[devIdx] := (flags AND 16#0010) <> 0; (** Bit 4: OutputOn **)
     ELSE
-      (** Group mode: still set mode flags from last-read group flags, in case direction or operation changed **)
-      GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]); (** Recalc standby based on current mode **)
+      (** Group mode: apply mode/command bits from this device's own group flags every cycle. **)
+      GVL.Voltage[devIdx] := (flags AND 16#0008) <> 0;
+      GVL.Current[devIdx] := (flags AND 16#0004) <> 0;
+      GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]);
+      GVL.Direction[devIdx] := (flags AND 16#0001) <> 0;
+      GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0;
+      IF (flags AND 16#0010) <> 0 AND NOT GVL.OutputOn[devIdx] THEN
+        THIS^.LastVoutSetpoint[devIdx] := 0;
+        THIS^.LastIoutSetpoint[devIdx] := 0;
+        THIS^.LastOperationOn[devIdx] := NOT GVL.OperationOn[devIdx];
+        THIS^.LastDirection[devIdx] := NOT GVL.Direction[devIdx];
+      END_IF;
+      GVL.OutputOn[devIdx] := (flags AND 16#0010) <> 0;
     END_IF;
+
+    (* Use active-cycle command flags as the source of truth for direction when choosing VOUT command type. *)
+    desiredReverse := (flags AND 16#0001) <> 0;
+
+    (* Global mode arbitration: if both bits are asserted by upstream UI/PLC mapping,
+       prefer voltage mode so reverse-voltage tracking stays on the CV command path. *)
+    IF GVL.Voltage[devIdx] AND GVL.Current[devIdx] THEN
+      GVL.Current[devIdx] := FALSE;
+      GVL.Standby[devIdx] := FALSE;
+    END_IF;
+
     GVL.OrangeStop[devIdx] := (flags AND 16#0020) <> 0; (** Bit 5: OrangeStop **)
     GVL.RedStop[devIdx] := (flags AND 16#0040) <> 0; (** Bit 6: RedStop **)
     GVL.EStop[devIdx] := (flags AND 16#0080) <> 0; (** Bit 7: EStop **)
@@ -715,6 +615,9 @@ FOR devIdx := 0 TO 19 DO
     IF GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx] THEN
       IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
         THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
+        (* Direction changed: force resend of setpoints in the new direction command space. *)
+        THIS^.LastVoutSetpoint[devIdx] := 0;
+        THIS^.LastIoutSetpoint[devIdx] := 0;
       END_IF;
     END_IF;
 
@@ -722,8 +625,8 @@ FOR devIdx := 0 TO 19 DO
     IF GVL.OperationOn[devIdx] <> THIS^.LastOperationOn[devIdx] THEN
       IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, BOOL_TO_UINT(GVL.OperationOn[devIdx])) THEN (** CMD_OPERATION **)
         THIS^.LastOperationOn[devIdx] := GVL.OperationOn[devIdx];
-        IF devIdx <= 3 AND GVL.OperationOn[devIdx] THEN
-          (* DPU: trigger one clean resend of setpoints after OPERATION is acknowledged. *)
+        IF GVL.OperationOn[devIdx] THEN
+          (* Trigger one clean resend of setpoints after OPERATION is acknowledged. *)
           THIS^.LastVoutSetpoint[devIdx] := 0;
           THIS^.LastIoutSetpoint[devIdx] := 0;
         END_IF;
@@ -734,7 +637,7 @@ FOR devIdx := 0 TO 19 DO
     IF GVL.Standby[devIdx] THEN
     (** Standby mode **)
     IF THIS^.LastVoutSetpoint[devIdx] <> 0 THEN
-      IF GVL.Direction[devIdx] THEN
+      IF desiredReverse THEN
         IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, 0) THEN (** CMD_REVERSE_VOUT_SET, 0 **)
           GVL.VoutSetRev[devIdx] := 0.0; (** Clear reverse Vout setpoint **)
           THIS^.LastVoutSetpoint[devIdx] := 0;
@@ -803,12 +706,35 @@ FOR devIdx := 0 TO 19 DO
     END_IF;
     (** CC mode voltage ceiling for BIC devices: 5% margin below 28V hardware max *)
     IF devIdx >= 4 THEN
+      IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
+        groupIdx := (devIdx - 4) / 4;
+        IF groupIdx >= 0 AND groupIdx <= 3 THEN
+          baseIdx := GVL.GroupInputBase[groupIdx]; (* Configurable base; default = 10+groupIdx*7 *)
+          groupVoutRaw := GVL.NumericInput[baseIdx];
+          setpointVout := UINT_TO_REAL(groupVoutRaw);
+          IF setpointVout > 500.0 THEN
+            setpointVout := setpointVout / 100.0;
+          END_IF;
+        ELSE
+          setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
+        END_IF;
+      ELSE
+        setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
+      END_IF;
+
       IF GVL.Direction[devIdx] THEN
         (* Reverse CC: REVERSE_VOUT_SET = lower voltage protection, floored at MIN_VOLTAGE *)
-        setpointVout := MAX(GVL.VoutSetpoint[devIdx] / 100.0, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
+        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
       ELSE
-        (* Forward CC: VOUT_SET = upper voltage ceiling, capped at BIC24_VOUT_CC_MAX (26.6V) *)
-        setpointVout := MIN(MAX(GVL.VoutSetpoint[devIdx] / 100.0, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE)), GVL_Constant.BIC24_VOUT_CC_MAX);
+        (* Forward CC: VOUT_SET = upper voltage ceiling, capped at VoutSetMax from group/operator limits *)
+        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
+        IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
+          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE));
+        ELSIF THIS^.VoutSetMax[devIdx] > 0 THEN
+          setpointVout := MIN(setpointVout, UINT_TO_REAL(THIS^.VoutSetMax[devIdx]));
+        ELSE
+          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE));
+        END_IF;
       END_IF;
       factorNibble := GVL.VoutScale[devIdx] AND 16#000F;
       CASE factorNibble OF
@@ -821,7 +747,7 @@ FOR devIdx := 0 TO 19 DO
         ELSE clampedVout := REAL_TO_UINT(setpointVout * 100.0);
       END_CASE;
       IF clampedVout <> THIS^.LastVoutSetpoint[devIdx] THEN
-        IF GVL.Direction[devIdx] THEN
+        IF desiredReverse THEN
           IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, clampedVout) THEN
             THIS^.LastVoutSetpoint[devIdx] := clampedVout;
           END_IF;
@@ -834,9 +760,66 @@ FOR devIdx := 0 TO 19 DO
     END_IF;
   ELSIF GVL.Voltage[devIdx] THEN
     (** Voltage mode **)
+    (* In voltage mode, keep current limit tracking active as well. *)
+    setpointIout := GVL.IoutSetpoint[devIdx] / 100.0;
+    IF THIS^.IoutSetMin[devIdx] > 0 THEN
+      setpointIout := MAX(setpointIout, UINT_TO_REAL(THIS^.IoutSetMin[devIdx]));
+    END_IF;
+    IF THIS^.IoutSetMax[devIdx] > 0 THEN
+      setpointIout := MIN(setpointIout, UINT_TO_REAL(THIS^.IoutSetMax[devIdx]));
+    END_IF;
     IF devIdx >= 4 THEN
+      IF GVL.Direction[devIdx] THEN
+        setpointIout := MIN(setpointIout, GVL_Constant.BIC24_IOUT_MAX_REV);
+      ELSE
+        setpointIout := MIN(setpointIout, GVL_Constant.BIC24_IOUT_MAX_FWD);
+      END_IF;
+    END_IF;
+    IF devIdx <= 3 THEN
+      clampedIout := REAL_TO_UINT(setpointIout * 10.0);   (** DPU F=0.1 **)
+    ELSE
+      factorNibble := SHR((GVL.VoutScale[devIdx] AND 16#00F0), 4);
+      CASE factorNibble OF
+        16#4: clampedIout := REAL_TO_UINT(setpointIout * 1000.0);
+        16#5: clampedIout := REAL_TO_UINT(setpointIout * 100.0);
+        16#6: clampedIout := REAL_TO_UINT(setpointIout * 10.0);
+        16#7: clampedIout := REAL_TO_UINT(setpointIout);
+        16#8: clampedIout := REAL_TO_UINT(setpointIout * 0.1);
+        16#9: clampedIout := REAL_TO_UINT(setpointIout * 0.01);
+        ELSE clampedIout := REAL_TO_UINT(setpointIout * 100.0);
+      END_CASE;
+    END_IF;
+    IF clampedIout <> THIS^.LastIoutSetpoint[devIdx] THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, clampedIout) THEN
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, clampedIout) THEN
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+        END_IF;
+      END_IF;
+    END_IF;
+
+    IF devIdx >= 4 THEN
+      IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
+        groupIdx := (devIdx - 4) / 4;
+        IF groupIdx >= 0 AND groupIdx <= 3 THEN
+          baseIdx := GVL.GroupInputBase[groupIdx]; (* Configurable base; default = 10+groupIdx*7 *)
+          groupVoutRaw := GVL.NumericInput[baseIdx];
+          setpointVout := UINT_TO_REAL(groupVoutRaw);
+          IF setpointVout > 500.0 THEN
+            setpointVout := setpointVout / 100.0;
+          END_IF;
+        ELSE
+          setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
+        END_IF;
+      ELSE
+        setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
+      END_IF;
+
       (* Hardware bounds always applied *)
-      setpointVout := MAX(GVL.VoutSetpoint[devIdx] / 100.0, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
+      setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
       setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE));
       (* Operator limits from Morphee: applied only when non-zero (tighter than hardware range) *)
       IF THIS^.VoutSetMin[devIdx] > 0 THEN
@@ -874,7 +857,7 @@ FOR devIdx := 0 TO 19 DO
       END_CASE;
     END_IF;
      IF clampedVout <> THIS^.LastVoutSetpoint[devIdx] THEN
-      IF GVL.Direction[devIdx] THEN
+      IF desiredReverse THEN
         IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, clampedVout) THEN (** CMD_REVERSE_VOUT_SET **)
           THIS^.LastVoutSetpoint[devIdx] := clampedVout;
         END_IF;
@@ -989,18 +972,14 @@ FOR devIdx := 0 TO 19 DO
     END_IF;
   END_IF;
 
-  (* Apply group-level setpoints and limits to master in normal mode *)
-  IF NOT maintenanceMode AND devIdx >= 4 THEN
+  (* Group-level setpoints/limits are applied in ProcessInputs for all grouped devices.
+     Skip the legacy master-override path here to avoid cross-group overwrite races. *)
+  IF NOT maintenanceMode AND devIdx >= 4 AND GVL.UseIndividualBicControl THEN
     FOR groupIdx := 0 TO 3 DO
       masterIdx := GVL.GroupMaster[groupIdx];
       IF masterIdx >= 4 AND masterIdx <= 19 THEN
         IF NOT GVL.SafetyShutdown[masterIdx] THEN
-        CASE groupIdx OF
-          0: inputIdx := 10; (* LVLA1 *)
-          1: inputIdx := 17; (* LVLA2 *)
-          2: inputIdx := 24; (* LVLA3 *)
-          3: inputIdx := 31; (* LVLA4 *)
-        END_CASE;
+        inputIdx := GVL.GroupInputBase[groupIdx]; (* Per-group configurable base; default = 10+groupIdx*7 *)
         IF devIdx = masterIdx THEN
           IF inputIdx + 6 < SIZEOF(GVL.NumericInput) / SIZEOF(GVL.NumericInput[0]) THEN
             IF GVL.UseTempGroupInputs THEN
@@ -1008,9 +987,9 @@ FOR devIdx := 0 TO 19 DO
               IF tempBase >= 0 AND tempBase + 6 < SIZEOF(GVL.TempGroupInput) / SIZEOF(GVL.TempGroupInput[0]) THEN
                 VoutSetpoint[masterIdx] := GVL.TempGroupInput[tempBase];
                 IoutSetpoint[masterIdx] := GVL.TempGroupInput[tempBase + 1];
-                VoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 3];
-                VoutSetMax[masterIdx] := GVL.TempGroupInput[tempBase + 4];
-                IoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 5];
+                VoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 3] / 100;
+                VoutSetMax[masterIdx] := GVL.TempGroupInput[tempBase + 4] / 100;
+                IoutSetMin[masterIdx] := GVL.TempGroupInput[tempBase + 5] / 100;
                 groupIoutLimitInput := GVL.TempGroupInput[tempBase + 6];
                 IF groupIoutLimitInput = 0 THEN
                   groupIoutLimitInput := GVL.GroupCapacity[groupIdx];
@@ -1110,11 +1089,12 @@ VAR
   upperBound : INT;                        (* Upper bound for FOR loop *)
 	scaledVin: INT; (** Scaled input voltage **)
 	scaledVout: UINT; (** Scaled output voltage **)
-	scaledIout: UINT; (** Scaled current **)
+  scaledIout: INT; (** Scaled current, signed for discharge export **)
 	scaledTemp: UINT; (** Scaled temperature **)
 	scaledFanSpeed1: INT; (** Scaled fan speed 1 **)
 	scaledFanSpeed2: INT; (** Scaled fan speed 2 **)
 	scaledIin: INT; (** Scaled input current **)
+  signedIoutRaw: INT; (** Raw signed current decoded from UINT storage **)
 	tempScale: UINT; (** Temporary variable for scaling factor extraction **)
 	scaleValue: UINT; (** Extracted 4-bit scaling value **)
   systemFlagsOut : UINT;                  (* Device system status word sent to EtherCAT *)
@@ -1132,7 +1112,7 @@ VAR
   groupAggVoutRaw : UDINT;                (* Sum of raw Vout across healthy devices in a group *)
   groupAvgVinRaw : UDINT;                 (* Average raw Vin across healthy devices in a group *)
   groupAvgVoutRaw : UDINT;                (* Average raw Vout across healthy devices in a group *)
-  groupAggIoutRaw : UDINT;                (* Sum of raw Iout across healthy devices in a group *)
+  groupAggIoutRaw : DINT;                 (* Sum of raw signed Iout across healthy devices in a group *)
   groupMaxTempRaw : UINT;                 (* Max raw temperature across healthy devices in a group *)
   groupMinFan1Raw : UINT;                 (* Min raw fan1 speed across healthy devices in a group *)
   groupMinFan2Raw : UINT;                 (* Min raw fan2 speed across healthy devices in a group *)
@@ -1350,27 +1330,28 @@ ELSE
                 GVL.NumericOutput[baseIdx] := 0;
             END_IF;
 
+            signedIoutRaw := WORD_TO_INT(UINT_TO_WORD(GVL.Iout[devIdx]));
             IF devIdx <= 3 THEN
-              scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+              scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 0.1);
               scaledTemp := REAL_TO_UINT(UINT_TO_REAL(GVL.Temperature[devIdx]) * 0.1);
             ELSE
               (* Scale GVL.Iout[devIdx] using IOUT scaling factor, byte 0 bits 4-7 *)
               tempScale := GVL.VoutScale[devIdx] AND 16#F0; (* Mask bits 4-7 *)
               scaleValue := SHR(tempScale, 4); (* Shift right by 4 to get IOUT bits *)
               IF scaleValue = 16#4 THEN
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.001);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 0.001);
               ELSIF scaleValue = 16#5 THEN
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.01);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 0.01);
               ELSIF scaleValue = 16#6 THEN
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 0.1);
               ELSIF scaleValue = 16#7 THEN
-                scaledIout := GVL.Iout[devIdx];
+                scaledIout := signedIoutRaw;
               ELSIF scaleValue = 16#8 THEN
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 10.0);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 10.0);
               ELSIF scaleValue = 16#9 THEN
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 100.0);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 100.0);
               ELSE
-                scaledIout := REAL_TO_UINT(UINT_TO_REAL(GVL.Iout[devIdx]) * 0.1);
+                scaledIout := REAL_TO_INT(INT_TO_REAL(signedIoutRaw) * 0.1);
               END_IF;
 
               (* Scale GVL.Temperature[devIdx] using TEMPERATURE_1 scaling factor, byte 2 bits 0-3 *)
@@ -1463,7 +1444,7 @@ ELSE
                       groupActiveCount := groupActiveCount + 1;
                       groupAggVinRaw := groupAggVinRaw + UINT_TO_UDINT(GVL.Vin[memberIdx]);
                       groupAggVoutRaw := groupAggVoutRaw + UINT_TO_UDINT(GVL.Vout[memberIdx]);
-                      groupAggIoutRaw := groupAggIoutRaw + UINT_TO_UDINT(GVL.Iout[memberIdx]);
+                      groupAggIoutRaw := groupAggIoutRaw + INT_TO_DINT(WORD_TO_INT(UINT_TO_WORD(GVL.Iout[memberIdx])));
                       groupMaxTempRaw := MAX(groupMaxTempRaw, GVL.Temperature[memberIdx]);
                       IF GVL.FanSpeed1[memberIdx] < groupMinFan1Raw THEN
                         groupMinFan1Raw := GVL.FanSpeed1[memberIdx];
@@ -1503,19 +1484,19 @@ ELSE
                   tempScale := GVL.VoutScale[devIdx] AND 16#F0;
                   scaleValue := SHR(tempScale, 4);
                   IF scaleValue = 16#4 THEN
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 0.001);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 0.001);
                   ELSIF scaleValue = 16#5 THEN
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 0.01);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 0.01);
                   ELSIF scaleValue = 16#6 THEN
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 0.1);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 0.1);
                   ELSIF scaleValue = 16#7 THEN
-                    scaledIout := UDINT_TO_UINT(groupAggIoutRaw);
+                    scaledIout := DINT_TO_INT(groupAggIoutRaw);
                   ELSIF scaleValue = 16#8 THEN
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 10.0);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 10.0);
                   ELSIF scaleValue = 16#9 THEN
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 100.0);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 100.0);
                   ELSE
-                    scaledIout := REAL_TO_UINT(UDINT_TO_REAL(groupAggIoutRaw) * 0.1);
+                    scaledIout := REAL_TO_INT(DINT_TO_REAL(groupAggIoutRaw) * 0.1);
                   END_IF;
 
                   (* Group thermal feedback uses hottest healthy unit in the group. *)
@@ -1573,7 +1554,7 @@ ELSE
             END_IF;
 
             GVL.NumericOutput[baseIdx] := SHL(TO_DWORD(scaledVin), 16) OR TO_DWORD(scaledVout);
-            GVL.NumericOutput[baseIdx + 1] := SHL(TO_DWORD(scaledIout), 16) OR TO_DWORD(scaledTemp);
+            GVL.NumericOutput[baseIdx + 1] := SHL(TO_DWORD(INT_TO_WORD(scaledIout)), 16) OR TO_DWORD(scaledTemp);
             GVL.NumericOutput[baseIdx + 2] := SHL(TO_DWORD(scaledFanSpeed1), 16) OR TO_DWORD(scaledFanSpeed2);
 
             groupFaultStatusAgg := GVL.FaultStatus[devIdx];
@@ -1720,39 +1701,30 @@ ELSE
       GVL.NumericOutput[112 + groupIdx] := SHL(TO_DWORD(groupLimitFwdX10), 16) OR TO_DWORD(groupLimitRevX10);
     END_FOR;
 
-    (* DIAGNOSTIC: Bus1 device 0 control state and gates (NumericOutput[116])
-       Upper byte: control_path (0=morphee, 1=test_bus1_direct, 2=test_individual, 3=none)
-       Lower byte bits: [UseTempBus1Direct, Voltage[0], Current[0], OutputOn[0], OperationOn[0], PollingPaused[0], CommFault[0], SafetyShutdown[0]] *)
-    systemFlagsOut := 0;
-    IF GVL.UseTempBus1Direct AND 0 <= 3 THEN
-      systemFlagsOut := 1; (* Test Bus1 direct mode active *)
-    ELSIF GVL.UseIndividualBicControl AND 0 >= 4 THEN
-      systemFlagsOut := 2; (* Test individual BIC mode *)
-    ELSE
-      systemFlagsOut := 0; (* Morphee control *)
-    END_IF;
-    GVL.NumericOutput[116] := SHL(TO_DWORD(systemFlagsOut), 24) OR
-                              SHL(TO_DWORD(GVL.UseTempBus1Direct), 0) OR
-                              SHL(TO_DWORD(GVL.Voltage[0]), 1) OR
-                              SHL(TO_DWORD(GVL.Current[0]), 2) OR
-                              SHL(TO_DWORD(GVL.OutputOn[0]), 3) OR
-                              SHL(TO_DWORD(GVL.OperationOn[0]), 4) OR
-                              SHL(TO_DWORD(GVL.PollingPaused[0]), 5) OR
-                              SHL(TO_DWORD(GVL.CommFault[0]), 6) OR
-                              SHL(TO_DWORD(GVL.SafetyShutdown[0]), 7);
-
-     (* DIAGNOSTIC: BIC Group 1 tracking check (device 8 = first unit in group 1).
-       [117] upper=applied VoutSetpoint[8], lower=applied IoutSetpoint[8]
-       [118] upper=last sent Vout command raw, lower=last sent Iout command raw *)
-     GVL.NumericOutput[117] := SHL(TO_DWORD(REAL_TO_UINT(GVL.VoutSetpoint[8])), 16) OR TO_DWORD(REAL_TO_UINT(GVL.IoutSetpoint[8]));
-     GVL.NumericOutput[118] := SHL(TO_DWORD(LastVoutSetpoint[8]), 16) OR TO_DWORD(LastIoutSetpoint[8]);
-
-     (* DIAGNOSTIC: Raw incoming Group 1 (LVLA2) inputs from Morphee.
-       Group 1 base index is 17 in NumericInput.
-       [119] upper=VoutSetpoint, lower=IoutSetpoint
-       [120] upper=Flags, lower=VoutSetMin *)
-     GVL.NumericOutput[119] := SHL(TO_DWORD(GVL.NumericInput[17]), 16) OR TO_DWORD(GVL.NumericInput[18]);
-     GVL.NumericOutput[120] := SHL(TO_DWORD(GVL.NumericInput[19]), 16) OR TO_DWORD(GVL.NumericInput[20]);
+     (* DIAGNOSTIC: Group 3/4 isolation verification in valid slots [116..120].
+       Note: some HMI links show only low 16-bit values from DWORD tags, so publish one value per slot.
+       [116] raw Group3 Vout input  = NumericInput[GroupInputBase[2]]
+       [117] raw Group4 Vout input  = NumericInput[GroupInputBase[3]]
+       [118] applied Group3 VoutSetpoint (dev12, x100 engineering)
+       [119] applied Group4 VoutSetpoint (dev16, x100 engineering)
+       [120] absolute command delta = ABS(LastVoutSetpoint[12] - LastVoutSetpoint[16]); 0 means both groups are being commanded identically *)
+     (* [116] LastVoutSetpoint[12]: last Vout CAN command sent to dev12 (Group3 first BIC) *)
+     GVL.NumericOutput[116] := TO_DWORD(LastVoutSetpoint[12]);
+     (* [117] LastVoutSetpoint[16]: last Vout CAN command sent to dev16 (Group4 first BIC) *)
+     GVL.NumericOutput[117] := TO_DWORD(LastVoutSetpoint[16]);
+     (* [118] Dev12 mode flags: bit0=Voltage, bit1=Current, bit2=OutputOn, bit3=OperationOn, bits 8-11 same for dev16 *)
+     GVL.NumericOutput[118] := SHL(TO_DWORD(GVL.Voltage[12]), 0) OR
+                                SHL(TO_DWORD(GVL.Current[12]), 1) OR
+                                SHL(TO_DWORD(GVL.OutputOn[12]), 2) OR
+                                SHL(TO_DWORD(GVL.OperationOn[12]), 3) OR
+                                SHL(TO_DWORD(GVL.Voltage[16]), 8) OR
+                                SHL(TO_DWORD(GVL.Current[16]), 9) OR
+                                SHL(TO_DWORD(GVL.OutputOn[16]), 10) OR
+                                SHL(TO_DWORD(GVL.OperationOn[16]), 11);
+     (* [119] GroupMaster[2] (G3) and GroupMaster[3] (G4); -1 = no master assigned *)
+     GVL.NumericOutput[119] := SHL(TO_DWORD(INT_TO_UINT(GVL.GroupMaster[2])), 16) OR TO_DWORD(INT_TO_UINT(GVL.GroupMaster[3]));
+     (* [120] Raw NumericInput[GroupInputBase[2]] = Group3 Vout input; compare with [117] to check Morphee PDO *)
+     GVL.NumericOutput[120] := TO_DWORD(GVL.NumericInput[GVL.GroupInputBase[3]]);
 END_IF;]]></ST>
       </Implementation>
     </Method>

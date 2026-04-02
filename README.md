@@ -112,6 +112,14 @@ Alias devices:
 - **Group capacity outputs remain at `NumericOutput[108..111]`**:
   Existing capacity mapping is unchanged and still reflects healthy-group capacity.
 
+### April 1, 2026 Update
+
+- **DPU fault reset command check (manual):**
+  No dedicated CAN fault-reset command was found for DPU. `FAULT_STATUS (0x0040)` is read-only.
+  Recovery path remains: clear fault condition, then toggle `OPERATION (0x0000)` OFF -> ON.
+- **BIC discharge-voltage tracking:**
+  Investigation is deferred for next session. Current evidence shows command-path separation is working, but field behavior on shared bus still needs hardware-level validation.
+
 ---
 
 ## Build & Deploy

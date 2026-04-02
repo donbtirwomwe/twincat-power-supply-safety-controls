@@ -44,6 +44,7 @@ IF CycleCounter >= 1 THEN
     Devices[i].Poll();                        // Poll CAN devices for data
   END_FOR;
   SetpointTest();                             // TEMP: run setpoint test before group/input processing
+  GroupMgr();                                 // Execute FB body to refresh GroupMembership mapping
   SafetyMgr.UpdateSafety();                   // Update safety conditions
   GroupMgr.UpdateGroupMasters();              // Update group master assignments
   GroupMgr.UpdateGroupCapacity();             // Update group capacities and demands
