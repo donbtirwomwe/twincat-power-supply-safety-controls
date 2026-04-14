@@ -361,11 +361,27 @@
 		</System>
 		<Plc>
 			<Project GUID="{6A424EA9-6AD4-4F13-9DD1-4A6AEB39F45D}" Name="MorpheePanel_PowerSupplyControl" PrjFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.plcproj" TmcFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{34F63F96-1C07-6417-F9CA-9D19A4246B4D}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{F87C0297-E4D4-CE95-650A-CD434F5F33FF}">
 					<Name>MorpheePanel_PowerSupplyControl Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>Safety_Tags.Estop_ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.ECU1_2_Ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.CBU_LB_Ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.MCS_OK</Name>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>GVL.Bus1_Devices_Rx</Name>
 							<Comment><![CDATA[* CAN Bus 1 Rx data *]]></Comment>
@@ -401,25 +417,17 @@
 							<Comment><![CDATA[* Hard-wired high temp fault *]]></Comment>
 							<Type GUID="{0A93EAC9-643B-8275-73BB-9842E5FD5B76}">ARRAY [0..19] OF BOOL</Type>
 						</Var>
-						<Var>
-							<Name>Safety_Tags.Estop_ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.ECU1_2_Ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.CBU_LB_Ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.MCS_OK</Name>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>Safety_Tags.Reset</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.Run</Name>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>GVL.Bus1_Devices</Name>
 							<Comment><![CDATA[* CAN Bus 1 Tx data for devices 0-3 *]]></Comment>
@@ -479,14 +487,6 @@
 							<Name>GVL.NumericOutput</Name>
 							<Comment><![CDATA[* EtherCAT output data *]]></Comment>
 							<Type GUID="{596B6739-5177-1DF1-DD64-9691CE332CA0}">ARRAY [0..120] OF DWORD</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.Reset</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.Run</Name>
-							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2026-03-01T16:48:47">
@@ -15015,7 +15015,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0701" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -18776,7 +18776,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0801" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -20802,7 +20802,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0601" EquiCycleTime="100000" FifoSize="20" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>

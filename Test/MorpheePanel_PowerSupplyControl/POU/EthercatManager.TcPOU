@@ -313,6 +313,8 @@ VAR
   requestedOutputOn : BOOL;                 (** OutputOn request bit from active flags **)
 	resetRequest : BOOL;                      (** Manual fault reset request from EtherCAT system flags bit 8 **)
 	morpheeUseIndividualBicControl : BOOL;    (** Bit 9 in system flags requests individual BIC control from Morphee **)
+  forceIoutRefresh : BOOL;                  (** Force periodic Iout refresh for grouped BIC members **)
+  nowTimeForRefresh : TIME;                 (** Local timestamp used for periodic resend decision **)
 	j: INT;
 END_VAR]]></Declaration>
       <Implementation>
@@ -436,7 +438,7 @@ FOR devIdx := 0 TO 19 DO
   IF GVL.GroupMembership[devIdx] >= 0 AND GVL.GroupMembership[devIdx] <= 3 THEN
     isGroupedMaster := (GVL.GroupMaster[GVL.GroupMembership[devIdx]] = devIdx);
   END_IF;
-  IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND devIdx >= 4 AND GVL.GroupMembership[devIdx] >= 0 AND GVL.GroupMembership[devIdx] <= 3 THEN
+  IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND devIdx >= 4 THEN
     usePerDeviceInputs := FALSE;
   END_IF;
 
@@ -454,10 +456,7 @@ FOR devIdx := 0 TO 19 DO
     ELSIF NOT usePerDeviceInputs THEN
       groupIdx := (devIdx - 4) / 4;
       IF groupIdx >= 0 AND groupIdx <= 3 THEN
-        groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-        IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7); (* Fallback to canonical mapping when config is invalid *)
-        END_IF;
+        groupInputBaseIdx := 10 + (groupIdx * 7);
         groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
         groupIoutRawTotal := GVL.NumericInput[groupInputBaseIdx + 1];
         groupOutputRequest := (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0010) <> 0;
@@ -502,10 +501,7 @@ FOR devIdx := 0 TO 19 DO
       IF devIdx >= 4 AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-          IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-            groupInputBaseIdx := 10 + (groupIdx * 7);
-          END_IF;
+          groupInputBaseIdx := 10 + (groupIdx * 7);
           groupOutputRequest := (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0010) <> 0;
           IF GVL.VoutSetpoint[devIdx] = 0.0 AND GVL.IoutSetpoint[devIdx] = 0.0 AND
              (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0012) <> 0 THEN
@@ -532,10 +528,7 @@ FOR devIdx := 0 TO 19 DO
     ELSIF NOT usePerDeviceInputs THEN
       groupIdx := (devIdx - 4) / 4;
       IF groupIdx >= 0 AND groupIdx <= 3 THEN
-        groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-        IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7); (* Fallback to canonical mapping when config is invalid *)
-        END_IF;
+        groupInputBaseIdx := 10 + (groupIdx * 7);
         flags := GVL.NumericInput[groupInputBaseIdx + 2];
       ELSE
         flags := 0;
@@ -558,10 +551,7 @@ FOR devIdx := 0 TO 19 DO
       IF devIdx >= 4 AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-          IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-            groupInputBaseIdx := 10 + (groupIdx * 7);
-          END_IF;
+          groupInputBaseIdx := 10 + (groupIdx * 7);
           IF (flags AND 16#0012) = 0 AND (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0012) <> 0 THEN
             flags := GVL.NumericInput[groupInputBaseIdx + 2];
           END_IF;
@@ -757,7 +747,14 @@ FOR devIdx := 0 TO 19 DO
         ELSE clampedIout := REAL_TO_UINT(setpointIout * 100.0);
       END_CASE;
     END_IF;
-     IF clampedIout <> THIS^.LastIoutSetpoint[devIdx] THEN
+    forceIoutRefresh := FALSE;
+    IF devIdx >= 4 AND NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
+      nowTimeForRefresh := TIME();
+      IF THIS^.LastCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastCommandSentTime[devIdx]) >= T#500MS THEN
+        forceIoutRefresh := TRUE;
+      END_IF;
+    END_IF;
+    IF forceIoutRefresh OR clampedIout <> THIS^.LastIoutSetpoint[devIdx] THEN
       IF GVL.Direction[devIdx] THEN
         IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, clampedIout) THEN (** CMD_REVERSE_IOUT_SET **)
           THIS^.LastIoutSetpoint[devIdx] := clampedIout;
@@ -773,10 +770,7 @@ FOR devIdx := 0 TO 19 DO
       IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-          IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-            groupInputBaseIdx := 10 + (groupIdx * 7); (* Fallback to canonical mapping when config is invalid *)
-          END_IF;
+          groupInputBaseIdx := 10 + (groupIdx * 7);
           groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
           setpointVout := UINT_TO_REAL(groupVoutRaw) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
         ELSE
@@ -829,10 +823,7 @@ FOR devIdx := 0 TO 19 DO
       IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := GVL.GroupInputBase[groupIdx];
-          IF groupInputBaseIdx < 10 OR groupInputBaseIdx > 31 THEN
-            groupInputBaseIdx := 10 + (groupIdx * 7); (* Fallback to canonical mapping when config is invalid *)
-          END_IF;
+          groupInputBaseIdx := 10 + (groupIdx * 7);
           groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
           setpointVout := UINT_TO_REAL(groupVoutRaw) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
         ELSE
