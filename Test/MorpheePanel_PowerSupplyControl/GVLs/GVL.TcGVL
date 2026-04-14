@@ -116,6 +116,7 @@
     SuccessCounts: ARRAY[0..19] OF INT;   (** Successful polls per device **)
     SystemAlarms: UINT;                   (** System alarms bitfield **)
     SystemFlags: BYTE;                    (** System flags, bit 0 = maintenance **)
+    SystemRampScale: REAL := 1.0;         (** Ramp scale 1.0=full, 0.0=off; applied to setpoints during stop ramp-down **)
     SystemState: BYTE;                    (** System state: 0=normal, 1=orange, 2=red, 3=EStop **)
     TempScale: ARRAY[0..19] OF UINT;
     Temperature: ARRAY[0..19] OF UINT;    (** Device temperature, raw **)

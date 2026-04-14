@@ -48,8 +48,8 @@ IF CycleCounter >= 1 THEN
   SafetyMgr.UpdateSafety();                   // Update safety conditions
   GroupMgr.UpdateGroupMasters();              // Update group master assignments
   GroupMgr.UpdateGroupCapacity();             // Update group capacities and demands
-  EthercatMgr.ProcessInputs();                // Process EtherCAT inputs
-  EthercatMgr.UpdateOutputs();                // Update EtherCAT outputs
+  EthercatMgr.ProcessInputs();                // Process inputs and send CAN commands
+  EthercatMgr.UpdateOutputs();                // Publish same-cycle status/telemetry to NumericOutput
   // Commands are already sent inside EthercatMgr.ProcessInputs() via THIS^.ApplyCommands(...)
   CycleCounter := 0;                          // Reset cycle counter
 END_IF;

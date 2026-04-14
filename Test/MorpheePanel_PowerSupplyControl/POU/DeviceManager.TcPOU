@@ -98,7 +98,7 @@ PollCounter := PollCounter + 1; (** Increment polling counter **)
 
 pollIntervalLocal := PollInterval;
 IF DeviceIndex <= 3 THEN
-  pollIntervalLocal := 3; (** DPU polling at ~30 ms for faster setpoint feedback **)
+  pollIntervalLocal := 5; (** DPU polling at ~50 ms per protocol timing **)
 END_IF;
 
 (** Trigger polling action if counter reaches interval and polling is not paused **)
@@ -191,7 +191,9 @@ IF ResponseTrigger.Q THEN (** Response received and matches expected command **)
     GVL_Constant.CMD_READ_FAN_SPEED1: GVL.FanSpeed1[DeviceIndex] := rawValue; (** Update fan speed 1 **)
     GVL_Constant.CMD_READ_FAN_SPEED2: GVL.FanSpeed2[DeviceIndex] := rawValue; (** Update fan speed 2 **)
     GVL_Constant.CMD_FAULT_STATUS: GVL.FaultStatus[DeviceIndex] := rawValue; (** Update fault status **)
-    GVL_Constant.CMD_OPERATION: GVL.OperationOn[DeviceIndex] := (rawValue > 0); (** Update operation state **)
+    GVL_Constant.CMD_OPERATION:
+      (* Do not overwrite commanded operation state from readback.
+         Some devices/firmware do not return a reliable OPERATION echo, which can force FALSE here. *)
     GVL_Constant.CMD_VOUT_SET:
       IF DeviceIndex <= 3 THEN
         GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) / 10.0;   (** DPU F=0.1 **)
@@ -209,7 +211,10 @@ IF ResponseTrigger.Q THEN (** Response received and matches expected command **)
       END_IF;
     GVL_Constant.CMD_IOUT_SET:
       IF DeviceIndex <= 3 THEN
-        GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) / 10.0;   (** DPU F=0.1 **)
+        (* NOTE: DPU does not echo write commands, so this branch is dead code for DPU.
+           If it were reached, rawValue/10 yields amps, but GVL.IoutSetpoint[DPU] is
+           expected in centi-amps (Morphee convention: A*100). Would need *10 here. *)
+        GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(rawValue) / 10.0;   (** DPU F=0.1 — dead code, DPU never echoes IOUT_SET **)
       ELSE
         factorNibble := SHR((GVL.VoutScale[DeviceIndex] AND 16#00F0), 4);
         CASE factorNibble OF
@@ -348,8 +353,7 @@ CASE CANBusIndex OF
 END_CASE;
 
 IF WriteCommandIndex = GVL_Constant.CMD_OPERATION THEN
-  GVL.OperationOn[DeviceIndex] := FALSE; (* Reset to avoid latching *)
-  GVL.OperationOn[DeviceIndex] := (Data > 0) AND NOT GVL.Standby[DeviceIndex];
+  GVL.OperationOn[DeviceIndex] := (Data > 0);
 ELSIF WriteCommandIndex = GVL_Constant.CMD_DIRECTION_CTRL THEN
   GVL.Direction[DeviceIndex] := (Data > 0);
 END_IF;]]></ST>

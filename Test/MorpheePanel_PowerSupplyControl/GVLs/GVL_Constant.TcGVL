@@ -18,7 +18,7 @@
   CMD_OPERATION : UINT := 16#0000;      (* R/W, 1 byte: 00h=OFF, 01h=ON, DLC 3 *)
   CMD_READ_FAN_SPEED1 : UINT := 16#0070;    (* R, 2 bytes: Fan 1 speed *)
   CMD_READ_FAN_SPEED2 : UINT := 16#0071;    (* R, 2 bytes: Fan 2 speed *)
-  CMD_READ_IOUT : UINT := 16#0061;      (* R, 2 bytes: Output current, F=0.01 or 0.1 *)
+  CMD_READ_IOUT : UINT := 16#0061;      (* R, 2 bytes: Output current, F=0.1 (DPU-3200 manual section 1.3.1) *)
   CMD_READ_TEMPERATURE_1 : UINT := 16#0062; (* R, 2 bytes: Temperature, F=0.1 *)
   CMD_READ_VIN : UINT := 16#0050;       (* R, 2 bytes: Input voltage, F=0.1 *)
   CMD_READ_VOUT : UINT := 16#0060;      (* R, 2 bytes: Output voltage, F=0.01 or 0.1 *)

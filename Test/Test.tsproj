@@ -361,7 +361,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{6A424EA9-6AD4-4F13-9DD1-4A6AEB39F45D}" Name="MorpheePanel_PowerSupplyControl" PrjFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.plcproj" TmcFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{1A5CEA36-37E1-8E5E-0474-82A6FEEC27F7}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{34F63F96-1C07-6417-F9CA-9D19A4246B4D}">
 					<Name>MorpheePanel_PowerSupplyControl Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -15015,7 +15015,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0701" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -18776,7 +18776,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0801" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -20802,7 +20802,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0601" EquiCycleTime="100000" FifoSize="20" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -20918,9 +20918,51 @@ CAN-Message-Information:
 							<BitOffs>80</BitOffs>
 						</Var>
 					</Vars>
-					<Eap Mac="010105040000">
-						<EapVar Id="1" NvId="11" NvLength="6">
+					<Eap Publisher="058f9df60601" Mac="010105040000">
+						<EapVar Id="1" Disabled="true" NvId="11" NvLength="6">
 							<Name>toP307</Name>
+							<ImageId>98</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Invalid hash value received
+0x0002 = Invalid variable length received
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>48</BitOffs>
+								</Var>
+								<Var>
+									<Name>Quality</Name>
+									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>64</BitOffs>
+								</Var>
+								<Var>
+									<Name>CycleIndex</Name>
+									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>80</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>96</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Ignore hash value
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>96</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+						<EapVar Id="2" NvId="48" NvLength="6">
+							<Name>Pub-Var 48</Name>
 							<ImageId>98</ImageId>
 							<Vars VarGrpType="1">
 								<Name>Inputs</Name>
@@ -23894,6 +23936,7 @@ CAN-Message-Information:
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030030"/>
+		<MappingInfo Identifier="{00000000-2001-0850-0020-500830000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500850000403}" Id="#x02030040"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500860000403}" Id="#x02030050"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500870000403}" Id="#x02030060"/>
@@ -24688,6 +24731,9 @@ CAN-Message-Information:
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[99]" VarB="Outputs^iNumericOutput_99" Size="16" OffsA="16"/>
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[9]" VarB="Outputs^dNumericOutput_9"/>
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[9]" VarB="Outputs^iNumericOutput_9" Size="16" OffsA="16"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Box 44 (Subscriber)">
+				<Link VarA="PlcTask Inputs^Safety_Tags.Estop_ok" VarB="Pub-Var 48^Inputs^VarData^FSoE Data[0]"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID3">
 				<Link VarA="PlcTask Inputs^GVL.Bus1_Devices_Rx[0]^Command" VarB="ResponseSixBytes_id3^Inputs^command_code"/>

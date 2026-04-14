@@ -15,6 +15,12 @@ VAR
   EStopTimer : TON;                           // E-Stop delay timer
   RedStopTimer : TON;                         // Red Stop delay timer
   OrangeStopTimer : TON;                      // Orange Stop delay timer
+  RedStopInProgress : BOOL;                   // Red stop 30s ramp is active
+  OrangeStopInProgress : BOOL;                // Orange stop hold/ramp is active
+  OrangeRampInProgress : BOOL;                // Orange stop 30s ramp has started (after 3min hold)
+  RedStopStartTime : TIME;                    // When Red Stop ramp began
+  OrangeStopStartTime : TIME;                 // When Orange Stop was first detected
+  OrangeRampStartTime : TIME;                 // When Orange Stop 30s ramp began
 END_VAR
 
 
@@ -44,12 +50,19 @@ VAR
   anyRedStop : BOOL;       (* Aggregate Red Stop state across all devices *)
   anyOrangeStop : BOOL;    (* Aggregate Orange Stop state across all devices *)
   systemSafe : BOOL;       (* System-wide safety condition, false if alarms active *)
+  currentTime : TIME;      (* Current task time for ramp calculations *)
+  elapsed_ms : DWORD;      (* Elapsed ms since stop event started *)
+  rampElapsed_ms : DWORD;  (* Elapsed ms since 30s ramp phase began *)
+  maintenanceMode : BOOL;  (* TRUE when GVL.SystemFlags bit 0 is set *)
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[(* Initialize aggregate safety flags *)
 anyEStop := FALSE;
 anyRedStop := FALSE;
 anyOrangeStop := FALSE;
+currentTime := TIME();
+
+maintenanceMode := (GVL.SystemFlags AND 1) <> 0;
 
 // Aggregate device-level safety conditions
 FOR devIdx := 0 TO 19 DO
@@ -57,6 +70,12 @@ FOR devIdx := 0 TO 19 DO
   anyRedStop := anyRedStop OR GVL.RedStop[devIdx];   (* Check device Red Stop *)
   anyOrangeStop := anyOrangeStop OR GVL.OrangeStop[devIdx]; (* Check device Orange Stop *)
 END_FOR;
+
+// In maintenance mode, Red/Orange stops are overridden; only E-Stop applies
+IF maintenanceMode THEN
+  anyRedStop := FALSE;
+  anyOrangeStop := FALSE;
+END_IF;
 
 // Update system state based on aggregated conditions
 IF anyEStop THEN
@@ -68,6 +87,66 @@ ELSIF anyOrangeStop THEN
 ELSE
   GVL.SystemState := 0; // Normal state, all clear
 END_IF;
+
+// Ramp scale: Red = 30s ramp immediately; Orange = 3min hold then 30s ramp
+IF anyEStop THEN
+  // E-Stop: instant off, reset all ramp state
+  GVL.SystemRampScale := 0.0;
+  RedStopInProgress := FALSE;
+  OrangeStopInProgress := FALSE;
+  OrangeRampInProgress := FALSE;
+ELSIF anyRedStop THEN
+  // Red Stop: 30s linear ramp-down starting immediately
+  OrangeStopInProgress := FALSE;
+  OrangeRampInProgress := FALSE;
+  IF NOT RedStopInProgress THEN
+    RedStopStartTime := currentTime;
+    RedStopInProgress := TRUE;
+  END_IF;
+  elapsed_ms := TIME_TO_DWORD(currentTime) - TIME_TO_DWORD(RedStopStartTime);
+  IF elapsed_ms >= 30000 THEN
+    GVL.SystemRampScale := 0.0;
+  ELSE
+    GVL.SystemRampScale := 1.0 - (DWORD_TO_REAL(elapsed_ms) / 30000.0);
+  END_IF;
+ELSIF anyOrangeStop THEN
+  // Orange Stop: hold 3 minutes, then 30s ramp-down
+  RedStopInProgress := FALSE;
+  IF NOT OrangeStopInProgress THEN
+    OrangeStopStartTime := currentTime;
+    OrangeStopInProgress := TRUE;
+    OrangeRampInProgress := FALSE;
+  END_IF;
+  elapsed_ms := TIME_TO_DWORD(currentTime) - TIME_TO_DWORD(OrangeStopStartTime);
+  IF elapsed_ms < 180000 THEN
+    GVL.SystemRampScale := 1.0; // Hold period - no ramp yet
+  ELSE
+    IF NOT OrangeRampInProgress THEN
+      OrangeRampStartTime := currentTime;
+      OrangeRampInProgress := TRUE;
+    END_IF;
+    rampElapsed_ms := TIME_TO_DWORD(currentTime) - TIME_TO_DWORD(OrangeRampStartTime);
+    IF rampElapsed_ms >= 30000 THEN
+      GVL.SystemRampScale := 0.0;
+    ELSE
+      GVL.SystemRampScale := 1.0 - (DWORD_TO_REAL(rampElapsed_ms) / 30000.0);
+    END_IF;
+  END_IF;
+ELSE
+  // All clear: reset state and restore full scale
+  RedStopInProgress := FALSE;
+  OrangeStopInProgress := FALSE;
+  OrangeRampInProgress := FALSE;
+  GVL.SystemRampScale := 1.0;
+END_IF;
+
+// When ramp completes (scale=0), force outputs and operation off
+FOR devIdx := 0 TO 19 DO
+  IF GVL.SystemRampScale <= 0.0 THEN
+    GVL.OutputOn[devIdx] := FALSE;
+    GVL.OperationOn[devIdx] := FALSE;
+  END_IF;
+END_FOR;
 
 // Update SafetyOK per device: safe if no E-Stop, Red, or Orange Stop
 FOR devIdx := 0 TO 19 DO
