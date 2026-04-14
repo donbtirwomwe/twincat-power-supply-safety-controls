@@ -310,6 +310,11 @@ VAR
   groupIoutLimitInput : UINT;               (** Group Iout max limit input before capacity constraint **)
   desiredReverse : BOOL;                    (** Per-cycle requested direction bit from active control flags **)
   groupInputBaseIdx : INT;                  (** Canonical NumericInput base index for grouped BIC control **)
+  groupReqVoutRaw : ARRAY[0..3] OF UINT;    (** Group object: requested voltage raw (x100) **)
+  groupReqIoutRawTotal : ARRAY[0..3] OF UINT; (** Group object: requested total current raw (x100) **)
+  groupReqIoutRawPerDevice : ARRAY[0..3] OF UINT; (** Group object: split per-member current raw (x100) **)
+  groupReqFlags : ARRAY[0..3] OF WORD;      (** Group object: raw flags word **)
+  groupReqOutputOn : ARRAY[0..3] OF BOOL;   (** Group object: output-on request bit **)
   requestedOutputOn : BOOL;                 (** OutputOn request bit from active flags **)
 	resetRequest : BOOL;                      (** Manual fault reset request from EtherCAT system flags bit 8 **)
 	morpheeUseIndividualBicControl : BOOL;    (** Bit 9 in system flags requests individual BIC control from Morphee **)
@@ -422,7 +427,19 @@ FOR i := 0 TO 7 DO
   GVL.EL2798_Output[i] := (GVL.EL2798_InputFlags AND SHL(TO_BYTE(1), i)) <> 0;
 END_FOR;
 
-(** Group-level sourcing is processed directly in this method. **)
+(** Build group request objects once per cycle so all members use identical decode logic. **)
+FOR groupIdx := 0 TO 3 DO
+  groupInputBaseIdx := 10 + (groupIdx * 7);
+  groupReqVoutRaw[groupIdx] := GVL.NumericInput[groupInputBaseIdx];
+  groupReqIoutRawTotal[groupIdx] := GVL.NumericInput[groupInputBaseIdx + 1];
+  groupReqFlags[groupIdx] := GVL.NumericInput[groupInputBaseIdx + 2];
+  groupReqOutputOn[groupIdx] := (groupReqFlags[groupIdx] AND 16#0010) <> 0;
+  IF groupReqOutputOn[groupIdx] THEN
+    groupReqIoutRawPerDevice[groupIdx] := groupReqIoutRawTotal[groupIdx] / 4;
+  ELSE
+    groupReqIoutRawPerDevice[groupIdx] := 0;
+  END_IF;
+END_FOR;
 
 (** Process device inputs and queue control commands **)
 FOR devIdx := 0 TO 19 DO
@@ -456,10 +473,9 @@ FOR devIdx := 0 TO 19 DO
     ELSIF NOT usePerDeviceInputs THEN
       groupIdx := (devIdx - 4) / 4;
       IF groupIdx >= 0 AND groupIdx <= 3 THEN
-        groupInputBaseIdx := 10 + (groupIdx * 7);
-        groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
-        groupIoutRawTotal := GVL.NumericInput[groupInputBaseIdx + 1];
-        groupOutputRequest := (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0010) <> 0;
+        groupVoutRaw := groupReqVoutRaw[groupIdx];
+        groupIoutRawTotal := groupReqIoutRawTotal[groupIdx];
+        groupOutputRequest := groupReqOutputOn[groupIdx];
 
         activeInGroup := 0;
         FOR memberIdx := (groupIdx * 4) + 4 TO (groupIdx * 4) + 7 DO
@@ -477,11 +493,7 @@ FOR devIdx := 0 TO 19 DO
         END_IF;
 
         GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(groupVoutRaw);
-        IF groupOutputRequest THEN
-          GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
-        ELSE
-          GVL.IoutSetpoint[devIdx] := 0.0;
-        END_IF;
+        GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupReqIoutRawPerDevice[groupIdx]);
       END_IF;
     ELSIF GVL.UseIndividualBicControl AND GVL.UseTempGroupInputs AND devIdx >= 4 THEN
       CASE devIdx OF
@@ -501,18 +513,11 @@ FOR devIdx := 0 TO 19 DO
       IF devIdx >= 4 AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7);
-          groupOutputRequest := (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0010) <> 0;
+          groupOutputRequest := groupReqOutputOn[groupIdx];
           IF GVL.VoutSetpoint[devIdx] = 0.0 AND GVL.IoutSetpoint[devIdx] = 0.0 AND
-             (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0012) <> 0 THEN
-            groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
-            groupIoutRawTotal := GVL.NumericInput[groupInputBaseIdx + 1];
-            IF groupOutputRequest THEN
-              activeInGroup := 4;
-              groupIoutRawPerDevice := groupIoutRawTotal / activeInGroup;
-            ELSE
-              groupIoutRawPerDevice := 0;
-            END_IF;
+             (groupReqFlags[groupIdx] AND 16#0012) <> 0 THEN
+            groupVoutRaw := groupReqVoutRaw[groupIdx];
+            groupIoutRawPerDevice := groupReqIoutRawPerDevice[groupIdx];
             GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(groupVoutRaw);
             GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
           END_IF;
@@ -528,8 +533,7 @@ FOR devIdx := 0 TO 19 DO
     ELSIF NOT usePerDeviceInputs THEN
       groupIdx := (devIdx - 4) / 4;
       IF groupIdx >= 0 AND groupIdx <= 3 THEN
-        groupInputBaseIdx := 10 + (groupIdx * 7);
-        flags := GVL.NumericInput[groupInputBaseIdx + 2];
+        flags := groupReqFlags[groupIdx];
       ELSE
         flags := 0;
       END_IF;
@@ -551,9 +555,8 @@ FOR devIdx := 0 TO 19 DO
       IF devIdx >= 4 AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7);
-          IF (flags AND 16#0012) = 0 AND (GVL.NumericInput[groupInputBaseIdx + 2] AND 16#0012) <> 0 THEN
-            flags := GVL.NumericInput[groupInputBaseIdx + 2];
+          IF (flags AND 16#0012) = 0 AND (groupReqFlags[groupIdx] AND 16#0012) <> 0 THEN
+            flags := groupReqFlags[groupIdx];
           END_IF;
         END_IF;
       END_IF;
@@ -770,9 +773,7 @@ FOR devIdx := 0 TO 19 DO
       IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7);
-          groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
-          setpointVout := UINT_TO_REAL(groupVoutRaw) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
+          setpointVout := UINT_TO_REAL(groupReqVoutRaw[groupIdx]) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
         ELSE
           setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
         END_IF;
@@ -823,9 +824,7 @@ FOR devIdx := 0 TO 19 DO
       IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
-          groupInputBaseIdx := 10 + (groupIdx * 7);
-          groupVoutRaw := GVL.NumericInput[groupInputBaseIdx];
-          setpointVout := UINT_TO_REAL(groupVoutRaw) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
+          setpointVout := UINT_TO_REAL(groupReqVoutRaw[groupIdx]) / 100.0; (* Morphee always sends x100: 2200 = 22.00V *)
         ELSE
           setpointVout := GVL.VoutSetpoint[devIdx] / 100.0;
         END_IF;
