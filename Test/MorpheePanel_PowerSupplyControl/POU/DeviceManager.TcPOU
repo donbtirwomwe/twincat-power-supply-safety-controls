@@ -320,14 +320,14 @@ END_IF;]]></ST>
     <Method Name="WriteDLC3" Id="{d7c58609-b00d-4819-99d7-460b092f3db3}">
       <Declaration><![CDATA[METHOD WriteDLC3 : BOOL
 VAR_INPUT
-  DeviceIndex : INT;                       (* Device index *)
-  WriteCommandIndex : UINT;                (* Command to send *)
-  Data : BYTE;                             (* Single-byte data *)
+  DeviceIndex : INT;                       (** Device index **)
+  WriteCommandIndex : INT;                 (** Command to send **)
+  Data : BYTE;                             (** 1-byte data **)
 END_VAR
 VAR
-  txDataLocal : TxData;                    (* Transmit data structure *)
+  txDataLocal : TxData;                    (** Transmit data structure **)
 END_VAR
-]]></Declaration>
+       ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 CASE DeviceIndex OF
@@ -417,18 +417,8 @@ CASE CANBusIndex OF
     END_IF;
 END_CASE;
 
-(** Update GVL variables based on command **)
-IF WriteDLC4 THEN
-  IF WriteCommandIndex = GVL_Constant.CMD_VOUT_SET THEN
-    GVL.VoutSetpoint[DeviceIndex] := UINT_TO_REAL(Data); (** Update Vout setpoint **)
-  ELSIF WriteCommandIndex = GVL_Constant.CMD_IOUT_SET THEN
-    GVL.IoutSetpoint[DeviceIndex] := UINT_TO_REAL(Data); (** Update Iout setpoint **)
-  ELSIF WriteCommandIndex = GVL_Constant.CMD_REVERSE_VOUT_SET THEN
-    GVL.VoutSetRev[DeviceIndex] := UINT_TO_REAL(Data); (** Update reverse Vout **)
-  ELSIF WriteCommandIndex = GVL_Constant.CMD_REVERSE_IOUT_SET THEN
-    GVL.IoutSetRev[DeviceIndex] := UINT_TO_REAL(Data);(** Update reverse Iout **)
-  END_IF;
-END_IF;]]></ST>
+(* Do not write encoded CAN payload values back into logical request setpoints.
+   ProcessInputs owns requested values; this method only transmits wire-format commands. *)]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="DeviceManager">

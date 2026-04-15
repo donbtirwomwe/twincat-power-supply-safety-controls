@@ -1,136 +1,414 @@
-# Honda PTF – Power Supply & Safety Controls
+# Honda PTF - Power Supply & Safety Controls
 
-TwinCAT 3 PLC project for the Honda Power Transmission Facility (PTF) commissioning.  
-Manages EtherCAT-connected power supply devices (DPUs and BICs) and TwinSAFE safety logic.
+TwinCAT 3 PLC project for the Honda PTF commissioning system. The solution manages EtherCAT I/O, CAN-connected power supplies, grouped BIC behavior, and TwinSAFE interlocks for the Morphee panel power-supply application.
 
----
+This README is intended to be both a commissioning manual and a developer maintenance guide for the current project state.
 
-## Project Structure
+## 1. Purpose
 
-```
+The project provides a single PLC runtime that:
+
+- polls 20 power devices,
+- exposes status and commands through EtherCAT process data,
+- coordinates grouped BIC devices as shared power-supply banks,
+- applies safety-stop behavior before command dispatch,
+- publishes status, limits, and aggregated group feedback back to Morphee.
+
+The main PLC project is MorpheePanel_PowerSupplyControl on PLC port 851. The safety project is RH310_SAFETY.
+
+## 2. Repository Layout
+
+```text
 PowerSupply_SafetyControls/
-├── Test/
-│   ├── MorpheePanel_PowerSupplyControl/   # Main PLC project (Port 851)
-│   │   ├── POU/
-│   │   │   ├── Main.TcPOU                 # Task entry point
-│   │   │   ├── EthercatManager.TcPOU      # EtherCAT I/O processing & CAN command dispatch
-│   │   │   ├── DeviceManager.TcPOU        # Per-device CAN polling (WriteDLC3/WriteDLC4)
-│   │   │   ├── GroupManager.TcPOU         # BIC group setpoint coordination
-│   │   │   ├── SafetyMgr.TcPOU            # TwinSAFE interface
-│   │   │   └── SetpointTest.TcPOU         # Temporary commissioning test injection POU
-│   │   ├── GVLs/
-│   │   │   ├── GVL.TcGVL                  # Shared global state arrays
-│   │   │   ├── GVL_Constant.TcGVL         # Constants
-│   │   │   ├── GVL_Persistent.TcGVL       # Persistent variables
-│   │   │   └── Safety_Tags.TcGVL          # Safety I/O tags
-│   │   └── DUTs/
-│   │       ├── panel302.TcDUT
-│   │       ├── RxData.TcDUT
-│   │       └── TxData.TcDUT
-│   └── RH310_SAFETY/                      # TwinSAFE project
-│       └── TwinSafeGroup1/
-│           └── TwinSafeGroup1.sal         # Safety logic (EL1904, EL1918, EL2904)
+|-- README.md
+|-- Test.sln
+`-- Test/
+    |-- Test.tsproj
+    |-- MorpheePanel_PowerSupplyControl/
+    |   |-- MorpheePanel_PowerSupplyControl.plcproj
+    |   |-- DUTs/
+    |   |   |-- panel302.TcDUT
+    |   |   |-- RxData.TcDUT
+    |   |   `-- TxData.TcDUT
+    |   |-- GVLs/
+    |   |   |-- GVL.TcGVL
+    |   |   |-- GVL_Constant.TcGVL
+    |   |   |-- GVL_Persistent.TcGVL
+    |   |   `-- Safety_Tags.TcGVL
+    |   |-- POU/
+    |   |   |-- Main.TcPOU
+    |   |   |-- DeviceManager.TcPOU
+    |   |   |-- EthercatManager.TcPOU
+    |   |   |-- GroupManager.TcPOU
+    |   |   |-- SafetyMgr.TcPOU
+    |   |   `-- SetpointTest.TcPOU
+    |   `-- VISUs/
+    `-- RH310_SAFETY/
+        |-- RH310_SAFETY.splcproj
+        `-- TwinSafeGroup1/
+            `-- TwinSafeGroup1.sal
 ```
 
----
+## 3. System Architecture
 
-## Device Overview
+### 3.1 Main execution order
 
-| Bus   | Device Index | Type | Protocol         | Notes                        |
-|-------|-------------|------|------------------|------------------------------|
-| Bus 1 | 0 – 3       | DPU  | CAN DLC3/DLC4    | Fixed scaling: VOUT/IOUT/TEMP ×0.1 (F=0.1), VIN F=1 |
-| Bus 2 | 4 – 19      | BIC  | CAN DLC3/DLC4    | Dynamic scaling via SCALING_FACTOR nibbles |
+Main.TcPOU runs the control flow in this order each PLC cycle:
 
----
+1. Poll each DeviceManager instance.
+2. Run SetpointTest.
+3. Refresh group membership by executing GroupManager.
+4. Apply safety state in SafetyMgr.UpdateSafety.
+5. Refresh group masters in GroupManager.UpdateGroupMasters.
+6. Refresh group capacity in GroupManager.UpdateGroupCapacity.
+7. Decode commands and send CAN writes in EthercatManager.ProcessInputs.
+8. Publish output/status data through EthercatManager.UpdateOutputs.
 
-## Key Components
+That order matters. Safety and group state are updated before command dispatch, so ProcessInputs sees the latest ramp-down, shutdown, and group-master information.
 
-### EthercatManager (`EthercatManager.TcPOU`)
-- **ProcessInputs**: Reads `NumericInput` from EtherCAT, dispatches setpoints/flags to CAN devices.  
-  In test mode (`GVL.UseTempBus1Direct = TRUE`), uses `TempBus1*` override arrays for DPU devices 0–3.
-- **ApplyCommands**: Rate-limited command write (≥50 ms per device per DPU manual requirement).  
-  Latches (`LastVoutSetpoint`, `LastIoutSetpoint`, `LastDirection`, `LastOperationOn`) only update on successful write.
-- **ReadLimits**: Reads voltage/current setpoint min/max limits. In test mode, uses `TempBus1VoutSetMin/Max` and `TempBus1IoutSetMin/Max`.
-- **UpdateOutputs**: Packs engineering-scaled values into `NumericOutput`.  
-  DPU devices 0–3 use fixed scaling; BIC devices use dynamic `VoutScale/VinScale/TempScale` nibbles.
+### 3.2 Primary function blocks
 
-### DeviceManager (`DeviceManager.TcPOU`)
-- CAN frame polling per device.
-- DPU devices 0–3: poll interval = 5 cycles (50 ms at 10 ms task rate).
-- BIC devices: standard poll interval.
+Main.TcPOU
+- Creates 20 DeviceManager instances.
+- Performs first-run initialization.
+- Owns the scan order for polling, safety, grouping, command dispatch, and output publishing.
 
-### SetpointTest (`SetpointTest.TcPOU`) ⚠️ Temporary
-Commissioning test POU for injecting setpoints without the HMI.  
-**Remove before production deployment** along with all `UseTempBus1Direct` / `TempBus1*` references.
+DeviceManager.TcPOU
+- Handles low-level CAN read/write interaction for a single device.
+- Maps logical device indices to Bus1, Bus2, and Bus3 PDO structures.
+- Polls readback/status frames.
+- Sends DLC3 and DLC4 commands.
 
----
+EthercatManager.TcPOU
+- Converts EtherCAT NumericInput words into per-device control state.
+- Handles grouped-BIC request decoding.
+- Applies command pacing and write sequencing.
+- Sends operation, direction, voltage, current, and configuration commands.
+- Publishes telemetry, status, and group-level limits back to NumericOutput.
 
-## Safety System (RH310_SAFETY)
+GroupManager.TcPOU
+- Maintains group membership.
+- Determines group masters.
+- Computes available group capacity from healthy active members.
 
-TwinSAFE project targeting the RH310 safety controller.  
-Alias devices:
-- `EL1904` – 4 digital safety inputs
-- `EL1918` – 8 digital safety inputs (FW2)
-- `EL2904` – 4 digital safety outputs (×3 instances)
-- `ErrorAcknowledgement`, `Run` – logical safety signals
+SafetyMgr.TcPOU
+- Translates safety inputs into system state and device shutdown flags.
+- Forces stop and shutdown behavior before command issue.
 
----
+SetpointTest.TcPOU
+- Temporary commissioning helper used to inject setpoints without Morphee/HMI.
+- Useful during bench testing.
+- Not intended as a production control path.
 
-## Known Commissioning Notes
+## 4. Device Model
 
-- **DPU setpoints**: Must send raw value ×100 (e.g., 32 V → write `3200`); `ProcessInputs` divides by 100 before hardware scaling.
-- **50 ms minimum command spacing**: Required by DPU CAN protocol; enforced in `ApplyCommands` and `DeviceManager.Poll`.
-- **BIC group setpoints**: Group master/slave assignment and `SYSTEM_CONFIG` timing — debugging deferred; see `ProcessInputs` lines ~380–420.
+### 4.1 Device index map
 
-### March 30, 2026 Update
+| Device range | Bus | Type | Notes |
+|---|---|---|---|
+| 0..3 | Bus 1 | DPU | Individual devices, fixed scaling behavior |
+| 4..11 | Bus 2 | BIC | Group-controlled or individually controlled depending on mode |
+| 12..19 | Bus 3 | BIC | Group-controlled or individually controlled depending on mode |
 
-- **BIC limits aligned to hardware (24 V platform)**:
-  `MIN_VOLTAGE=19`, `MAX_VOLTAGE=28`, forward current cap `80.0 A`, reverse current cap `64.3 A`.
-- **CC-mode voltage headroom added**:
-  In BIC forward current mode, voltage command is capped at `26.6 V` to preserve ~5% headroom below 28 V max.
-- **CAN command map corrections**:
-  Fan reads corrected to `0x0070` (Fan1) and `0x0071` (Fan2), and BIDIRECTIONAL_CONFIG handled as 2-byte DLC4.
-- **Grouped BIC control behavior**:
-  In grouped non-maintenance mode, current demand is split across active healthy devices in each group and constrained by direction-dependent per-device limits.
-- **Group feedback to Morphee without remap**:
-  Group masters now publish aggregated group telemetry/status through existing master device channels (Vin/Vout, Iout, temp, fans, fault/status bits).
-- **Manual mode/test interaction fix**:
-  `SetpointTest` no longer forces individual BIC control unless test `Enable` is TRUE, so Morphee maintenance/non-maintenance mode selection is respected.
+### 4.2 Group map
 
-### March 31, 2026 Update
+Grouped BIC control is organized by fixed device ranges:
 
-- **BIC voltage clamp behavior fixed**:
-  In voltage mode, BIC setpoints now always respect hardware voltage bounds (`MIN_VOLTAGE`/`MAX_VOLTAGE`).
-  Morphee operator limits (`VoutSetMin`/`VoutSetMax`) are applied only when non-zero, so missing HMI limits no longer collapse setpoint to zero.
-- **Absolute limits exported to Morphee for operator UI clamping**:
-  `NumericOutput[104..107]` now publish group absolute voltage bounds (x100):
-  high word = absolute min, low word = absolute max.
-- **Direction-aware absolute current limits exported per group**:
-  `NumericOutput[112..115]` now publish group absolute current bounds (x10):
-  high word = forward max, low word = reverse max.
-  Both values are computed from active healthy device count in each group and BIC forward/reverse per-device hard limits.
-- **Group capacity outputs remain at `NumericOutput[108..111]`**:
-  Existing capacity mapping is unchanged and still reflects healthy-group capacity.
+| Group | Devices | Default NumericInput base |
+|---|---|---|
+| 0 | 4..7 | 10 |
+| 1 | 8..11 | 17 |
+| 2 | 12..15 | 24 |
+| 3 | 16..19 | 31 |
 
-### April 1, 2026 Update
+The default group block size is 7 words per group. The runtime also keeps boot-time GroupMembership defaults aligned to the same fixed mapping so grouped behavior is stable even before dynamic refresh.
 
-- **DPU fault reset command check (manual):**
-  No dedicated CAN fault-reset command was found for DPU. `FAULT_STATUS (0x0040)` is read-only.
-  Recovery path remains: clear fault condition, then toggle `OPERATION (0x0000)` OFF -> ON.
-- **BIC discharge-voltage tracking:**
-  Investigation is deferred for next session. Current evidence shows command-path separation is working, but field behavior on shared bus still needs hardware-level validation.
+### 4.3 Bus mapping summary
 
----
+| Bus structure | Device indices |
+|---|---|
+| Bus1_Devices / Bus1_Devices_DLC3 / Bus1_Devices_DLC4 | 0..3 |
+| Bus2_Devices / Bus2_Devices_DLC3 / Bus2_Devices_DLC4 | 4..11 |
+| Bus3_Devices / Bus3_Devices_DLC3 / Bus3_Devices_DLC4 | 12..19 |
 
-## Build & Deploy
+## 5. Core Data Interfaces
 
-1. Open `Test.sln` in TwinCAT XAE (VS 2019 / VS 2022 with TC3 shell).
-2. Activate configuration on target (`TwinCAT RT x64`).
-3. Build → Download → Run.
+### 5.1 EtherCAT input model
 
----
+GVL.NumericInput is the main inbound control surface from Morphee.
 
-## Git
+For grouped BIC control, each group consumes a 7-word block:
 
-Branch: `main`  
-Remote: `https://github.com/donbtirwomwe/twincat-power-supply-safety-controls.git`
+1. Vout setpoint
+2. Iout setpoint
+3. flags word
+4. Vout minimum
+5. Vout maximum
+6. Iout minimum
+7. Iout maximum
+
+The default bases are stored in GVL.GroupInputBase = [10, 17, 24, 31].
+
+### 5.2 EtherCAT output model
+
+GVL.NumericOutput publishes:
+
+- device telemetry,
+- device status flags,
+- group master outputs,
+- group capacity,
+- absolute voltage limits,
+- absolute current limits.
+
+The project uses group-master channels to return aggregated grouped-BIC feedback without requiring an external remap in Morphee.
+
+### 5.3 Temporary commissioning paths
+
+The codebase contains temporary override paths for lab and field commissioning:
+
+- GVL.UseTempBus1Direct with TempBus1* arrays for direct DPU injection.
+- GVL.UseTempGroupInputs with TempGroupInput for direct grouped-input injection.
+- SetpointTest.TcPOU for temporary command injection.
+
+These paths are useful during commissioning but should be treated as temporary support logic rather than final production behavior.
+
+## 6. Control Behavior
+
+### 6.1 DPU behavior
+
+DPUs are devices 0..3. The DPU protocol requires at least 50 ms between commands. The project enforces this in two places:
+
+- DeviceManager polling for DPU devices is slowed to match the protocol requirement.
+- EthercatManager ApplyCommands only sends DPU writes when the minimum interval has elapsed.
+
+Important commissioning note: DPU write commands are not echoed back by the device. Successful control must be verified through subsequent read polling, not by expecting the write packet itself to appear as feedback.
+
+### 6.2 BIC grouped behavior
+
+For grouped BIC operation, the project uses shared group decoding and then applies the result to the four devices in each group. The current implementation is designed to keep behavior consistent across all groups rather than relying on each group being wired slightly differently.
+
+Current grouped behavior includes:
+
+- fixed group ranges 4..7, 8..11, 12..15, 16..19,
+- safety-aware output and operation gating,
+- current split across active healthy members,
+- direction-aware forward and reverse current handling,
+- repeated current refresh during steady state,
+- group-master based feedback publishing.
+
+### 6.3 Voltage mode vs current mode
+
+The code tracks Voltage, Current, Standby, OutputOn, OperationOn, and Direction per device.
+
+Current implementation behavior:
+
+- standby drives effective setpoints to zero,
+- safety shutdown forces OutputOn and OperationOn false,
+- grouped current requests can activate current mode even when upstream flags are incomplete,
+- voltage mode clamps to hardware limits,
+- current mode uses direction-aware current limits.
+
+### 6.4 CC mode send sequence
+
+The current code sequence for BIC current-control operation is:
+
+1. Ensure direction command is issued when needed.
+2. Send the CC voltage ceiling once when the required voltage changes.
+3. Continue sending current commands on subsequent paced opportunities.
+
+Periodic direction refresh no longer clears the remembered voltage/current latches unless the direction actually changed. That prevents the voltage command from repeatedly stealing the pacing slot and starving current refreshes.
+
+### 6.5 Setpoint scaling
+
+Relevant current scaling rules:
+
+- DPU temporary injection values are entered in centi-units. Example: 32.00 V is written as 3200.
+- Group current requests from Morphee are handled as total group demand and split per active device.
+- BIC engineering scaling is based on runtime scale factors, with current logic using CurrentScale and falling back when needed.
+
+## 7. Safety Behavior
+
+SafetyMgr is authoritative for safe-operation gating.
+
+Observed and implemented behavior:
+
+- SystemState = 0 means normal operation.
+- SystemState = 1 means orange stop / controlled limitation.
+- SystemState = 2 means red stop.
+- SystemState = 3 means E-stop condition.
+- SystemRampScale is applied to reduce effective setpoints during stop handling.
+- SafetyShutdown per device forces command inhibition.
+
+In practice, when SystemState enters red stop or the ramp scale reaches zero, grouped outputs should not continue commanding active voltage/current operation.
+
+## 8. Build, Download, and Run
+
+### 8.1 Tooling
+
+Expected environment:
+
+- TwinCAT XAE installed in Visual Studio,
+- access to the TwinCAT runtime target,
+- EtherCAT configuration matching the deployed hardware,
+- TwinSAFE configuration available for RH310.
+
+### 8.2 Standard workflow
+
+1. Open Test.sln in TwinCAT XAE.
+2. Load the Test.tsproj project.
+3. Verify that the PLC project MorpheePanel_PowerSupplyControl and the RH310_SAFETY project both load correctly.
+4. Select the correct target runtime.
+5. Activate the configuration if the target mapping changed.
+6. Build the PLC project.
+7. Download to the runtime.
+8. Start the PLC in Run mode.
+9. Confirm EtherCAT alive status and device polling.
+
+### 8.3 First checks after download
+
+Verify these items first:
+
+1. GVL.EthercatAlive becomes true.
+2. Device polling updates Vin, Vout, Iout, and flags.
+3. GroupMembership remains aligned to the expected fixed BIC ranges.
+4. Safety state is normal before command tests.
+5. NumericInput values are landing on the expected group blocks.
+
+## 9. Commissioning Guide
+
+### 9.1 Baseline startup checklist
+
+Before any command test:
+
+1. Verify the correct target is selected.
+2. Confirm no active safety trip is holding the system in shutdown.
+3. Confirm polling is healthy and no widespread CommFault is present.
+4. Confirm the relevant device or group has OutputOn and OperationOn enabled.
+5. Confirm the requested mode matches the intended test.
+
+### 9.2 Grouped BIC commissioning steps
+
+Recommended approach:
+
+1. Start with one group and verify all four device indices in that group.
+2. Confirm the group master is sensible and the slaves are healthy.
+3. Apply a small voltage-mode request first and verify the group accepts it.
+4. Switch to current mode and verify the send order: direction, voltage ceiling if changed, then current.
+5. Verify the total requested current is split across active healthy members.
+6. Check NumericOutput feedback from the group-master channels.
+
+### 9.3 DPU commissioning steps
+
+1. Use conservative command rates.
+2. Do not expect immediate echo of write commands.
+3. Verify readback values through polling.
+4. If a fault clears, recover by toggling operation off then on after the condition is removed.
+
+### 9.4 Using SetpointTest and temporary overrides
+
+Use these only when direct HMI/Morphee control is unavailable or when isolating a mapping issue.
+
+Recommended discipline:
+
+1. Enable the temporary path intentionally.
+2. Record which override path is active.
+3. Disable it after the test.
+4. Do not leave temporary overrides enabled for production commissioning handoff.
+
+## 10. Troubleshooting
+
+### 10.1 POU or PLC folders do not appear in TwinCAT
+
+Check the solution and project metadata first. This repository previously required repair of solution and PLC linkage metadata before the PLC tree appeared correctly in the IDE.
+
+### 10.2 Voltage commands work but current does not
+
+Check the following in order:
+
+1. Verify safety is not forcing standby or shutdown.
+2. Verify OutputOn and OperationOn are both true.
+3. Verify the device is actually in current mode.
+4. Verify direction is correct for the intended power-flow path.
+5. Verify the pacing slot is not being consumed by repeated direction or voltage prerequisites.
+6. Verify current feedback through polling, not by assuming the write packet was accepted.
+
+### 10.3 Group 3 works but other groups do not
+
+Typical suspects:
+
+1. Wrong NumericInput base mapping.
+2. Group membership or group-master mismatch.
+3. Health differences between groups.
+4. Safety state affecting one subset of devices.
+
+This project now prefers fixed group ranges and shared group decode logic to reduce that class of inconsistent behavior.
+
+### 10.4 PLC restart makes setpoints work temporarily
+
+That symptom usually points to state-latch, configuration, direction, or device-side acceptance timing rather than a missing PDO write. Review:
+
+- direction state,
+- system configuration state,
+- whether voltage/current latches were reset correctly,
+- whether current commands resume after the one-time voltage prerequisite.
+
+## 11. Current Version Notes
+
+### March 30-31, 2026
+
+- BIC hardware limits aligned for the 24 V platform.
+- Group current demand split across active healthy devices.
+- Group feedback published through master channels.
+- Voltage clamp behavior fixed so missing operator limits do not collapse setpoints to zero.
+- Absolute group voltage and current limits exported to NumericOutput.
+
+### April 1, 2026
+
+- Confirmed no dedicated DPU fault-reset CAN command.
+- Retained recovery strategy of clearing the fault condition and toggling operation off then on.
+
+### April 14, 2026
+
+- Restored DPU pacing to the documented 50 ms minimum.
+- Re-aligned grouped BIC handling to fixed device ranges.
+- Added periodic grouped-BIC current refresh so steady-state current commands continue to be resent.
+
+### April 15, 2026
+
+- Grouped request decoding is shared across all BIC groups in EthercatManager.ProcessInputs.
+- Safety shutdown now clamps OutputOn and OperationOn before command dispatch.
+- Nonzero setpoint writes require active output and operation state.
+- Current-mode behavior now favors sending the CC voltage prerequisite only when it changes and otherwise uses paced send opportunities for current commands.
+- Periodic direction refresh no longer resets remembered voltage/current setpoints unless direction actually changes.
+- DeviceManager no longer overwrites logical setpoint state with encoded CAN payload values during DLC4 writes.
+
+## 12. Git and Change Control
+
+Current working branch is main.
+
+Recommended source-control practice for this project:
+
+1. Commit PLC source, solution metadata, and generated artifacts only when they are needed for reproducible TwinCAT builds.
+2. Avoid committing user-specific IDE state when possible.
+3. Record commissioning behavior changes in this README when command sequencing or safety semantics change.
+
+Repository remote:
+
+- https://github.com/donbtirwomwe/twincat-power-supply-safety-controls.git
+
+## 13. Files Most Relevant to Maintenance
+
+- Test/MorpheePanel_PowerSupplyControl/POU/Main.TcPOU
+- Test/MorpheePanel_PowerSupplyControl/POU/EthercatManager.TcPOU
+- Test/MorpheePanel_PowerSupplyControl/POU/DeviceManager.TcPOU
+- Test/MorpheePanel_PowerSupplyControl/POU/GroupManager.TcPOU
+- Test/MorpheePanel_PowerSupplyControl/POU/SafetyMgr.TcPOU
+- Test/MorpheePanel_PowerSupplyControl/GVLs/GVL.TcGVL
+
+## 14. Open Items
+
+Items still requiring hardware validation:
+
+1. Reverse-direction current acceptance in all grouped BIC scenarios.
+2. Whether CurrentScale is always populated correctly from all devices online.
+3. Full field validation that restart-only acceptance symptoms are eliminated by the current direction/latch sequencing changes.

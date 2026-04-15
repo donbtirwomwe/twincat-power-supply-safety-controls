@@ -361,7 +361,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{6A424EA9-6AD4-4F13-9DD1-4A6AEB39F45D}" Name="MorpheePanel_PowerSupplyControl" PrjFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.plcproj" TmcFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{F87C0297-E4D4-CE95-650A-CD434F5F33FF}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{EDAF7F1A-D582-1461-9F8B-C2346EF9E7FF}">
 					<Name>MorpheePanel_PowerSupplyControl Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
