@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.62">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.64">
 	<DataTypes>
 		<DataType>
 			<Name GUID="{E844D3AD-7AFD-F02E-E85C-BC1C9F1ADD4F}" AutoDeleteType="true">RxData</Name>
@@ -357,31 +357,27 @@
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
 				</Task>
+				<Task Id="4" Priority="1" CycleTime="100000" AmsPort="301">
+					<Name>EAP</Name>
+					<Vars VarGrpType="1" InsertType="1">
+						<Name>Inputs</Name>
+					</Vars>
+					<Vars VarGrpType="2" InsertType="1">
+						<Name>Outputs</Name>
+					</Vars>
+					<Image Id="4" AddrType="1" ImageType="1">
+						<Name>Image</Name>
+					</Image>
+				</Task>
 			</Tasks>
 		</System>
 		<Plc>
 			<Project GUID="{6A424EA9-6AD4-4F13-9DD1-4A6AEB39F45D}" Name="MorpheePanel_PowerSupplyControl" PrjFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.plcproj" TmcFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{EDAF7F1A-D582-1461-9F8B-C2346EF9E7FF}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{E8074501-767B-202C-4F0E-4328C92F7A37}">
 					<Name>MorpheePanel_PowerSupplyControl Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>Safety_Tags.Estop_ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.ECU1_2_Ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.CBU_LB_Ok</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.MCS_OK</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>GVL.Bus1_Devices_Rx</Name>
 							<Comment><![CDATA[* CAN Bus 1 Rx data *]]></Comment>
@@ -417,17 +413,25 @@
 							<Comment><![CDATA[* Hard-wired high temp fault *]]></Comment>
 							<Type GUID="{0A93EAC9-643B-8275-73BB-9842E5FD5B76}">ARRAY [0..19] OF BOOL</Type>
 						</Var>
+						<Var>
+							<Name>Safety_Tags.Estop_ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.ECU1_2_Ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.CBU_LB_Ok</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.MCS_OK</Name>
+							<Type>BOOL</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>Safety_Tags.Reset</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Safety_Tags.Run</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>GVL.Bus1_Devices</Name>
 							<Comment><![CDATA[* CAN Bus 1 Tx data for devices 0-3 *]]></Comment>
@@ -487,6 +491,14 @@
 							<Name>GVL.NumericOutput</Name>
 							<Comment><![CDATA[* EtherCAT output data *]]></Comment>
 							<Type GUID="{596B6739-5177-1DF1-DD64-9691CE332CA0}">ARRAY [0..120] OF DWORD</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.Reset</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Safety_Tags.Run</Name>
+							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2026-03-01T16:48:47">
@@ -10655,8 +10667,8 @@ Bit1: Value smaller than Limit2]]></Comment>
 								<EtherCAT SlaveType="2" PdiType="#x0005" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="3" FoeType="1" VendorId="#x00000002" ProductCode="#x077e3052" RevisionNo="#x00110000" InfoDataAddr="true" RepeatSupport="true" TimeoutStateChange1="5000" TimeoutMailbox2="10000" TComSupport="true" PortPhys="51" DebugMemory="8" SafetyLogicSupported="true" MaxSlotCount="2" Type="EL1918, 8Ch. Safety Input 24V, TwinSAFE" Desc="EL1918" PortABoxInfo="#x01000032">
 									<SyncMan>001000012600010001000000000100010001001026010000</SyncMan>
 									<SyncMan>001100012200010002000000000100010001001122010000</SyncMan>
-									<SyncMan>001222002400010003000000000000000800001224010000</SyncMan>
-									<SyncMan>001d20002000010004000000000000000900001d20010000</SyncMan>
+									<SyncMan>00123a002400010003000000000000000800001224010000</SyncMan>
+									<SyncMan>001d38002000010004000000000000000900001d20010000</SyncMan>
 									<SyncMan>002e00002400000003000000000000000000002e24000000</SyncMan>
 									<SyncMan>002f00002000000004000000000000000000002f20000000</SyncMan>
 									<Fmmu>0000000000000000001200020100000001000000060000000200000000000000</Fmmu>
@@ -10686,6 +10698,18 @@ Bit1: Value smaller than Limit2]]></Comment>
 										<Entry Name="Message_12 TxPDO" Index="#x7000" Sub="#x05">
 											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 										</Entry>
+										<Entry Name="Message_14 TxPDO" Index="#x7000" Sub="#x06">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_15 TxPDO" Index="#x7000" Sub="#x07">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_16 TxPDO" Index="#x7000" Sub="#x08">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_17 TxPDO" Index="#x7000" Sub="#x09">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
 									</Pdo>
 									<Pdo Name="ConnectionOutputs" Index="#x1600" InOut="1" Flags="#x2011" SyncMan="2">
 										<Entry Name="Message_3 RxPDO" Index="#x6000" Sub="#x01">
@@ -10701,6 +10725,18 @@ Bit1: Value smaller than Limit2]]></Comment>
 											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 										</Entry>
 										<Entry Name="Message_12 RxPDO" Index="#x6000" Sub="#x05">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_14 RxPDO" Index="#x6000" Sub="#x06">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_15 RxPDO" Index="#x6000" Sub="#x07">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_16 RxPDO" Index="#x6000" Sub="#x08">
+											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+										</Entry>
+										<Entry Name="Message_17 RxPDO" Index="#x6000" Sub="#x09">
 											<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 										</Entry>
 									</Pdo>
@@ -11494,11 +11530,11 @@ Bit1: Value smaller than Limit2]]></Comment>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>866</Value>
+								<Value>890</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>866</Value>
+								<Value>890</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -15015,7 +15051,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0701" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -15255,11 +15291,11 @@ CAN-Message-Information:
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>967</Value>
+								<Value>991</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>967</Value>
+								<Value>991</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -18776,7 +18812,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0801" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -19017,11 +19053,11 @@ CAN-Message-Information:
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>801</Value>
+								<Value>825</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>801</Value>
+								<Value>825</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -20802,7 +20838,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0601" EquiCycleTime="100000" FifoSize="20" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -20830,183 +20866,6 @@ CAN-Message-Information:
 					<SimulationNodes Key="6">01000000</SimulationNodes>
 					<SimulationNodes Key="3">01000000</SimulationNodes>
 				</CanOpen>
-			</Device>
-			<Device Id="2" DevType="112" AmsPort="28674" AmsNetId="5.146.184.42.3.1" RemoteName="Device 2 (EtherCAT Automation Protocol)">
-				<Name>Device 2 (EtherCAT Automation Protocol)</Name>
-				<AddressInfo>
-					<Pnp>
-						<DeviceDesc>X000 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit))</DeviceDesc>
-						<DeviceName>\DEVICE\{B18444AC-4D62-4795-BD74-F04638CD9CB6}</DeviceName>
-						<DeviceData>00010592b82b</DeviceData>
-					</Pnp>
-				</AddressInfo>
-				<Image Id="3" AddrType="1" ImageType="3">
-					<Name>Image</Name>
-				</Image>
-				<Box Id="43" BoxType="9051">
-					<Name>Box 43 (Publisher)</Name>
-					<ImageId>99</ImageId>
-					<Vars VarGrpType="1">
-						<Name>Inputs</Name>
-						<Var BoxStateVariable="true">
-							<Name>FrameState</Name>
-							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
-0x0002 = Error (frame oversized)
-0x0004 = Subscriber missing (Unicast only)
-]]></Comment>
-							<Type>UINT</Type>
-						</Var>
-					</Vars>
-					<Vars VarGrpType="2">
-						<Name>Outputs</Name>
-						<Var BoxStateVariable="true">
-							<Name>FrameCtrl</Name>
-							<Comment><![CDATA[0x0001 = Disable sending
-0x0002 = Remove destination MAC from ARP cache
-]]></Comment>
-							<Type>UINT</Type>
-						</Var>
-					</Vars>
-					<Eap InOut="1" Mac="010105040000" DisableSubscriberMonitoring="true" ArpRetryInterval="1000">
-						<EapVar Id="1" VarInOut="1" NvId="12" NvLength="6">
-							<Name>P307_To_Facility_PLC</Name>
-							<ImageId>97</ImageId>
-							<Vars VarGrpType="1">
-								<Name>Inputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarState</Name>
-									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>16</BitOffs>
-								</Var>
-							</Vars>
-							<Vars VarGrpType="2">
-								<Name>Outputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarCtrl</Name>
-									<Comment><![CDATA[0x0001 = Disable publishing
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>16</BitOffs>
-								</Var>
-								<Var>
-									<Name>VarData</Name>
-									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
-									<BitOffs>32</BitOffs>
-								</Var>
-							</Vars>
-						</EapVar>
-					</Eap>
-				</Box>
-				<Box Id="44" BoxType="9052">
-					<Name>Box 44 (Subscriber)</Name>
-					<ImageId>100</ImageId>
-					<Vars VarGrpType="1">
-						<Name>Inputs</Name>
-						<Var BoxStateVariable="true">
-							<Name>FrameState</Name>
-							<Type>UINT</Type>
-							<BitOffs>32</BitOffs>
-						</Var>
-					</Vars>
-					<Vars VarGrpType="2">
-						<Name>Outputs</Name>
-						<Var BoxStateVariable="true">
-							<Name>FrameCtrl</Name>
-							<Type>UINT</Type>
-							<BitOffs>80</BitOffs>
-						</Var>
-					</Vars>
-					<Eap Publisher="058f9df60601" Mac="010105040000">
-						<EapVar Id="1" Disabled="true" NvId="11" NvLength="6">
-							<Name>toP307</Name>
-							<ImageId>98</ImageId>
-							<Vars VarGrpType="1">
-								<Name>Inputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarState</Name>
-									<Comment><![CDATA[0x0001 = Invalid hash value received
-0x0002 = Invalid variable length received
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>48</BitOffs>
-								</Var>
-								<Var>
-									<Name>Quality</Name>
-									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>64</BitOffs>
-								</Var>
-								<Var>
-									<Name>CycleIndex</Name>
-									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>80</BitOffs>
-								</Var>
-								<Var>
-									<Name>VarData</Name>
-									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
-									<BitOffs>96</BitOffs>
-								</Var>
-							</Vars>
-							<Vars VarGrpType="2">
-								<Name>Outputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarCtrl</Name>
-									<Comment><![CDATA[0x0001 = Ignore hash value
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>96</BitOffs>
-								</Var>
-							</Vars>
-						</EapVar>
-						<EapVar Id="2" NvId="48" NvLength="6">
-							<Name>Pub-Var 48</Name>
-							<ImageId>98</ImageId>
-							<Vars VarGrpType="1">
-								<Name>Inputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarState</Name>
-									<Comment><![CDATA[0x0001 = Invalid hash value received
-0x0002 = Invalid variable length received
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>48</BitOffs>
-								</Var>
-								<Var>
-									<Name>Quality</Name>
-									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>64</BitOffs>
-								</Var>
-								<Var>
-									<Name>CycleIndex</Name>
-									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>80</BitOffs>
-								</Var>
-								<Var>
-									<Name>VarData</Name>
-									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
-									<BitOffs>96</BitOffs>
-								</Var>
-							</Vars>
-							<Vars VarGrpType="2">
-								<Name>Outputs</Name>
-								<Var BoxStateVariable="true">
-									<Name>VarCtrl</Name>
-									<Comment><![CDATA[0x0001 = Ignore hash value
-]]></Comment>
-									<Type>UINT</Type>
-									<BitOffs>96</BitOffs>
-								</Var>
-							</Vars>
-						</EapVar>
-					</Eap>
-				</Box>
-				<Ethernet DeviceDesc="X000 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit))"/>
-				<Eap EapDeviceGuid="{9873A596-8568-4914-A1CD-6ED4B379EDAA}"/>
 			</Device>
 			<Device Id="10" DevType="130" AmsNetId="5.146.184.42.11.255" RemoteName="Device 10 (EtherCAT Slave)">
 				<Name>Device 10 (EtherCAT Slave)</Name>
@@ -23932,15 +23791,516 @@ CAN-Message-Information:
 				</Image>
 				<EtherCATSlave GpioValueFromEsc="1"/>
 			</Device>
+			<Device Id="2" DevType="112" AmsPort="28674" AmsNetId="5.146.184.42.3.1" RemoteName="Device 2 (EtherCAT Automation Protocol)">
+				<Name>Device 2 (EtherCAT Automation Protocol)</Name>
+				<AddressInfo>
+					<Pnp>
+						<DeviceDesc>X000 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit))</DeviceDesc>
+						<DeviceName>\DEVICE\{B18444AC-4D62-4795-BD74-F04638CD9CB6}</DeviceName>
+						<DeviceData>00010592b82b</DeviceData>
+					</Pnp>
+				</AddressInfo>
+				<Image Id="3" AddrType="1" ImageType="3">
+					<Name>Image</Name>
+				</Image>
+				<Box Id="21" BoxType="9051">
+					<Name>Panel_300 (Publisher)</Name>
+					<ImageId>99</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Eap InOut="1" Publisher="4800a8c00000" NetIdPublisherAsIpAddress="true" ArpRetryInterval="1000">
+						<EapVar Id="1" VarInOut="1" NvId="36" NvLength="6">
+							<Name>Pub-Var 36</Name>
+							<ImageId>97</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>16</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>16</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>32</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="22" BoxType="9052">
+					<Name>Panel_300 (Subscriber)</Name>
+					<ImageId>100</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Type>UINT</Type>
+							<BitOffs>32</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Type>UINT</Type>
+							<BitOffs>80</BitOffs>
+						</Var>
+					</Vars>
+					<Eap Publisher="058f9df60401">
+						<EapVar Id="1" NvId="29" NvLength="6">
+							<Name>Pub-Var 29</Name>
+							<ImageId>98</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Invalid hash value received
+0x0002 = Invalid variable length received
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>48</BitOffs>
+								</Var>
+								<Var>
+									<Name>Quality</Name>
+									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>64</BitOffs>
+								</Var>
+								<Var>
+									<Name>CycleIndex</Name>
+									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>80</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>96</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Ignore hash value
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>96</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="43" BoxType="9051">
+					<Name>Panel_301LH (Publisher)</Name>
+					<ImageId>99</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>144</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>112</BitOffs>
+						</Var>
+					</Vars>
+					<Eap InOut="1" Publisher="059697c00301" ArpRetryInterval="1000">
+						<EapVar Id="2" VarInOut="1" NvId="38" NvLength="6">
+							<Name>Pub-Var 38</Name>
+							<ImageId>97</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>160</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>128</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>144</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="44" BoxType="9052">
+					<Name>Panel_301LH (Subscriber)</Name>
+					<ImageId>100</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Type>UINT</Type>
+							<BitOffs>176</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Type>UINT</Type>
+							<BitOffs>192</BitOffs>
+						</Var>
+					</Vars>
+					<Eap Publisher="059697c00301">
+						<EapVar Id="2" NvId="17" NvLength="6">
+							<Name>Sub-Var 46</Name>
+							<ImageId>98</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Invalid hash value received
+0x0002 = Invalid variable length received
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>192</BitOffs>
+								</Var>
+								<Var>
+									<Name>Quality</Name>
+									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>208</BitOffs>
+								</Var>
+								<Var>
+									<Name>CycleIndex</Name>
+									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>224</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>240</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Ignore hash value
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>208</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="46" BoxType="9051">
+					<Name>Panel_301RH(Publisher)</Name>
+					<ImageId>99</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>288</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>224</BitOffs>
+						</Var>
+					</Vars>
+					<Eap InOut="1" Publisher="05969b730301" ArpRetryInterval="1000">
+						<EapVar Id="3" VarInOut="1" NvId="31" NvLength="6">
+							<Name>Pub-Var 31</Name>
+							<ImageId>97</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>304</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>240</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>256</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="53" BoxType="9052">
+					<Name>Panel_301RH(Subscriber)</Name>
+					<ImageId>100</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Type>UINT</Type>
+							<BitOffs>320</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Type>UINT</Type>
+							<BitOffs>304</BitOffs>
+						</Var>
+					</Vars>
+					<Eap Publisher="05969b730301">
+						<EapVar Id="3" NvId="12" NvLength="6">
+							<Name>Sub-Var 12</Name>
+							<ImageId>98</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Invalid hash value received
+0x0002 = Invalid variable length received
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>336</BitOffs>
+								</Var>
+								<Var>
+									<Name>Quality</Name>
+									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>352</BitOffs>
+								</Var>
+								<Var>
+									<Name>CycleIndex</Name>
+									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>368</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>384</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Ignore hash value
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>320</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="57" BoxType="9051">
+					<Name>Panel_PGS (Publisher)</Name>
+					<ImageId>99</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>432</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>336</BitOffs>
+						</Var>
+					</Vars>
+					<Eap InOut="1" Publisher="059697b60301" ArpRetryInterval="1000" GatewayIpAddr="-256">
+						<EapVar Id="4" VarInOut="1" NvId="62" NvLength="6">
+							<Name>Pub-Var 62</Name>
+							<ImageId>97</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>448</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>352</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>368</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Box Id="59" BoxType="9052">
+					<Name>Panel_PGS (Subscriber)</Name>
+					<ImageId>100</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Type>UINT</Type>
+							<BitOffs>464</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Type>UINT</Type>
+							<BitOffs>416</BitOffs>
+						</Var>
+					</Vars>
+					<Eap Publisher="059697b60301">
+						<EapVar Id="4" NvId="20" NvLength="6">
+							<Name>Sub-Var 20</Name>
+							<ImageId>98</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Invalid hash value received
+0x0002 = Invalid variable length received
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>480</BitOffs>
+								</Var>
+								<Var>
+									<Name>Quality</Name>
+									<Comment><![CDATA[Duration the variable is not refreshed (in 100µs)]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>496</BitOffs>
+								</Var>
+								<Var>
+									<Name>CycleIndex</Name>
+									<Comment><![CDATA[Incremented each publisher cycle]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>512</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
+									<BitOffs>528</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Ignore hash value
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>432</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Ethernet DeviceDesc="X000 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit))"/>
+				<Eap EapDeviceGuid="{D3483CEE-529A-49E6-9097-65ADDB2930BA}"/>
+			</Device>
 		</Io>
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030030"/>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500830000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500850000403}" Id="#x02030040"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500860000403}" Id="#x02030050"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500870000403}" Id="#x02030060"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500880000403}" Id="#x02030070"/>
+		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{03040010-0010-0304-1000-040310000403}" Id="#x02030020" Watchdog="04000000040000000400000004000000"/>
 		<OwnerA Name="TIID^Device 1 (EtherCAT)">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)">
@@ -24156,6 +24516,26 @@ CAN-Message-Information:
 				<Link VarA="Term 37 (EK1200)^Term 3(EL6695)^IO Outputs^Pdo Entry 95" VarB="IO Inputs^Pdo Entry 95"/>
 				<Link VarA="Term 37 (EK1200)^Term 3(EL6695)^IO Outputs^Pdo Entry 96" VarB="IO Inputs^Pdo Entry 96"/>
 				<Link VarA="Term 37 (EK1200)^Term 3(EL6695)^IO Outputs^Pdo Entry 97" VarB="IO Inputs^Pdo Entry 97"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_300 (Subscriber)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_14 RxPDO" VarB="Pub-Var 29^Inputs^VarData"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_301LH (Subscriber)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_15 RxPDO" VarB="Sub-Var 46^Inputs^VarData"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_301RH(Subscriber)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_16 RxPDO" VarB="Sub-Var 12^Inputs^VarData"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_PGS (Publisher)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionInputs^Message_17 TxPDO" VarB="Pub-Var 62^Outputs^VarData"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TIID^Device 2 (EtherCAT Automation Protocol)">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)">
+				<Link VarA="Panel_300 (Publisher)^Pub-Var 36^Outputs^VarData" VarB="ConnectionInputs^Message_14 TxPDO"/>
+				<Link VarA="Panel_301LH (Publisher)^Pub-Var 38^Outputs^VarData" VarB="ConnectionInputs^Message_15 TxPDO"/>
+				<Link VarA="Panel_301RH(Publisher)^Pub-Var 31^Outputs^VarData" VarB="ConnectionInputs^Message_16 TxPDO"/>
+				<Link VarA="Panel_PGS (Subscriber)^Sub-Var 20^Inputs^VarData" VarB="ConnectionOutputs^Message_17 RxPDO"/>
 			</OwnerB>
 		</OwnerA>
 		<OwnerA Name="TIPC^MorpheePanel_PowerSupplyControl^MorpheePanel_PowerSupplyControl Instance">
@@ -24731,9 +25111,6 @@ CAN-Message-Information:
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[99]" VarB="Outputs^iNumericOutput_99" Size="16" OffsA="16"/>
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[9]" VarB="Outputs^dNumericOutput_9"/>
 				<Link VarA="PlcTask Outputs^GVL.NumericOutput[9]" VarB="Outputs^iNumericOutput_9" Size="16" OffsA="16"/>
-			</OwnerB>
-			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Box 44 (Subscriber)">
-				<Link VarA="PlcTask Inputs^Safety_Tags.Estop_ok" VarB="Pub-Var 48^Inputs^VarData^FSoE Data[0]"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID3">
 				<Link VarA="PlcTask Inputs^GVL.Bus1_Devices_Rx[0]^Command" VarB="ResponseSixBytes_id3^Inputs^command_code"/>

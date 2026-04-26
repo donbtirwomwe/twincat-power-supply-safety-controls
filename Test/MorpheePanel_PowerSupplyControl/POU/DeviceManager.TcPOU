@@ -169,7 +169,7 @@ END_IF;
 (** Check if received command matches the last sent command to trigger response processing **)
 ResponseTrigger(CLK := (rxData.Command = UINT_TO_INT(LastExpectedCommand)));
 IF ResponseTrigger.Q THEN (** Response received and matches expected command **)
-  rawValue := rxData.Data[0] + SHL(rxData.Data[1], 8); (** Combine first two bytes into a 16-bit value **)
+  rawValue := UINT_TO_WORD(rxData.Data[0]) + UINT_TO_WORD(SHL(TO_BYTE(rxData.Data[1]), 8)); (** Combine first two bytes into a 16-bit value **)
   CASE LastExpectedCommand OF
 
 	GVL_Constant.CMD_READ_VIN: GVL.Vin[DeviceIndex] := rawValue; (** Update VIN **)
@@ -352,9 +352,9 @@ CASE CANBusIndex OF
   3: GVL.Bus3_Devices_DLC3[DeviceOffset] := txDataLocal; WriteDLC3 := TRUE;
 END_CASE;
 
-IF WriteCommandIndex = GVL_Constant.CMD_OPERATION THEN
+IF UINT_TO_INT(WriteCommandIndex) = GVL_Constant.CMD_OPERATION THEN
   GVL.OperationOn[DeviceIndex] := (Data > 0);
-ELSIF WriteCommandIndex = GVL_Constant.CMD_DIRECTION_CTRL THEN
+ELSIF UINT_TO_INT(WriteCommandIndex) = GVL_Constant.CMD_DIRECTION_CTRL THEN
   GVL.Direction[DeviceIndex] := (Data > 0);
 END_IF;]]></ST>
       </Implementation>

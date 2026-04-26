@@ -44,7 +44,7 @@ END_VAR
 IF GVL.UseIndividualBicControl THEN
   FOR groupIdx := 0 TO 3 DO
     GVL.GroupCapacity[groupIdx] := 0;
-    GVL.NumericOutput[104 + groupIdx] := 0;
+    GVL.NumericOutput[104 + groupIdx] := DWORD_TO_UINT(0);
   END_FOR;
   RETURN;
 END_IF;
@@ -87,12 +87,12 @@ FOR groupIdx := 0 TO 3 DO
   GVL.GroupCapacity[groupIdx] := activeDevices * perDeviceLimit;
 
   IF GVL.GroupMaster[groupIdx] >= 0 AND GVL.GroupMaster[groupIdx] <= 19 THEN
-    GVL.NumericOutput[104 + groupIdx] := SHL(TO_DWORD(outCount), 16) OR TO_DWORD(opCount);
+    GVL.NumericOutput[104 + groupIdx] := DWORD_TO_UINT(SHL(TO_DWORD(outCount), 16) OR TO_DWORD(opCount));
     IF opCount < 4 THEN
       GVL.SystemAlarms := DWORD_TO_UINT(GVL.SystemAlarms OR SHL(TO_DWORD(1), groupIdx));
     END_IF;
   ELSE
-    GVL.NumericOutput[104 + groupIdx] := 0;
+    GVL.NumericOutput[104 + groupIdx] := DWORD_TO_UINT(0);
     GVL.GroupCapacity[groupIdx] := 0;
     GVL.SystemAlarms := DWORD_TO_UINT(GVL.SystemAlarms OR SHL(TO_DWORD(1), groupIdx));
   END_IF;

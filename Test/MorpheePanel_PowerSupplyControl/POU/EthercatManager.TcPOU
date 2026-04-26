@@ -242,17 +242,17 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   GVL.PollingPauseTimeout[devIdx](IN := TRUE, PT := T#100MS); (** Start 100ms timeout **)
   CASE commandCode OF
     16#0000: (** CMD_OPERATION **)
-      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, GVL_Constant.CMD_OPERATION, UINT_TO_BYTE(commandData));
+      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, UINT_TO_INT(GVL_Constant.CMD_OPERATION), UINT_TO_BYTE(commandData));
     16#0100: (** CMD_DIRECTION_CTRL **)
-      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, UINT_TO_BYTE(commandData));
+      ApplyCommands := fbDeviceManager.WriteDLC3(devIdx, UINT_TO_INT(GVL_Constant.CMD_DIRECTION_CTRL), UINT_TO_BYTE(commandData));
     16#0020: (** CMD_VOUT_SET **)
-      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_VOUT_SET, commandData);
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, UINT_TO_INT(GVL_Constant.CMD_VOUT_SET), commandData);
     16#0030: (** CMD_IOUT_SET **)
-      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_IOUT_SET, commandData);
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, UINT_TO_INT(GVL_Constant.CMD_IOUT_SET), commandData);
     16#0120: (** CMD_REVERSE_VOUT_SET **)
-      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, commandData);
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, UINT_TO_INT(GVL_Constant.CMD_REVERSE_VOUT_SET), commandData);
     16#0130: (** CMD_REVERSE_IOUT_SET **)
-      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, commandData);
+      ApplyCommands := fbDeviceManager.WriteDLC4(devIdx, UINT_TO_INT(GVL_Constant.CMD_REVERSE_IOUT_SET), commandData);
     ELSE
       ApplyCommands := FALSE; (** Invalid command code **)
       GVL.PollingPaused[devIdx] := FALSE; (** Resume polling on invalid command **)
