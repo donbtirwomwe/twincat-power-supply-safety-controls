@@ -308,6 +308,106 @@
 			</SubItem>
 		</DataType>
 		<DataType>
+			<Name GUID="{D3C465FB-980D-C9E7-19BC-E61EE875E45A}" AutoDeleteType="true">INFODATA_3260476488</Name>
+			<BitSize>16</BitSize>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[0]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[1]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>1</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[2]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>2</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[3]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>3</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[4]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>4</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[5]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>5</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[6]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>6</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Safe Data Byte 0[7]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>7</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[0]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>8</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[1]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>9</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[2]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>10</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[3]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>11</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[4]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>12</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[5]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>13</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[6]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>14</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Output Safe Data Safe Data Byte 0[7]</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>15</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
 			<Name GUID="{18071995-0000-0000-0000-002000000030}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..5] OF BYTE</Name>
 			<BitSize>48</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
@@ -373,7 +473,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{6A424EA9-6AD4-4F13-9DD1-4A6AEB39F45D}" Name="MorpheePanel_PowerSupplyControl" PrjFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.plcproj" TmcFilePath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{E8074501-767B-202C-4F0E-4328C92F7A37}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MorpheePanel_PowerSupplyControl\MorpheePanel_PowerSupplyControl.tmc" TmcHash="{13F1D88D-7BCA-FB6D-979C-2B57C4B0347B}">
 					<Name>MorpheePanel_PowerSupplyControl Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -10668,7 +10768,7 @@ Bit1: Value smaller than Limit2]]></Comment>
 									<SyncMan>001000012600010001000000000100010001001026010000</SyncMan>
 									<SyncMan>001100012200010002000000000100010001001122010000</SyncMan>
 									<SyncMan>00123a002400010003000000000000000800001224010000</SyncMan>
-									<SyncMan>001d38002000010004000000000000000900001d20010000</SyncMan>
+									<SyncMan>001d40002000010004000000000000000900001d20010000</SyncMan>
 									<SyncMan>002e00002400000003000000000000000000002e24000000</SyncMan>
 									<SyncMan>002f00002000000004000000000000000000002f20000000</SyncMan>
 									<Fmmu>0000000000000000001200020100000001000000060000000200000000000000</Fmmu>
@@ -10749,6 +10849,20 @@ Bit1: Value smaller than Limit2]]></Comment>
 										</Entry>
 										<Entry>
 											<Type GUID="{18071995-0000-0000-0000-002000000006}">ARRAY [0..5] OF BIT</Type>
+										</Entry>
+									</Pdo>
+									<Pdo Name="Connection Info Data" Index="#x1bf9" Flags="#x2011" SyncMan="3">
+										<Entry Name="Message_14 Info Data" Index="#x7000" Sub="#x01">
+											<Type GUID="{D3C465FB-980D-C9E7-19BC-E61EE875E45A}">INFODATA_3260476488</Type>
+										</Entry>
+										<Entry Name="Message_15 Info Data" Index="#x7000" Sub="#x02">
+											<Type GUID="{D3C465FB-980D-C9E7-19BC-E61EE875E45A}">INFODATA_3260476488</Type>
+										</Entry>
+										<Entry Name="Message_16 Info Data" Index="#x7000" Sub="#x03">
+											<Type GUID="{D3C465FB-980D-C9E7-19BC-E61EE875E45A}">INFODATA_3260476488</Type>
+										</Entry>
+										<Entry Name="Message_17 Info Data" Index="#x7000" Sub="#x04">
+											<Type GUID="{D3C465FB-980D-C9E7-19BC-E61EE875E45A}">INFODATA_3260476488</Type>
 										</Entry>
 									</Pdo>
 									<Pdo Name="FSLOGIC Inputs" Index="#x1bff" Flags="#x0091" SyncMan="3">
@@ -11530,11 +11644,11 @@ Bit1: Value smaller than Limit2]]></Comment>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>890</Value>
+								<Value>896</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>890</Value>
+								<Value>896</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -15051,7 +15165,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0701" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -15291,11 +15405,11 @@ CAN-Message-Information:
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>991</Value>
+								<Value>997</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>991</Value>
+								<Value>997</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -18812,7 +18926,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0801" EquiCycleTime="100000" FifoSize="40" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -19053,11 +19167,11 @@ CAN-Message-Information:
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[0]</Name>
-								<Value>825</Value>
+								<Value>831</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgOffset[1]</Name>
-								<Value>825</Value>
+								<Value>831</Value>
 							</Value>
 							<Value>
 								<Name>CanMsgSize[0]</Name>
@@ -20838,7 +20952,7 @@ CAN-Message-Information:
 						</RxPdo>
 					</CanOpen>
 				</Box>
-				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
+				<CanOpen CurrentDBCPath="D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\PowerSupply_SafetyControls\Test\D:\TwinCAT_projects\Honda Project\Honda PTF Commissioning\300_PSandSafety_Controls\307Control\D:\NC Commissioning\NC Commissioning\310\ownloads\307PTF.dbc">
 					<Fcxxxx>
 						<DevSettings BusyIntEnabled="true" EnableMasterDiag="true" ExtendedMapping="true" DisableSlots="true" NetId="0592b82a0601" EquiCycleTime="100000" FifoSize="20" CycleDivider="1"/>
 						<DevParameter CycleTime="100000" EnableExtMasterDiag="true" InputShift="60" ExtendedMapping="true"/>
@@ -24304,18 +24418,19 @@ CAN-Message-Information:
 		<MappingInfo Identifier="{03040010-0010-0304-1000-040310000403}" Id="#x02030020" Watchdog="04000000040000000400000004000000"/>
 		<OwnerA Name="TIID^Device 1 (EtherCAT)">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)">
-				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 57 (EL1918)^Module 1 (FSOE)^FSoE Inputs^FSOE" VarB="ConnectionOutputs^Message_7 RxPDO"/>
-				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 57 (EL1918)^Module 1 (FSOE)^FSoE Outputs^FSOE" VarB="ConnectionInputs^Message_7 TxPDO"/>
-				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 58 (EL2904)^Module 1 (FSOES)^RxPDO^FSOE" VarB="ConnectionInputs^Message_10 TxPDO"/>
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 52 (EL2904)^Module 1 (FSOES)^TxPDO^FSOE" VarB="ConnectionOutputs^Message_8 RxPDO"/>
 				<Link VarA="Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 10 (EL1904)^Module 1 (FSOES)^RxPDO^FSOE" VarB="ConnectionInputs^Message_12 TxPDO"/>
 				<Link VarA="Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 12 (EL2904)^Module 1 (FSOES)^RxPDO^FSOE" VarB="ConnectionInputs^Message_3 TxPDO"/>
-				<Link VarA="Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 12 (EL2904)^Module 1 (FSOES)^TxPDO^FSOE" VarB="ConnectionOutputs^Message_3 RxPDO"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 52 (EL2904)">
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionInputs^Message_8 TxPDO" VarB="Module 1 (FSOES)^RxPDO^FSOE"/>
-				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_8 RxPDO" VarB="Module 1 (FSOES)^TxPDO^FSOE"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 57 (EL1918)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionInputs^Message_7 TxPDO" VarB="Module 1 (FSOE)^FSoE Outputs^FSOE"/>
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_7 RxPDO" VarB="Module 1 (FSOE)^FSoE Inputs^FSOE"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 58 (EL2904)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionInputs^Message_10 TxPDO" VarB="Module 1 (FSOES)^RxPDO^FSOE"/>
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_10 RxPDO" VarB="Module 1 (FSOES)^TxPDO^FSOE"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3(EL6695)">
@@ -24368,6 +24483,9 @@ CAN-Message-Information:
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 10 (EL1904)">
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_12 RxPDO" VarB="Module 1 (FSOES)^TxPDO^FSOE"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 12 (EL2904)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_3 RxPDO" VarB="Module 1 (FSOES)^TxPDO^FSOE"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 20 (EK1122)^Box 22 (CX8110 EtherCAT slave)">
 				<Link VarA="Term 37 (EK1200)^Term 3(EL6695)^IO Inputs^Pdo Entry 1" VarB="IO Outputs^Pdo Entry 1"/>
@@ -24520,22 +24638,22 @@ CAN-Message-Information:
 			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_300 (Subscriber)">
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_14 RxPDO" VarB="Pub-Var 29^Inputs^VarData"/>
 			</OwnerB>
-			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_301LH (Subscriber)">
-				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_15 RxPDO" VarB="Sub-Var 46^Inputs^VarData"/>
-			</OwnerB>
 			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_301RH(Subscriber)">
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_16 RxPDO" VarB="Sub-Var 12^Inputs^VarData"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_PGS (Publisher)">
 				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionInputs^Message_17 TxPDO" VarB="Pub-Var 62^Outputs^VarData"/>
 			</OwnerB>
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Panel_PGS (Subscriber)">
+				<Link VarA="Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)^ConnectionOutputs^Message_17 RxPDO" VarB="Sub-Var 20^Inputs^VarData"/>
+			</OwnerB>
 		</OwnerA>
 		<OwnerA Name="TIID^Device 2 (EtherCAT Automation Protocol)">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)">
 				<Link VarA="Panel_300 (Publisher)^Pub-Var 36^Outputs^VarData" VarB="ConnectionInputs^Message_14 TxPDO"/>
 				<Link VarA="Panel_301LH (Publisher)^Pub-Var 38^Outputs^VarData" VarB="ConnectionInputs^Message_15 TxPDO"/>
+				<Link VarA="Panel_301LH (Subscriber)^Sub-Var 46^Inputs^VarData" VarB="ConnectionOutputs^Message_15 RxPDO"/>
 				<Link VarA="Panel_301RH(Publisher)^Pub-Var 31^Outputs^VarData" VarB="ConnectionInputs^Message_16 TxPDO"/>
-				<Link VarA="Panel_PGS (Subscriber)^Sub-Var 20^Inputs^VarData" VarB="ConnectionOutputs^Message_17 RxPDO"/>
 			</OwnerB>
 		</OwnerA>
 		<OwnerA Name="TIPC^MorpheePanel_PowerSupplyControl^MorpheePanel_PowerSupplyControl Instance">

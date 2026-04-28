@@ -4,6 +4,50 @@ TwinCAT 3 PLC project for the Honda PTF commissioning system. The solution manag
 
 This README is intended to be both a commissioning manual and a developer maintenance guide for the current project state.
 
+## Recent Updates (2026-04-28)
+
+### TwinSAFE / FSoE
+
+- Updated custom alias-device files:
+    - RH310_SAFETY/TwinSafeGroup1/Alias Devices/Custom FSoE Connection_1.sds
+    - RH310_SAFETY/TwinSafeGroup1/Alias Devices/Custom FSoE Connection_2.sds
+    - RH310_SAFETY/TwinSafeGroup1/Alias Devices/Custom FSoE Connection_3.sds
+    - RH310_SAFETY/TwinSafeGroup1/Alias Devices/Custom FSoE Connection_4.sds
+- Enabled mapping on all four connections:
+    - MapInputs=true
+    - MapOutputs=true
+- Increased watchdog from 100 to 500.
+- Configured ComErrAck as AliasDevice mapping.
+- Updated RH310 safety target metadata CRC values.
+
+### EtherCAT / Mapping
+
+- Added auto-generated type INFODATA_3260476488 for connection info payload mapping.
+- Added Connection Info Data PDO (0x1BF9) entries for Message_14 through Message_17 on EL1918.
+- Updated EL1918 SyncManager output offset (001d38... to 001d40...).
+- Updated CanMsgOffset values after mapping changes.
+- Updated EL1918 and EL2904 safety link mappings.
+
+### EAP Message Routing (Current)
+
+| Message | EAP -> EL1918 (Tx into ConnectionInputs) | EL1918 -> EAP (Rx from ConnectionOutputs) |
+|---|---|---|
+| 14 | Panel_300 (Publisher) Pub-Var 36 -> ConnectionInputs Message_14 TxPDO | ConnectionOutputs Message_14 RxPDO -> Panel_300 (Subscriber) Pub-Var 29 |
+| 15 | Panel_301LH (Publisher) Pub-Var 38 -> ConnectionInputs Message_15 TxPDO | ConnectionOutputs Message_15 RxPDO -> Panel_301LH (Subscriber) Sub-Var 46 |
+| 16 | Panel_301RH (Publisher) Pub-Var 31 -> ConnectionInputs Message_16 TxPDO | ConnectionOutputs Message_16 RxPDO -> Panel_301RH (Subscriber) Sub-Var 12 |
+| 17 | ConnectionInputs Message_17 TxPDO -> Panel_PGS (Publisher) Pub-Var 62 | ConnectionOutputs Message_17 RxPDO -> Panel_PGS (Subscriber) Sub-Var 20 |
+
+### Generated Artifacts
+
+- Regenerated MorpheePanel_PowerSupplyControl.tmc and updated TmcHash in Test/Test.tsproj.
+- Project CRC/hash updates in generated XML are expected side effects.
+
+### Validation Focus
+
+- Verify TwinSAFE FSoE links are healthy after download.
+- Verify EAP pub/sub data updates bidirectionally for Message_14 to Message_17.
+- Verify no watchdog or communication-acknowledgement faults remain active.
+
 ## 1. Purpose
 
 The project provides a single PLC runtime that:
