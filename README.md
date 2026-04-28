@@ -396,6 +396,36 @@ That symptom usually points to state-latch, configuration, direction, or device-
 - whether voltage/current latches were reset correctly,
 - whether current commands resume after the one-time voltage prerequisite.
 
+### 10.5 FSoE master-slave unknown command in DATA state and watchdog faults
+
+Observed error example (one case):
+
+- Term 7 (EL6910): (0x2082) The 3. connection has received an unknown FSoE-Cmd in state DATA.
+- Intermittent watchdog faults at the same time.
+
+Scope:
+
+- This can affect master-slave safety communications across multiple FSoE links, not only Term 7.
+- Bad commands or watchdog loss can force the CX8110 into fail-safe behavior.
+
+Likely cause in this project context:
+
+- EAP traffic uses UDP and is sensitive to network noise and congestion.
+- When EAP traffic shares a busy/noisy switch segment, packet quality/timing can degrade and TwinSAFE/FSoE communication can become unstable.
+
+Recommended fix (validated during commissioning):
+
+1. Keep EAP devices on their own dedicated switch segment.
+2. Avoid mixing unrelated high-traffic or noisy devices on the same switch path.
+3. Retest TwinSAFE link health and watchdog status after isolating the network path.
+4. If fail-safe was triggered on the CX8110, perform a reset by cycling power.
+
+Expected result:
+
+- Unknown FSoE-Cmd DATA-state errors clear across affected links.
+- Watchdog faults stop recurring under normal load.
+- CX8110 remains in normal operation without repeated fail-safe resets.
+
 ## 11. Current Version Notes
 
 ### March 30-31, 2026
