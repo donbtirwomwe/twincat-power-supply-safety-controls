@@ -20,3 +20,5 @@
 *.tpzip
 *.tfzip
 *.tszip
+
+.vs/
