@@ -88,7 +88,7 @@ ELSE
   GVL.SystemState := 0; // Normal state, all clear
 END_IF;
 
-// Ramp scale: Red = 30s ramp immediately; Orange = 3min hold then 30s ramp
+// Ramp scale: Red = 30s ramp immediately; Orange = ORANGESTOPTIME hold then 30s ramp
 IF anyEStop THEN
   // E-Stop: instant off, reset all ramp state
   GVL.SystemRampScale := 0.0;
@@ -110,7 +110,7 @@ ELSIF anyRedStop THEN
     GVL.SystemRampScale := 1.0 - (DWORD_TO_REAL(elapsed_ms) / 30000.0);
   END_IF;
 ELSIF anyOrangeStop THEN
-  // Orange Stop: hold 3 minutes, then 30s ramp-down
+  // Orange Stop: hold ORANGESTOPTIME, then 30s ramp-down
   RedStopInProgress := FALSE;
   IF NOT OrangeStopInProgress THEN
     OrangeStopStartTime := currentTime;
@@ -118,7 +118,7 @@ ELSIF anyOrangeStop THEN
     OrangeRampInProgress := FALSE;
   END_IF;
   elapsed_ms := TIME_TO_DWORD(currentTime) - TIME_TO_DWORD(OrangeStopStartTime);
-  IF elapsed_ms < 180000 THEN
+  IF elapsed_ms < TIME_TO_DWORD(GVL_Constant.ORANGESTOPTIME) THEN
     GVL.SystemRampScale := 1.0; // Hold period - no ramp yet
   ELSE
     IF NOT OrangeRampInProgress THEN

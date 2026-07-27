@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.13">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
   <GVL Name="GVL" Id="{f20f1905-5880-4192-9280-dc27597430f4}">
     <Declaration><![CDATA[VAR_GLOBAL
     AdlOn: ARRAY[0..19] OF BOOL;          (** Active dummy load control status: 0 = off/not supported, 1 = on **)
@@ -26,7 +26,7 @@
     DeviceSystemFlags: ARRAY[0..19] OF UINT;(** Device status bits **)
     Direction: ARRAY[0..19] OF BOOL;      (** Direction control **)
     Eeper: ARRAY[0..19] OF BOOL;          (** EEPROM data access error: 0 = normal, 1 = error **)
- 	 EL2809_InputFlags: ARRAY[0..2] OF WORD;     (** 3 16-bit flags for EL2809 channels **)
+ 	EL2809_InputFlags: ARRAY[0..2] OF WORD;     (** 3 16-bit flags for EL2809 channels **)
     EL2798_InputFlags: BYTE;              (** 8-bit flags for EL2798 channels **)
     EL2809_Output AT %Q*: ARRAY[0..3,0..15] OF BOOL;  (** 16-channel output for EL2809 **)
     EL2798_Output AT %Q*: ARRAY[0..7] OF BOOL;   (** 8-channel output for EL2798 **)
@@ -34,10 +34,10 @@
     EL3174_Channel2_Value: INT;           (** Raw analog value from EL3174 channel 2, 0-10V **)
     EL3174_Channel3_Value: INT;           (** Raw analog value from EL3174 channel 3, 0-10V **)
     EL3174_Channel4_Value: INT;           (** Raw analog value from EL3174 channel 4, 0-10V **)
-    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >2.5V **)
-    EL3174_Channel2_Alarm: BOOL;          (** Alarm for channel 2, >2.5V, optional **)
-    EL3174_Channel3_Alarm: BOOL;          (** Alarm for channel 3, >2.5V, optional **)
-    EL3174_Channel4_Alarm: BOOL;          (** Alarm for channel 4, >2.5V, optional **)
+    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >5V **)
+    EL3174_Channel2_Alarm: BOOL;          (** Alarm for channel 2, >5V, optional **)
+    EL3174_Channel3_Alarm: BOOL;          (** Alarm for channel 3, >5V, optional **)
+    EL3174_Channel4_Alarm: BOOL;          (** Alarm for channel 4, >5V, optional **)
     EStop: ARRAY[0..19] OF BOOL;          (** Emergency stop per device **)
     EthercatAlive: BOOL;                  (** EtherCAT communication status **)
     EthercatAliveFromMaster: BOOL;        (** EtherCAT master status **)

@@ -4,6 +4,11 @@ TwinCAT 3 PLC project for the Honda PTF commissioning system. The solution manag
 
 This README is intended to be both a commissioning manual and a developer maintenance guide for the current project state.
 
+> **Note (2026-07-21):** Active commissioning tree with the Morphee **edge-aged heartbeat / crash gate** is documented in:
+> `../060226/README.md` (Recent Updates 2026-07-21, §5.1 system flags, §7.1, §10.5).
+> Morphee side: `PTF1_Morphee/bench/components/HARDWARE/307/README.md`.
+> Summary: `NumericInput[1]` bit2 is a **WATCHDOG toggle**, not a static level; PLC ages edges (~3 s) and sets `MorpheeWatchdogFault` to clamp all OutputOn/OperationOn if Morphee freezes or crashes.
+
 ## Recent Updates (2026-04-28)
 
 ### TwinSAFE / FSoE

@@ -39,6 +39,38 @@
 ### Local IDE Metadata
 - .vs/Test/v15/.suo changed (local Visual Studio user metadata).
 
+## EtherCAT Terminal I/O Usage
+
+### EL2798 (8-Channel Digital Output)
+- **Location**: Term 52 (EL2904) - Module 1 (FSOES)
+- **Input Source**: `GVL.NumericInput[6]` (8-bit flag register from EtherCAT)
+- **Mapping**: Each bit controls one output channel
+  - GVL.EL2798_InputFlags: BYTE (receives flags from NumericInput[6])
+  - FOR i := 0 TO 7:
+    - GVL.EL2798_Output[i] := bit i of EL2798_InputFlags
+- **Purpose**: 8-channel discrete on/off control
+- **Data Flow**: EtherCAT Input → NumericInput[6] → EL2798_InputFlags → EL2798_Output[0..7]
+
+### EL3174 (4-Channel Analog Input, ±10V)
+- **Location**: Term 15 (EL3174)
+- **Input Channels**: 4 differential analog inputs (0-10V range)
+- **Raw Values**: Mapped to GVL as INT (16-bit)
+  - GVL.EL3174_Channel1_Value AT %I*
+  - GVL.EL3174_Channel2_Value
+  - GVL.EL3174_Channel3_Value
+  - GVL.EL3174_Channel4_Value
+- **Alarm Detection**: Each channel compared against 5V threshold
+  - Threshold formula: 5V = (5.0 * 10) / 32768 (16-bit scaling)
+  - Channel 1: **Yellow alarm** (from GT, triggers when > 5V)
+  - Channels 2-4: Optional alarms (when > 5V)
+  - GVL.EL3174_Channel1_Alarm through Channel4_Alarm (BOOL)
+- **Output Mapping**: Alarm flags packed into GVL.NumericOutput[101]
+  - Bit 6: Channel 1 Alarm (Yellow - from GT)
+  - Bit 7: Channel 2 Alarm (Optional)
+  - Bit 8: Channel 3 Alarm (Optional)
+  - Bit 9: Channel 4 Alarm (Optional)
+- **Data Flow**: EtherCAT Analog Input → Raw INT Values → Threshold Comparison → Alarm Flags → NumericOutput[101]
+
 ## Validation Notes
 - Most CRC/hash and generated XML/TMC diffs are expected side effects from safety and mapping edits.
 - Recommended post-download checks:

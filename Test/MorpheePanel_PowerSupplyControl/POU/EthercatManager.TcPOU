@@ -55,6 +55,7 @@ END_VAR
 (*      - Bit 1 (16#0002): GVL.EthercatAliveFromMaster (EtherCAT master status) *)
 (*      - Bit 2 (16#0004): GVL.RemoteMasterAlive (Remote master status) *)
 (*      - Bit 8 (16#0100): Manual BIC reset request (force OPERATION OFF->ON sequence) *)
+(*      - Bit 10 (16#0400): Manual BIC reset request 2 (alternative trigger) *)
 (*      - Other bits 3-15: Unallocated (reserved for future flags) *)
 (*   2: Morphee Initialization Signal (DWORD to UINT, processed in UpdateOutputs) *)
 (*      - Values 1-5: Initialization cycle *)
@@ -139,15 +140,17 @@ END_VAR
 (* 100: systemAlarms (DWORD, system-wide alarms) *)
 (* 101: System Flags (WORD) *)
 (*   - Bit 0: GVL.SystemFlags *)
-(*   - Bit 1: RefreshTableRequired *)
+(*   - Bit 1: Reserved *)
 (*   - Bit 2: GVL.EthercatAliveFromMaster *)
 (*   - Bit 3: GVL.RemoteMasterAlive *)
 (*   - Bit 4: watchDog (toggled per cycle) *)
 (*   - Bit 5: DataRefreshRequired *)
-(*   - Bit 6: EL3174_Channel1_Alarm *)
-(*   - Bit 7: EL3174_Channel2_Alarm *)
-(*   - Bit 8: EL3174_Channel3_Alarm *)
-(*   - Bit 9: EL3174_Channel4_Alarm *)
+(*   - Bit 6: IsInitPhase *)
+(*   - Bit 7: EL3174_Channel1_Alarm *)
+(*   - Bit 8: EL3174_Channel2_Alarm *)
+(*   - Bit 9: EL3174_Channel3_Alarm *)
+(*   - Bit 10: EL3174_Channel4_Alarm *)
+(*   - Bit 11: Reset pressed feedback (Safety_Tags.Reset) *)
 (* 102: GroupMaster[0] (high 16 bits), GroupMaster[1] (low 16 bits) *)
 (* 103: GroupMaster[2] (high), GroupMaster[3] (low) *)
 (* 104-107: Group absolute voltage limits (x100 V) for operator UI bounds *)
@@ -204,12 +207,10 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   END_IF;
 
   (* BIDIRECTIONAL_CONFIG (0x0140) is polled once during init in DeviceManager.
-     Do not send it via WriteDLC here. *)
+     Do not send it via WriteDLC here, and do not drop the caller's real command. *)
   IF (commandCode = 16#0000 OR commandCode = 16#0020 OR commandCode = 16#0030 OR commandCode = 16#0120 OR commandCode = 16#0130)
       AND devIdx >= 4 AND CanCtrlConfigured[devIdx] AND NOT BidirAutoConfigured[devIdx] THEN
     BidirAutoConfigured[devIdx] := TRUE;
-    ApplyCommands := FALSE;
-    RETURN;
   END_IF;
 
   (* DPU manual requires >=50 ms spacing between commands. Apply per-device write pacing globally for safety. *)
@@ -360,6 +361,9 @@ END_VAR]]></Declaration>
 (**      - Bit 0 (16#0001): GVL.SystemFlags (sets maintenanceMode) **)
 (**      - Bit 1 (16#0002): GVL.EthercatAliveFromMaster **)
 (**      - Bit 2 (16#0004): GVL.RemoteMasterAlive **)
+(**      - Bit 8 (16#0100): Manual BIC reset request **)
+(**      - Bit 9 (16#0200): Morphee individual BIC control request **)
+(**      - Bit 10 (16#0400): Manual BIC reset request 2 (alternative trigger) **)
 (**   2: Morphee Initialization Signal **)
 (**      - Used in UpdateOutputs, not processed here **)
 (**   3-4: Reserved **)
@@ -412,7 +416,8 @@ GVL.SystemFlags := TO_BYTE(systemFlags AND 16#0001);
 GVL.EthercatAliveFromMaster := (systemFlags AND 16#0002) <> 0;
 GVL.RemoteMasterAlive := (systemFlags AND 16#0004) <> 0;
 maintenanceMode := (systemFlags AND 16#0001) <> 0; (** Maintenance mode flag **)
-resetRequest := (systemFlags AND 16#0100) <> 0; (** Bit 8: Manual BIC reset request (OFF->ON sequence) **)
+resetRequest := Safety_Tags.iReset; (** Reset request from facility safety reset input **)
+Safety_Tags.Reset := resetRequest;
 morpheeUseIndividualBicControl := (systemFlags AND 16#0200) <> 0; (** Bit 9: Morphee individual BIC mode request **)
 IF NOT GVL.UseTempGroupInputs THEN
   GVL.UseIndividualBicControl := FALSE; (** Force grouped live control path so group setpoints always drive BICs **)
@@ -420,10 +425,15 @@ END_IF;
 
 IF resetRequest AND NOT FaultResetRequestPrev THEN
   FOR devIdx := 4 TO 19 DO
-    FaultResetState[devIdx] := 1;
-    FaultResetCounter[devIdx] := 0;
-    CanCtrlConfigured[devIdx] := FALSE;
-    BidirAutoConfigured[devIdx] := FALSE;
+    IF GVL.RecoveryPending[devIdx] OR (GVL.FaultLevel[devIdx] > 0) OR GVL.CommFault[devIdx] THEN
+      FaultResetState[devIdx] := 1;
+      FaultResetCounter[devIdx] := 0;
+      CanCtrlConfigured[devIdx] := FALSE;
+      BidirAutoConfigured[devIdx] := FALSE;
+    ELSE
+      FaultResetState[devIdx] := 0;
+      FaultResetCounter[devIdx] := 0;
+    END_IF;
   END_FOR;
 END_IF;
 FaultResetRequestPrev := resetRequest;
@@ -449,26 +459,38 @@ FOR groupIdx := 0 TO 3 DO
     groupInputBaseIdx := groupInputBaseCanonicalIdx; (* Fallback to canonical mapping when config is invalid *)
   END_IF;
 
-  groupVoutConfigured := GVL.NumericInput[groupInputBaseIdx];
-  groupIoutConfigured := GVL.NumericInput[groupInputBaseIdx + 1];
-  groupFlagsConfigured := GVL.NumericInput[groupInputBaseIdx + 2];
-  groupVoutCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx];
-  groupIoutCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx + 1];
-  groupFlagsCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx + 2];
+  (* SetpointTest path: when UseTempGroupInputs is active, drive group decode from TempGroupInput
+     so Enable alone works in grouped BIC mode (not only with UseIndividualBicControl). *)
+  IF GVL.UseTempGroupInputs THEN
+    tempBase := groupIdx * 7;
+    groupVoutConfigured := GVL.TempGroupInput[tempBase];
+    groupIoutConfigured := GVL.TempGroupInput[tempBase + 1];
+    groupFlagsConfigured := GVL.TempGroupInput[tempBase + 2];
+    groupVoutCanonical := groupVoutConfigured;
+    groupIoutCanonical := groupIoutConfigured;
+    groupFlagsCanonical := groupFlagsConfigured;
+  ELSE
+    groupVoutConfigured := GVL.NumericInput[groupInputBaseIdx];
+    groupIoutConfigured := GVL.NumericInput[groupInputBaseIdx + 1];
+    groupFlagsConfigured := GVL.NumericInput[groupInputBaseIdx + 2];
+    groupVoutCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx];
+    groupIoutCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx + 1];
+    groupFlagsCanonical := GVL.NumericInput[groupInputBaseCanonicalIdx + 2];
 
-  cfgHasControlBits := (groupFlagsConfigured AND 16#001F) <> 0;
-  canHasControlBits := (groupFlagsCanonical AND 16#001F) <> 0;
-  cfgHasSetpoints := (groupVoutConfigured <> 0) OR (groupIoutConfigured <> 0);
-  canHasSetpoints := (groupVoutCanonical <> 0) OR (groupIoutCanonical <> 0);
+    cfgHasControlBits := (groupFlagsConfigured AND 16#001F) <> 0;
+    canHasControlBits := (groupFlagsCanonical AND 16#001F) <> 0;
+    cfgHasSetpoints := (groupVoutConfigured <> 0) OR (groupIoutConfigured <> 0);
+    canHasSetpoints := (groupVoutCanonical <> 0) OR (groupIoutCanonical <> 0);
 
-  IF groupInputBaseIdx <> groupInputBaseCanonicalIdx THEN
-    IF ((NOT cfgHasControlBits) AND canHasControlBits) OR
-       ((NOT cfgHasSetpoints) AND canHasSetpoints) THEN
-      (* If configured block is effectively empty while canonical block is active, use canonical for this cycle. *)
-      groupInputBaseIdx := groupInputBaseCanonicalIdx;
-      groupVoutConfigured := groupVoutCanonical;
-      groupIoutConfigured := groupIoutCanonical;
-      groupFlagsConfigured := groupFlagsCanonical;
+    IF groupInputBaseIdx <> groupInputBaseCanonicalIdx THEN
+      IF ((NOT cfgHasControlBits) AND canHasControlBits) OR
+         ((NOT cfgHasSetpoints) AND canHasSetpoints) THEN
+        (* If configured block is effectively empty while canonical block is active, use canonical for this cycle. *)
+        groupInputBaseIdx := groupInputBaseCanonicalIdx;
+        groupVoutConfigured := groupVoutCanonical;
+        groupIoutConfigured := groupIoutCanonical;
+        groupFlagsConfigured := groupFlagsCanonical;
+      END_IF;
     END_IF;
   END_IF;
 
@@ -728,17 +750,11 @@ FOR devIdx := 0 TO 19 DO
         END_IF;
     END_CASE;
   ELSE
-    (** Queue direction command only when requested direction changes.
-        Avoid retrying every cycle on feedback mismatch, which can starve later commands under 50 ms pacing. **)
-    forceIoutRefresh := FALSE;
-    IF devIdx >= 4 AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
-      nowTimeForRefresh := TIME();
-      IF THIS^.LastDirectionCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastDirectionCommandSentTime[devIdx]) >= T#500MS THEN
-        forceIoutRefresh := TRUE;
-      END_IF;
-    END_IF;
+    (** Queue direction only when requested direction changes.
+        Do not periodic-refresh direction: that stole the write pacing slot on every BIC
+        with OutputOn+OperationOn and delayed/starved VOUT/IOUT for all devices. *)
     directionChangedThisCycle := (GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx]);
-    IF directionChangedThisCycle OR forceIoutRefresh THEN
+    IF directionChangedThisCycle OR (THIS^.LastDirectionCommandSentTime[devIdx] = T#0MS AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx]) THEN
       IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
         THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
         THIS^.LastDirectionCommandSentTime[devIdx] := TIME();
@@ -1280,6 +1296,7 @@ VAR
   aggRedStop : BOOL;                      (* Aggregated red-stop status for group master output *)
   aggEStop : BOOL;                        (* Aggregated e-stop status for group master output *)
   aggTempFaultHigh : BOOL;                (* Aggregated high-temperature flag for group master output *)
+  publishGroupAggregate : BOOL;           (* TRUE when grouped mode should publish aggregate feedback for each group member slot *)
  
 END_VAR]]></Declaration>
       <Implementation>
@@ -1583,7 +1600,8 @@ ELSE
                 ELSE groupIdx := -1;
               END_CASE;
 
-              IF groupIdx >= 0 AND groupIdx <= 3 AND GVL.GroupMaster[groupIdx] = devIdx THEN
+              publishGroupAggregate := (NOT maintenanceMode) AND (NOT GVL.UseIndividualBicControl);
+              IF groupIdx >= 0 AND groupIdx <= 3 AND (publishGroupAggregate OR GVL.GroupMaster[groupIdx] = devIdx) THEN
                 groupBase := (groupIdx * 4) + 4;
                 groupAggVinRaw := 0;
                 groupAggVoutRaw := 0;
@@ -1732,7 +1750,8 @@ ELSE
                 ELSE groupIdx := -1;
               END_CASE;
 
-              IF groupIdx >= 0 AND groupIdx <= 3 AND GVL.GroupMaster[groupIdx] = devIdx THEN
+              publishGroupAggregate := (NOT maintenanceMode) AND (NOT GVL.UseIndividualBicControl);
+              IF groupIdx >= 0 AND groupIdx <= 3 AND (publishGroupAggregate OR GVL.GroupMaster[groupIdx] = devIdx) THEN
                 groupBase := (groupIdx * 4) + 4;
                 groupFaultStatusAgg := 0;
                 aggDirection := FALSE;
@@ -1794,10 +1813,10 @@ ELSE
     END_FOR;
 
     GVL.NumericOutput[100] := systemAlarms;
-	 EL3174_Channel1_Alarm:=  EL3174_Channel1_value>(2.5*10)/32768;
- 	 EL3174_Channel2_Alarm:=  EL3174_Channel2_value>(2.5*10)/32768;
- 	 EL3174_Channel3_Alarm:=  EL3174_Channel3_value>(2.5*10)/32768;
-	 EL3174_Channel4_Alarm:=  EL3174_Channel4_value>(2.5*10)/32768;
+   EL3174_Channel1_Alarm:=  EL3174_Channel1_value>(5.0*10)/32768;
+   EL3174_Channel2_Alarm:=  EL3174_Channel2_value>(5.0*10)/32768;
+   EL3174_Channel3_Alarm:=  EL3174_Channel3_value>(5.0*10)/32768;
+   EL3174_Channel4_Alarm:=  EL3174_Channel4_value>(5.0*10)/32768;
     GVL.NumericOutput[101] := SHL(TO_DWORD(GVL.SystemFlags), 0) OR 
                               SHL(TO_DWORD(GVL.EthercatAliveFromMaster), 2) OR 
                               SHL(TO_DWORD(GVL.RemoteMasterAlive), 3) OR 
@@ -1807,7 +1826,8 @@ ELSE
 							  SHL(TO_DWORD(EL3174_Channel1_Alarm), 7) OR 
 							  SHL(TO_DWORD(EL3174_Channel2_Alarm), 8) OR 
 							  SHL(TO_DWORD(EL3174_Channel3_Alarm), 9) OR 
-							  SHL(TO_DWORD(EL3174_Channel4_Alarm), 10);
+							  SHL(TO_DWORD(EL3174_Channel4_Alarm), 10) OR
+							  SHL(TO_DWORD(Safety_Tags.Reset), 11);
     GVL.NumericOutput[102] := SHL(TO_DWORD(GVL.GroupMaster[0]), 16) OR TO_DWORD(GVL.GroupMaster[1]);
     GVL.NumericOutput[103] := SHL(TO_DWORD(GVL.GroupMaster[2]), 16) OR TO_DWORD(GVL.GroupMaster[3]);
 
