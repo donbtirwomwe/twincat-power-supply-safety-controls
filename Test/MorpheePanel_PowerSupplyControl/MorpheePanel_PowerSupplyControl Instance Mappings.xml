@@ -1,0 +1,922 @@
+<?xml version="1.0"?>
+<VarLinks>
+	<OwnerA Name="InputDst" Prefix="TIPC^MorpheePanel_PowerSupplyControl^MorpheePanel_PowerSupplyControl Instance" Type="1">
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 15 (EL3174)">
+			<Link VarA="GVL.EL3174_Channel1_Value" GrpA="PlcTask Inputs" TypeA="INT" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="AI Standard Channel 1^Value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 8 (EL1819)">
+			<Link VarA="GVL.TemperatureFaultHigh[0]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[10]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[1]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[2]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[3]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[4]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[5]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[6]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[7]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[8]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[9]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 9 (EL1819)">
+			<Link VarA="GVL.TemperatureFaultHigh[11]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[12]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[13]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[14]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[15]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[16]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[17]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[18]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+			<Link VarA="GVL.TemperatureFaultHigh[19]" GrpA="PlcTask Inputs" TypeA="BOOL" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 10 (EtherCAT Slave)">
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_0" Size="16"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_1" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_10" Size="16" OffsA="160"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_100" Size="16" OffsA="1600"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_101" Size="16" OffsA="1616"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_102" Size="16" OffsA="1632"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_103" Size="16" OffsA="1648"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_104" Size="16" OffsA="1664"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_105" Size="16" OffsA="1680"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_106" Size="16" OffsA="1696"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_107" Size="16" OffsA="1712"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_108" Size="16" OffsA="1728"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_109" Size="16" OffsA="1744"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_11" Size="16" OffsA="176"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_110" Size="16" OffsA="1760"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_111" Size="16" OffsA="1776"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_112" Size="16" OffsA="1792"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_113" Size="16" OffsA="1808"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_114" Size="16" OffsA="1824"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_115" Size="16" OffsA="1840"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_116" Size="16" OffsA="1856"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_117" Size="16" OffsA="1872"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_118" Size="16" OffsA="1888"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_119" Size="16" OffsA="1904"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_12" Size="16" OffsA="192"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_120" Size="16" OffsA="1920"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_121" Size="16" OffsA="1936"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_122" Size="16" OffsA="1952"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_123" Size="16" OffsA="1968"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_124" Size="16" OffsA="1984"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_125" Size="16" OffsA="2000"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_126" Size="16" OffsA="2016"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_127" Size="16" OffsA="2032"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_128" Size="16" OffsA="2048"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_129" Size="16" OffsA="2064"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_13" Size="16" OffsA="208"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_130" Size="16" OffsA="2080"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_131" Size="16" OffsA="2096"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_132" Size="16" OffsA="2112"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_133" Size="16" OffsA="2128"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_134" Size="16" OffsA="2144"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_135" Size="16" OffsA="2160"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_136" Size="16" OffsA="2176"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_137" Size="16" OffsA="2192"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_138" Size="16" OffsA="2208"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_139" Size="16" OffsA="2224"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_14" Size="16" OffsA="224"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_140" Size="16" OffsA="2240"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_141" Size="16" OffsA="2256"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_142" Size="16" OffsA="2272"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_143" Size="16" OffsA="2288"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_144" Size="16" OffsA="2304"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_145" Size="16" OffsA="2320"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_146" Size="16" OffsA="2336"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_147" Size="16" OffsA="2352"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_148" Size="16" OffsA="2368"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_149" Size="16" OffsA="2384"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_15" Size="16" OffsA="240"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_150" Size="16" OffsA="2400"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_151" Size="16" OffsA="2416"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_152" Size="16" OffsA="2432"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_153" Size="16" OffsA="2448"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_154" Size="16" OffsA="2464"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_155" Size="16" OffsA="2480"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_156" Size="16" OffsA="2496"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_157" Size="16" OffsA="2512"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_158" Size="16" OffsA="2528"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_159" Size="16" OffsA="2544"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_16" Size="16" OffsA="256"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_160" Size="16" OffsA="2560"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_161" Size="16" OffsA="2576"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_162" Size="16" OffsA="2592"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_163" Size="16" OffsA="2608"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_164" Size="16" OffsA="2624"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_165" Size="16" OffsA="2640"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_166" Size="16" OffsA="2656"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_167" Size="16" OffsA="2672"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_168" Size="16" OffsA="2688"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_169" Size="16" OffsA="2704"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_17" Size="16" OffsA="272"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_170" Size="16" OffsA="2720"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_171" Size="16" OffsA="2736"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_172" Size="16" OffsA="2752"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_173" Size="16" OffsA="2768"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_174" Size="16" OffsA="2784"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_175" Size="16" OffsA="2800"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_176" Size="16" OffsA="2816"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_177" Size="16" OffsA="2832"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_178" Size="16" OffsA="2848"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_179" Size="16" OffsA="2864"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_18" Size="16" OffsA="288"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_180" Size="16" OffsA="2880"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_181" Size="16" OffsA="2896"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_182" Size="16" OffsA="2912"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_183" Size="16" OffsA="2928"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_184" Size="16" OffsA="2944"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_185" Size="16" OffsA="2960"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_186" Size="16" OffsA="2976"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_187" Size="16" OffsA="2992"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_188" Size="16" OffsA="3008"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_189" Size="16" OffsA="3024"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_19" Size="16" OffsA="304"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_190" Size="16" OffsA="3040"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_191" Size="16" OffsA="3056"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_192" Size="16" OffsA="3072"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_193" Size="16" OffsA="3088"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_194" Size="16" OffsA="3104"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_195" Size="16" OffsA="3120"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_196" Size="16" OffsA="3136"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_197" Size="16" OffsA="3152"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_198" Size="16" OffsA="3168"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_199" Size="16" OffsA="3184"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_2" Size="16" OffsA="32"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_20" Size="16" OffsA="320"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_200" Size="16" OffsA="3200"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_201" Size="16" OffsA="3216"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_202" Size="16" OffsA="3232"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_203" Size="16" OffsA="3248"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_204" Size="16" OffsA="3264"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_205" Size="16" OffsA="3280"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_206" Size="16" OffsA="3296"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_207" Size="16" OffsA="3312"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_208" Size="16" OffsA="3328"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_209" Size="16" OffsA="3344"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_21" Size="16" OffsA="336"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_210" Size="16" OffsA="3360"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_211" Size="16" OffsA="3376"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_212" Size="16" OffsA="3392"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_213" Size="16" OffsA="3408"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_214" Size="16" OffsA="3424"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_215" Size="16" OffsA="3440"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_216" Size="16" OffsA="3456"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_217" Size="16" OffsA="3472"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_218" Size="16" OffsA="3488"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_219" Size="16" OffsA="3504"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_22" Size="16" OffsA="352"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_220" Size="16" OffsA="3520"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_221" Size="16" OffsA="3536"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_222" Size="16" OffsA="3552"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_223" Size="16" OffsA="3568"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_224" Size="16" OffsA="3584"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_225" Size="16" OffsA="3600"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_226" Size="16" OffsA="3616"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_227" Size="16" OffsA="3632"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_228" Size="16" OffsA="3648"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_229" Size="16" OffsA="3664"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_23" Size="16" OffsA="368"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_230" Size="16" OffsA="3680"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_231" Size="16" OffsA="3696"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_232" Size="16" OffsA="3712"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_233" Size="16" OffsA="3728"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_234" Size="16" OffsA="3744"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_235" Size="16" OffsA="3760"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_236" Size="16" OffsA="3776"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_237" Size="16" OffsA="3792"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_238" Size="16" OffsA="3808"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_239" Size="16" OffsA="3824"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_24" Size="16" OffsA="384"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_25" Size="16" OffsA="400"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_26" Size="16" OffsA="416"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_27" Size="16" OffsA="432"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_28" Size="16" OffsA="448"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_29" Size="16" OffsA="464"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_3" Size="16" OffsA="48"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_30" Size="16" OffsA="480"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_31" Size="16" OffsA="496"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_32" Size="16" OffsA="512"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_33" Size="16" OffsA="528"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_34" Size="16" OffsA="544"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_35" Size="16" OffsA="560"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_36" Size="16" OffsA="576"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_37" Size="16" OffsA="592"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_38" Size="16" OffsA="608"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_39" Size="16" OffsA="624"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_4" Size="16" OffsA="64"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_40" Size="16" OffsA="640"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_41" Size="16" OffsA="656"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_42" Size="16" OffsA="672"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_43" Size="16" OffsA="688"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_44" Size="16" OffsA="704"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_45" Size="16" OffsA="720"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_46" Size="16" OffsA="736"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_47" Size="16" OffsA="752"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_48" Size="16" OffsA="768"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_49" Size="16" OffsA="784"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_5" Size="16" OffsA="80"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_50" Size="16" OffsA="800"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_51" Size="16" OffsA="816"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_52" Size="16" OffsA="832"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_53" Size="16" OffsA="848"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_54" Size="16" OffsA="864"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_55" Size="16" OffsA="880"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_56" Size="16" OffsA="896"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_57" Size="16" OffsA="912"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_58" Size="16" OffsA="928"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_59" Size="16" OffsA="944"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_6" Size="16" OffsA="96"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_60" Size="16" OffsA="960"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_61" Size="16" OffsA="976"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_62" Size="16" OffsA="992"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_63" Size="16" OffsA="1008"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_64" Size="16" OffsA="1024"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_65" Size="16" OffsA="1040"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_66" Size="16" OffsA="1056"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_67" Size="16" OffsA="1072"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_68" Size="16" OffsA="1088"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_69" Size="16" OffsA="1104"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_7" Size="16" OffsA="112"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_70" Size="16" OffsA="1120"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_71" Size="16" OffsA="1136"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_72" Size="16" OffsA="1152"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_73" Size="16" OffsA="1168"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_74" Size="16" OffsA="1184"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_75" Size="16" OffsA="1200"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_76" Size="16" OffsA="1216"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_77" Size="16" OffsA="1232"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_78" Size="16" OffsA="1248"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_79" Size="16" OffsA="1264"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_8" Size="16" OffsA="128"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_80" Size="16" OffsA="1280"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_81" Size="16" OffsA="1296"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_82" Size="16" OffsA="1312"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_83" Size="16" OffsA="1328"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_84" Size="16" OffsA="1344"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_85" Size="16" OffsA="1360"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_86" Size="16" OffsA="1376"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_87" Size="16" OffsA="1392"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_88" Size="16" OffsA="1408"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_89" Size="16" OffsA="1424"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_9" Size="16" OffsA="144"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_90" Size="16" OffsA="1440"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_91" Size="16" OffsA="1456"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_92" Size="16" OffsA="1472"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_93" Size="16" OffsA="1488"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_94" Size="16" OffsA="1504"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_95" Size="16" OffsA="1520"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_96" Size="16" OffsA="1536"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_97" Size="16" OffsA="1552"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_98" Size="16" OffsA="1568"/>
+			<Link VarA="GVL.NumericInput" GrpA="PlcTask Inputs" TypeA="ARRAY [0..239] OF WORD" InOutA="0" GuidA="{1BD612FA-F091-4851-C68A-520A5780CC51}" VarB="Inputs^NumericInput_99" Size="16" OffsA="1584"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID3">
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id3^Inputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[0]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID5">
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id5^Inputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[1]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID6">
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id6^Inputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[2]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID7">
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id7^Inputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus1_Devices_Rx[3]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID0">
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id0^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[0]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID1">
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id1^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[1]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID2">
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id2^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[2]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID3">
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id3^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[3]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID4">
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id4^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[4]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID5">
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id5^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[5]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID6">
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id6^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[6]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID7">
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id7^Inputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus2_Devices_Rx[7]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID0">
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id0^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[0]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id0^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID1">
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id1^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[1]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id1^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID2">
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id2^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[2]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id2^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID3">
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id3^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[3]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id3^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID4">
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id4^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[4]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id4^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID5">
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id5^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[5]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id5^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID6">
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id6^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[6]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id6^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID7">
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Command" GrpA="PlcTask Inputs" TypeA="UINT" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ResponseSixBytes_id7^Inputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[0]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[1]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="8"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[2]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="16"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[3]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="24"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[4]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="32"/>
+			<Link VarA="GVL.Bus3_Devices_Rx[7]^Data[5]" GrpA="PlcTask Inputs" TypeA="BYTE" InOutA="0" ParentTypeA="RxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="ResponseSixBytes_id7^Inputs^data_6bytes" Size="8" OffsB="40"/>
+		</OwnerB>
+	</OwnerA>
+	<OwnerA Name="OutputSrc" Prefix="TIPC^MorpheePanel_PowerSupplyControl^MorpheePanel_PowerSupplyControl Instance" Type="2">
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 45 (EL1918)">
+			<Link VarA="Safety_Tags.Reset" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="StandardOutputs^Standard In Var 1" Size="1"/>
+			<Link VarA="Safety_Tags.Run" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="StandardOutputs^Standard In Var 9" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 48 (EK1100)^Term 50 (EL2809)">
+			<Link VarA="GVL.EL2809_Output[2,0]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,10]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,11]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,12]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,13]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,14]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,15]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,1]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,2]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,3]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,4]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,5]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,6]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,7]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,8]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[2,9]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 3 (EK1122)^Term 54 (EK1100)^Term 56 (EL2809)">
+			<Link VarA="GVL.EL2809_Output[1,0]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,10]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,11]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,12]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,13]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,14]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,15]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,1]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,2]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,3]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,4]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,5]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,6]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,7]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,8]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[1,9]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 11 (EL2809)">
+			<Link VarA="GVL.EL2809_Output[0,0]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,10]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,11]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,12]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,13]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,14]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,15]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,1]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,2]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,3]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,4]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,5]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,6]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,7]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,8]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+			<Link VarA="GVL.EL2809_Output[0,9]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 37 (EK1200)^Term 4 (EK1521)^Term 5 (EK1501)^Term 13 (EL2798)">
+			<Link VarA="GVL.EL2798_Output[0]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+			<Link VarA="GVL.EL2798_Output[1]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+			<Link VarA="GVL.EL2798_Output[2]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+			<Link VarA="GVL.EL2798_Output[3]" GrpA="PlcTask Outputs" TypeA="BOOL" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 10 (EtherCAT Slave)">
+			<Link VarA="GVL.NumericOutput[0]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_0" Size="16"/>
+			<Link VarA="GVL.NumericOutput[0]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_0" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[100]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_100" Size="16"/>
+			<Link VarA="GVL.NumericOutput[100]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_100" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[101]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_101" Size="16"/>
+			<Link VarA="GVL.NumericOutput[101]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_101" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[102]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_102" Size="16"/>
+			<Link VarA="GVL.NumericOutput[102]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_102" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[103]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_103" Size="16"/>
+			<Link VarA="GVL.NumericOutput[103]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_103" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[104]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_104" Size="16"/>
+			<Link VarA="GVL.NumericOutput[104]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_104" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[105]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_105" Size="16"/>
+			<Link VarA="GVL.NumericOutput[105]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_105" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[106]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_106" Size="16"/>
+			<Link VarA="GVL.NumericOutput[106]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_106" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[107]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_107" Size="16"/>
+			<Link VarA="GVL.NumericOutput[107]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_107" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[108]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_108" Size="16"/>
+			<Link VarA="GVL.NumericOutput[108]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_108" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[109]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_109" Size="16"/>
+			<Link VarA="GVL.NumericOutput[109]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_109" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[10]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_10" Size="16"/>
+			<Link VarA="GVL.NumericOutput[10]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_10" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[110]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_110" Size="16"/>
+			<Link VarA="GVL.NumericOutput[110]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_110" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[111]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_111" Size="16"/>
+			<Link VarA="GVL.NumericOutput[111]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_111" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[112]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_112" Size="16"/>
+			<Link VarA="GVL.NumericOutput[112]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_112" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[113]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_113" Size="16"/>
+			<Link VarA="GVL.NumericOutput[113]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_113" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[114]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_114" Size="16"/>
+			<Link VarA="GVL.NumericOutput[114]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_114" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[115]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_115" Size="16"/>
+			<Link VarA="GVL.NumericOutput[115]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_115" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[116]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_116" Size="16"/>
+			<Link VarA="GVL.NumericOutput[116]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_116" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[117]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_117" Size="16"/>
+			<Link VarA="GVL.NumericOutput[117]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_117" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[118]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_118" Size="16"/>
+			<Link VarA="GVL.NumericOutput[118]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_118" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[119]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_119" Size="16"/>
+			<Link VarA="GVL.NumericOutput[119]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_119" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[11]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_11" Size="16"/>
+			<Link VarA="GVL.NumericOutput[11]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_11" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[12]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_12" Size="16"/>
+			<Link VarA="GVL.NumericOutput[12]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_12" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[13]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_13" Size="16"/>
+			<Link VarA="GVL.NumericOutput[13]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_13" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[14]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_14" Size="16"/>
+			<Link VarA="GVL.NumericOutput[14]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_14" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[15]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_15" Size="16"/>
+			<Link VarA="GVL.NumericOutput[15]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_15" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[16]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_16" Size="16"/>
+			<Link VarA="GVL.NumericOutput[16]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_16" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[17]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_17" Size="16"/>
+			<Link VarA="GVL.NumericOutput[17]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_17" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[18]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_18" Size="16"/>
+			<Link VarA="GVL.NumericOutput[18]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_18" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[19]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_19" Size="16"/>
+			<Link VarA="GVL.NumericOutput[19]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_19" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[1]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_1" Size="16"/>
+			<Link VarA="GVL.NumericOutput[1]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_1" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[20]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_20" Size="16"/>
+			<Link VarA="GVL.NumericOutput[20]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_20" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[21]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_21" Size="16"/>
+			<Link VarA="GVL.NumericOutput[21]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_21" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[22]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_22" Size="16"/>
+			<Link VarA="GVL.NumericOutput[22]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_22" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[23]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_23" Size="16"/>
+			<Link VarA="GVL.NumericOutput[23]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_23" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[24]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_24" Size="16"/>
+			<Link VarA="GVL.NumericOutput[24]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_24" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[25]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_25" Size="16"/>
+			<Link VarA="GVL.NumericOutput[25]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_25" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[26]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_26" Size="16"/>
+			<Link VarA="GVL.NumericOutput[26]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_26" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[27]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_27" Size="16"/>
+			<Link VarA="GVL.NumericOutput[27]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_27" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[28]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_28" Size="16"/>
+			<Link VarA="GVL.NumericOutput[28]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_28" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[29]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_29" Size="16"/>
+			<Link VarA="GVL.NumericOutput[29]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_29" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[2]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_2" Size="16"/>
+			<Link VarA="GVL.NumericOutput[2]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_2" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[30]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_30" Size="16"/>
+			<Link VarA="GVL.NumericOutput[30]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_30" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[31]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_31" Size="16"/>
+			<Link VarA="GVL.NumericOutput[31]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_31" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[32]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_32" Size="16"/>
+			<Link VarA="GVL.NumericOutput[32]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_32" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[33]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_33" Size="16"/>
+			<Link VarA="GVL.NumericOutput[33]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_33" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[34]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_34" Size="16"/>
+			<Link VarA="GVL.NumericOutput[34]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_34" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[35]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_35" Size="16"/>
+			<Link VarA="GVL.NumericOutput[35]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_35" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[36]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_36" Size="16"/>
+			<Link VarA="GVL.NumericOutput[36]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_36" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[37]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_37" Size="16"/>
+			<Link VarA="GVL.NumericOutput[37]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_37" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[38]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_38" Size="16"/>
+			<Link VarA="GVL.NumericOutput[38]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_38" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[39]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_39" Size="16"/>
+			<Link VarA="GVL.NumericOutput[39]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_39" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[3]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_3" Size="16"/>
+			<Link VarA="GVL.NumericOutput[3]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_3" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[40]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_40" Size="16"/>
+			<Link VarA="GVL.NumericOutput[40]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_40" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[41]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_41" Size="16"/>
+			<Link VarA="GVL.NumericOutput[41]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_41" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[42]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_42" Size="16"/>
+			<Link VarA="GVL.NumericOutput[42]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_42" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[43]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_43" Size="16"/>
+			<Link VarA="GVL.NumericOutput[43]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_43" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[44]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_44" Size="16"/>
+			<Link VarA="GVL.NumericOutput[44]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_44" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[45]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_45" Size="16"/>
+			<Link VarA="GVL.NumericOutput[45]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_45" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[46]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_46" Size="16"/>
+			<Link VarA="GVL.NumericOutput[46]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_46" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[47]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_47" Size="16"/>
+			<Link VarA="GVL.NumericOutput[47]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_47" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[48]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_48" Size="16"/>
+			<Link VarA="GVL.NumericOutput[48]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_48" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[49]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_49" Size="16"/>
+			<Link VarA="GVL.NumericOutput[49]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_49" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[4]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_4" Size="16"/>
+			<Link VarA="GVL.NumericOutput[4]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_4" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[50]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_50" Size="16"/>
+			<Link VarA="GVL.NumericOutput[50]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_50" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[51]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_51" Size="16"/>
+			<Link VarA="GVL.NumericOutput[51]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_51" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[52]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_52" Size="16"/>
+			<Link VarA="GVL.NumericOutput[52]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_52" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[53]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_53" Size="16"/>
+			<Link VarA="GVL.NumericOutput[53]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_53" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[54]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_54" Size="16"/>
+			<Link VarA="GVL.NumericOutput[54]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_54" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[55]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_55" Size="16"/>
+			<Link VarA="GVL.NumericOutput[55]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_55" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[56]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_56" Size="16"/>
+			<Link VarA="GVL.NumericOutput[56]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_56" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[57]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_57" Size="16"/>
+			<Link VarA="GVL.NumericOutput[57]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_57" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[58]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_58" Size="16"/>
+			<Link VarA="GVL.NumericOutput[58]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_58" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[59]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_59" Size="16"/>
+			<Link VarA="GVL.NumericOutput[59]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_59" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[5]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_5" Size="16"/>
+			<Link VarA="GVL.NumericOutput[5]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_5" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[60]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_60" Size="16"/>
+			<Link VarA="GVL.NumericOutput[60]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_60" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[61]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_61" Size="16"/>
+			<Link VarA="GVL.NumericOutput[61]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_61" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[62]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_62" Size="16"/>
+			<Link VarA="GVL.NumericOutput[62]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_62" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[63]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_63" Size="16"/>
+			<Link VarA="GVL.NumericOutput[63]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_63" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[64]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_64" Size="16"/>
+			<Link VarA="GVL.NumericOutput[64]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_64" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[65]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_65" Size="16"/>
+			<Link VarA="GVL.NumericOutput[65]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_65" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[66]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_66" Size="16"/>
+			<Link VarA="GVL.NumericOutput[66]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_66" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[67]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_67" Size="16"/>
+			<Link VarA="GVL.NumericOutput[67]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_67" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[68]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_68" Size="16"/>
+			<Link VarA="GVL.NumericOutput[68]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_68" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[69]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_69" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[69]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_69" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[6]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_6" Size="16"/>
+			<Link VarA="GVL.NumericOutput[6]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_6" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[70]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_70" Size="16"/>
+			<Link VarA="GVL.NumericOutput[70]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_70" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[71]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_71" Size="16"/>
+			<Link VarA="GVL.NumericOutput[71]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_71" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[72]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_72" Size="16"/>
+			<Link VarA="GVL.NumericOutput[72]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_72" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[73]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_73" Size="16"/>
+			<Link VarA="GVL.NumericOutput[73]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_73" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[74]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_74" Size="16"/>
+			<Link VarA="GVL.NumericOutput[74]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_74" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[75]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_75" Size="16"/>
+			<Link VarA="GVL.NumericOutput[75]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_75" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[76]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_76" Size="16"/>
+			<Link VarA="GVL.NumericOutput[76]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_76" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[77]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_77" Size="16"/>
+			<Link VarA="GVL.NumericOutput[77]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_77" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[78]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_78" Size="16"/>
+			<Link VarA="GVL.NumericOutput[78]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_78" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[79]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_79" Size="16"/>
+			<Link VarA="GVL.NumericOutput[79]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_79" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[7]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_7" Size="16"/>
+			<Link VarA="GVL.NumericOutput[7]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_7" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[80]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_80" Size="16"/>
+			<Link VarA="GVL.NumericOutput[80]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_80" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[81]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_81" Size="16"/>
+			<Link VarA="GVL.NumericOutput[81]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_81" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[82]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_82" Size="16"/>
+			<Link VarA="GVL.NumericOutput[82]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_82" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[83]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_83" Size="16"/>
+			<Link VarA="GVL.NumericOutput[83]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_83" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[84]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_84" Size="16"/>
+			<Link VarA="GVL.NumericOutput[84]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_84" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[85]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_85" Size="16"/>
+			<Link VarA="GVL.NumericOutput[85]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_85" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[86]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_86" Size="16"/>
+			<Link VarA="GVL.NumericOutput[86]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_86" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[87]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_87" Size="16"/>
+			<Link VarA="GVL.NumericOutput[87]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_87" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[88]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_88" Size="16"/>
+			<Link VarA="GVL.NumericOutput[88]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_88" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[89]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_89" Size="16"/>
+			<Link VarA="GVL.NumericOutput[89]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_89" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[8]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_8" Size="16"/>
+			<Link VarA="GVL.NumericOutput[8]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_8" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[90]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_90" Size="16"/>
+			<Link VarA="GVL.NumericOutput[90]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_90" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[91]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_91" Size="16"/>
+			<Link VarA="GVL.NumericOutput[91]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_91" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[92]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_92" Size="16"/>
+			<Link VarA="GVL.NumericOutput[92]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_92" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[93]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_93" Size="16"/>
+			<Link VarA="GVL.NumericOutput[93]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_93" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[94]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_94" Size="16"/>
+			<Link VarA="GVL.NumericOutput[94]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_94" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[95]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_95" Size="16"/>
+			<Link VarA="GVL.NumericOutput[95]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_95" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[96]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_96" Size="16"/>
+			<Link VarA="GVL.NumericOutput[96]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_96" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[97]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_97" Size="16"/>
+			<Link VarA="GVL.NumericOutput[97]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_97" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[98]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_98" Size="16"/>
+			<Link VarA="GVL.NumericOutput[98]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_98" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[99]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_99" Size="16"/>
+			<Link VarA="GVL.NumericOutput[99]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_99" Size="16" OffsA="16"/>
+			<Link VarA="GVL.NumericOutput[9]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^dNumericOutput_9" Size="16"/>
+			<Link VarA="GVL.NumericOutput[9]" GrpA="PlcTask Outputs" TypeA="DWORD" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000007}" VarB="Outputs^iNumericOutput_9" Size="16" OffsA="16"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID3">
+			<Link VarA="GVL.Bus1_Devices[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id3^Outputs^data_single"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[0]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID5">
+			<Link VarA="GVL.Bus1_Devices[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id5^Outputs^data_single"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[1]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID6">
+			<Link VarA="GVL.Bus1_Devices[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id6^Outputs^data_single"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[2]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 5 (EL6751)^DPU3200_ID7">
+			<Link VarA="GVL.Bus1_Devices[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC3[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id7^Outputs^data_single"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus1_Devices_DLC4[3]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID0">
+			<Link VarA="GVL.Bus2_Devices[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id0^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id0^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[0]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id0^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID1">
+			<Link VarA="GVL.Bus2_Devices[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id1^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id1^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[1]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id1^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID2">
+			<Link VarA="GVL.Bus2_Devices[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id2^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id2^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[2]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id2^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID3">
+			<Link VarA="GVL.Bus2_Devices[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id3^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[3]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID4">
+			<Link VarA="GVL.Bus2_Devices[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[4]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id4^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[4]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id4^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[4]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id4^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID5">
+			<Link VarA="GVL.Bus2_Devices[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[5]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id5^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[5]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[5]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID6">
+			<Link VarA="GVL.Bus2_Devices[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[6]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id6^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[6]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[6]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 6 (EL6751)^BIC2200_ID7">
+			<Link VarA="GVL.Bus2_Devices[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC3[7]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id7^Outputs^data_single"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[7]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus2_Devices_DLC4[7]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID0">
+			<Link VarA="GVL.Bus3_Devices[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id0^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[0]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id0^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[0]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id0^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[0]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id0^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID1">
+			<Link VarA="GVL.Bus3_Devices[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id1^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[1]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id1^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[1]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id1^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[1]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id1^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID2">
+			<Link VarA="GVL.Bus3_Devices[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id2^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[2]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id2^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[2]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id2^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[2]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id2^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID3">
+			<Link VarA="GVL.Bus3_Devices[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id3^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[3]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id3^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[3]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[3]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id3^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID4">
+			<Link VarA="GVL.Bus3_Devices[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[4]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id4^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[4]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id4^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[4]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id4^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[4]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id4^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID5">
+			<Link VarA="GVL.Bus3_Devices[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[5]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id5^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[5]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id5^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[5]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[5]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id5^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID6">
+			<Link VarA="GVL.Bus3_Devices[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[6]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id6^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[6]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id6^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[6]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[6]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id6^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 7 (EL6751)^BIC2200_ID7">
+			<Link VarA="GVL.Bus3_Devices[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandNoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandOneDataByte_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC3[7]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandOneDataByte_id7^Outputs^data_single"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[7]^Command" GrpA="PlcTask Outputs" TypeA="INT" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="CommandTwoDataBytes_id7^Outputs^command_code"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[7]^Data[0]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8"/>
+			<Link VarA="GVL.Bus3_Devices_DLC4[7]^Data[1]" GrpA="PlcTask Outputs" TypeA="BYTE" InOutA="1" ParentTypeA="TxData" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="CommandTwoDataBytes_id7^Outputs^data_word" Size="8" OffsB="8"/>
+		</OwnerB>
+	</OwnerA>
+</VarLinks>

@@ -50,7 +50,7 @@
   MODE_VOLTAGE_FWD : BYTE := 2;         (* Voltage control, forward direction *)
   MODE_VOLTAGE_REV : BYTE := 4;         (* Voltage control, reverse direction *)
   OFFRAMP : TIME := T#10s;              (* Duration for OFF ramp-down *)
-  ORANGESTOPTIME : TIME := T#1m;        (* Delay before Orange Stop starts ramp-down *)
+  ORANGESTOPTIME : TIME := T#3m;        (* Delay before Orange Stop disables outputs *)
   REDSTOPTIME : TIME := T#1m;           (* Delay before Red Stop disables outputs *)
   REMOTETIMEOUT : TIME := T#2s;         (* Timeout for RemoteMasterAlive *)
   SHUTDOWNRAMP : TIME := T#60s;         (* Duration for shutdown ramp-down *)

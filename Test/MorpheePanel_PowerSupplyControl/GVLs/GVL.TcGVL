@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
   <GVL Name="GVL" Id="{f20f1905-5880-4192-9280-dc27597430f4}">
     <Declaration><![CDATA[VAR_GLOBAL
@@ -34,10 +34,10 @@
     EL3174_Channel2_Value: INT;           (** Raw analog value from EL3174 channel 2, 0-10V **)
     EL3174_Channel3_Value: INT;           (** Raw analog value from EL3174 channel 3, 0-10V **)
     EL3174_Channel4_Value: INT;           (** Raw analog value from EL3174 channel 4, 0-10V **)
-    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >5V **)
-    EL3174_Channel2_Alarm: BOOL;          (** Alarm for channel 2, >5V, optional **)
-    EL3174_Channel3_Alarm: BOOL;          (** Alarm for channel 3, >5V, optional **)
-    EL3174_Channel4_Alarm: BOOL;          (** Alarm for channel 4, >5V, optional **)
+    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >2.5V **)
+    EL3174_Channel2_Alarm: BOOL;          (** Alarm for channel 2, >2.5V, optional **)
+    EL3174_Channel3_Alarm: BOOL;          (** Alarm for channel 3, >2.5V, optional **)
+    EL3174_Channel4_Alarm: BOOL;          (** Alarm for channel 4, >2.5V, optional **)
     EStop: ARRAY[0..19] OF BOOL;          (** Emergency stop per device **)
     EthercatAlive: BOOL;                  (** EtherCAT communication status **)
     EthercatAliveFromMaster: BOOL;        (** EtherCAT master status **)
@@ -75,7 +75,7 @@
     MorpheeGasPGSAlarm: BOOL;             (** Morphee gas PGS alarm **)
     MorpheeMCUFault: BOOL;                (** Morphee MCU fault **)
     MorpheeScavengeFanFault: BOOL;        (** Morphee scavenge fan fault **)
-    MorpheeWatchdogFault: BOOL;           (** Morphee watchdog fault **)
+    MorpheeWatchdogFault: BOOL;           (** TRUE when Morphee bit2 heartbeat lost (edge age >3s). Clamps all OutputOn/OperationOn. **)
     NumericInput AT %I*: ARRAY[0..239] OF WORD; (** EtherCAT input data **)
     (* Temporary test inputs for groups: 4 groups x 7 inputs = 28 indices *)
     UseTempGroupInputs : BOOL := FALSE;        (** When TRUE, EthercatManager will read group inputs from TempGroupInput instead of NumericInput **)
@@ -100,7 +100,7 @@
     ReadCommandIndex: ARRAY[0..19] OF INT; (** CAN read command index **)
     RecoveryPending: ARRAY[0..19] OF BOOL; (** Fault recovery pending **)
     RedStop: ARRAY[0..19] OF BOOL;        (** Red-level stop **)
-    RemoteMasterAlive: BOOL;              (** Remote master status **)
+    RemoteMasterAlive: BOOL;              (** TRUE while Morphee NumericInput[1].2 edges keep arriving (not static level). **)
     SafetyCANCommFault: BOOL;             (** Safety CAN fault **)
     SafetyDoorPGSArea: BOOL;              (** Safety door PGS area **)
     SafetyECUFault: BOOL;                 (** Safety ECU fault **)
