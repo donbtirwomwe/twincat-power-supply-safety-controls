@@ -160,15 +160,21 @@ ELSE
   systemSafe := TRUE;
 END_IF;
 
-// Apply system-wide safety and device-specific faults to shutdown
+// Apply system-wide safety and device-specific faults to shutdown.
+// MorpheeWatchdogFault: no NumericInput[1].2 edges for ~3s (Morphee crash / comms loss).
+// CommFault is poll/timeout only — do not drop OperationOn/OutputOn (Bus3 last
+// nodes were toggling ON/OFF whenever a VIN/VOUT read missed).
 FOR devIdx := 0 TO 19 DO
-  GVL.SafetyShutdown[devIdx] := NOT systemSafe OR GVL.CommFault[devIdx] OR GVL.TemperatureFaultHigh[devIdx];
+  GVL.SafetyShutdown[devIdx] := NOT systemSafe
+    OR GVL.TemperatureFaultHigh[devIdx]
+    OR GVL.MorpheeWatchdogFault;
 END_FOR;
 
-// Disable outputs for devices in shutdown
+// Disable outputs for devices in shutdown (DPU 0-3 and BIC 4-19)
 FOR devIdx := 0 TO 19 DO
   IF GVL.SafetyShutdown[devIdx] THEN
-    GVL.OutputOn[devIdx] := FALSE; // Disable output on shutdown
+    GVL.OutputOn[devIdx] := FALSE;
+    GVL.OperationOn[devIdx] := FALSE;
   END_IF;
 END_FOR;
 
@@ -190,10 +196,9 @@ FOR devIdx := 0 TO 19 DO
   END_IF;
 END_FOR;
 
-// Update communication faults and polling status
+// CommFault is status only. Do not pause polling — DeviceManager keeps reading until the device answers.
 FOR devIdx := 0 TO 19 DO
   GVL.CommFault[devIdx] := GVL.CommTimeouts[devIdx] > GVL_constant.MAXCOMMTIMEOUT; (* Fixed: MAXCOMMTIMEOUT *)
-  GVL.PollingPaused[devIdx] := GVL.CommFault[devIdx] AND NOT GVL.DataValid[devIdx]; (* Pause polling if fault and stale *)
   GVL.RecoveryPending[devIdx] := GVL.RecoveryPending[devIdx] OR (GVL.FaultLevel[devIdx] > 0); (* Set pending if faulted *)
 END_FOR;]]></ST>
       </Implementation>

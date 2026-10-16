@@ -72,7 +72,7 @@ FOR groupIdx := 0 TO 3 DO
 
   FOR devIdx := groupBase TO groupBase + 3 DO
     IF devIdx <= 19 THEN
-      IF GVL.Vin[devIdx] > 0 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
+      IF GVL.DataValid[devIdx] AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
         activeDevices := activeDevices + 1;
       END_IF;
       IF GVL.OperationOn[devIdx] THEN
@@ -121,14 +121,14 @@ FOR groupIdx := 0 TO 3 DO
   GVL.GroupMaster[groupIdx] := -1;
 
   IF oldMaster >= groupBase AND oldMaster <= groupBase + 3 THEN
-    IF GVL.Vin[oldMaster] > 0 AND NOT GVL.CommFault[oldMaster] THEN
+    IF GVL.DataValid[oldMaster] AND NOT GVL.CommFault[oldMaster] AND NOT GVL.SafetyShutdown[oldMaster] THEN
       GVL.GroupMaster[groupIdx] := oldMaster;
     END_IF;
   END_IF;
 
   IF GVL.GroupMaster[groupIdx] = -1 THEN
     FOR i := groupBase TO groupBase + 3 DO
-      IF i <= 19 AND GVL.Vin[i] > 0 AND NOT GVL.CommFault[i] THEN
+      IF i <= 19 AND GVL.DataValid[i] AND NOT GVL.CommFault[i] AND NOT GVL.SafetyShutdown[i] THEN
         GVL.GroupMaster[groupIdx] := i;
         EXIT;
       END_IF;

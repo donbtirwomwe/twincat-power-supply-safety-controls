@@ -30,11 +30,17 @@ VAR
   LastCommandSentTime : ARRAY[0..19] OF TIME; (* Last successful write timestamp per device *)
   LastIoutCommandSentTime : ARRAY[0..19] OF TIME; (* Last successful IOUT/REVERSE_IOUT write timestamp per device *)
   LastDirectionCommandSentTime : ARRAY[0..19] OF TIME; (* Last successful direction write timestamp per device *)
+  LastOperationCommandSentTime : ARRAY[0..19] OF TIME; (* Last successful OPERATION write timestamp per device *)
   WatchdogState : BOOL := FALSE;             (* Exported watchdog state for Morphee heartbeat bit *)
   WatchdogToggleTimer : TON;                 (* Timed watchdog toggle to avoid scan-rate flicker *)
   LastRemoteMasterHeartbeat : BOOL := FALSE; (* Prev NumericInput[1].2; edge detect for Morphee crash gate *)
   MorpheeHeartbeatSeen : BOOL := FALSE;      (* TRUE after first bit2 edge; until then RemoteMasterAlive=FALSE *)
-  MorpheeHeartbeatTimer : TON;               (* T#3S age; Q => no heartbeat edges => MorpheeWatchdogFault *)
+  MorpheeHeartbeatTimer : TON;               (* unused; TIME() age is the live timeout *)
+  LastMorpheeWatchdogFault : BOOL := FALSE;  (* Rising edge: force V/I zero commands to DPU+BIC *)
+  LastHeartbeatTime : TIME;                  (* TIME() of last NumericInput[1].2 edge *)
+  EthercatWasAlive : BOOL := FALSE;          (* Latched TRUE after slave has been in OP *)
+  PlcOpStartTime : TIME;                     (* TIME() when EtherCAT first went alive *)
+  PlcOpTimerStarted : BOOL := FALSE;         (* TRUE after first EthercatAlive *)
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -237,7 +243,7 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   IF (commandCode = 16#0020 OR commandCode = 16#0030 OR commandCode = 16#0120 OR commandCode = 16#0130)
      AND (NOT GVL.OutputOn[devIdx] OR NOT GVL.OperationOn[devIdx])
      AND data <> 0 THEN
-    (* All nonzero setpoint writes are gated: require both OutputOn and OperationOn. *)
+    (* Nonzero V/I only while OutputOn AND OperationOn are on. *)
     ApplyCommands := FALSE;
     RETURN;
   END_IF;
@@ -245,7 +251,7 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   IF GVL.OutputOn[devIdx] OR commandCode = 16#0000 OR commandCode = 16#0100 THEN
     commandData := data; (** Use provided data for enabled output or non-setpoint commands **)
   ELSE
-    commandData := 0; (** Output is off: send zero, but keep requested setpoints latched for retry when output turns on **)
+    commandData := 0; (** Output is off: send zero **)
   END_IF;
 
   (** Proceed with command **)
@@ -272,14 +278,6 @@ IF devIdx >= 0 AND devIdx <= 19 THEN
   END_CASE;
   IF ApplyCommands THEN
     LastCommandSentTime[devIdx] := nowTime;
-    (* Force immediate feedback polling after setpoint writes. ReadCommands index: 1=VOUT, 2=IOUT *)
-    CASE commandCode OF
-      16#0020, 16#0120:
-        GVL.ReadCommandIndex[devIdx] := 1;
-      16#0030, 16#0130:
-        GVL.ReadCommandIndex[devIdx] := 2;
-    END_CASE;
-
     GVL.PollingPaused[devIdx] := FALSE; (** Resume polling after successful write **)
     GVL.PollingPauseTimeout[devIdx](IN := FALSE); (** Stop timeout **)
   ELSE
@@ -328,6 +326,13 @@ VAR
   groupReqIoutRawPerDevice : ARRAY[0..3] OF UINT; (** Group object: split per-member current raw (x100) **)
   groupReqFlags : ARRAY[0..3] OF WORD;      (** Group object: raw flags word **)
   groupReqOutputOn : ARRAY[0..3] OF BOOL;   (** Group object: output-on request bit **)
+  groupReqOperationOn : ARRAY[0..3] OF BOOL; (** Group object: operation-on request bit **)
+  operationNeedsSend : BOOL;                (** TRUE when CMD_OPERATION must go out this cycle **)
+  heartbeatBit : BOOL;                       (** NumericInput[1] bit2 this cycle **)
+  heartbeatTimedOut : BOOL;                  (** TRUE when bit2 edges stopped for >=3s **)
+  neverGotHeartbeat : BOOL;                  (** TRUE when OP for >=3s with no bit2 edge **)
+  ethercatLost : BOOL;                       (** TRUE after OP then slave dropped out of OP **)
+  nowTimeWd : TIME;                          (** TIME() snapshot for watchdog age **)
   groupInputBaseCanonicalIdx : INT;          (** Canonical NumericInput base index for a group (10,17,24,31) **)
   groupFlagsConfigured : WORD;               (** Group flags read from configured GroupInputBase **)
   groupFlagsCanonical : WORD;                (** Group flags read from canonical group base **)
@@ -440,14 +445,42 @@ GVL.EthercatAliveFromMaster := (systemFlags AND 16#0002) <> 0;
    Campaign/bench: HARDWARE PROCESS_INIT may not re-run; formula must keep running.
    Docs: project README.md (2026-07-21), Morphee HARDWARE/307/README.md
    ------------------------------------------------------------------------- *)
-IF ((systemFlags AND 16#0004) <> 0) <> THIS^.LastRemoteMasterHeartbeat THEN
-  THIS^.LastRemoteMasterHeartbeat := ((systemFlags AND 16#0004) <> 0);
+nowTimeWd := TIME();
+heartbeatBit := (systemFlags AND 16#0004) <> 0;
+IF heartbeatBit <> THIS^.LastRemoteMasterHeartbeat THEN
+  THIS^.LastRemoteMasterHeartbeat := heartbeatBit;
   THIS^.MorpheeHeartbeatSeen := TRUE;
-  THIS^.MorpheeHeartbeatTimer(IN := FALSE); (* reset age on every edge *)
+  THIS^.LastHeartbeatTime := nowTimeWd;
 END_IF;
-THIS^.MorpheeHeartbeatTimer(IN := TRUE, PT := T#3S); (* ~3x Morphee 1s period *)
-GVL.RemoteMasterAlive := THIS^.MorpheeHeartbeatSeen AND NOT THIS^.MorpheeHeartbeatTimer.Q;
-GVL.MorpheeWatchdogFault := NOT GVL.RemoteMasterAlive;
+IF GVL.EthercatAlive THEN
+  THIS^.EthercatWasAlive := TRUE;
+  IF NOT THIS^.PlcOpTimerStarted THEN
+    THIS^.PlcOpStartTime := nowTimeWd;
+    THIS^.PlcOpTimerStarted := TRUE;
+  END_IF;
+END_IF;
+heartbeatTimedOut := THIS^.MorpheeHeartbeatSeen AND ((nowTimeWd - THIS^.LastHeartbeatTime) >= T#3S);
+neverGotHeartbeat := THIS^.EthercatWasAlive AND NOT THIS^.MorpheeHeartbeatSeen AND THIS^.PlcOpTimerStarted AND ((nowTimeWd - THIS^.PlcOpStartTime) >= T#3S);
+ethercatLost := THIS^.EthercatWasAlive AND NOT GVL.EthercatAlive;
+GVL.RemoteMasterAlive := THIS^.MorpheeHeartbeatSeen AND NOT heartbeatTimedOut AND NOT ethercatLost;
+(* Lost Morphee (no bit2 edges), never started toggling after OP, or EtherCAT master gone. *)
+GVL.MorpheeWatchdogFault := heartbeatTimedOut OR neverGotHeartbeat OR ethercatLost;
+IF GVL.MorpheeWatchdogFault AND NOT THIS^.LastMorpheeWatchdogFault THEN
+  (* Heartbeat just died: force CMD_OPERATION 0 and V/I = 0 on every DPU and BIC. *)
+  FOR devIdx := 0 TO 19 DO
+    IF THIS^.LastVoutSetpoint[devIdx] = 0 THEN
+      THIS^.LastVoutSetpoint[devIdx] := 1;
+    END_IF;
+    IF THIS^.LastIoutSetpoint[devIdx] = 0 THEN
+      THIS^.LastIoutSetpoint[devIdx] := 1;
+    END_IF;
+    THIS^.LastOperationOn[devIdx] := TRUE; (* mismatch vs OperationOn=FALSE => send OFF *)
+    GVL.OutputOn[devIdx] := FALSE;
+    GVL.OperationOn[devIdx] := FALSE;
+    GVL.SafetyShutdown[devIdx] := TRUE;
+  END_FOR;
+END_IF;
+THIS^.LastMorpheeWatchdogFault := GVL.MorpheeWatchdogFault;
 maintenanceMode := (systemFlags AND 16#0001) <> 0; (** Maintenance mode flag **)
 safetyResetRequest := ((systemFlags AND 16#0400) <> 0) OR Safety_Tags.iReset;
 deviceResetRequest := (systemFlags AND 16#0100) <> 0;
@@ -477,13 +510,17 @@ FaultResetRequestPrev := deviceResetRequest;
 
 (** Process EL2809 and EL2798 inputs **)
 FOR j:=0 TO 2 DO
-GVL.EL2809_InputFlags[j] := GVL.NumericInput[5+j]; (** Index 5: EL2809 flags **)
+  IF j = 1 THEN
+    GVL.EL2809_InputFlags[j] := GVL.NumericInput[5+j] AND 16#FF0F; (** Reserve word 6 bits 4-7 for PS1 EL2798 outputs **)
+  ELSE
+    GVL.EL2809_InputFlags[j] := GVL.NumericInput[5+j]; (** EL2809 flags **)
+  END_IF;
 	FOR i := 0 TO 15 DO
 	  GVL.EL2809_Output[j,i] := (GVL.EL2809_InputFlags[j] AND SHL(TO_WORD(1), i)) <> 0;
 	END_FOR;
 END_FOR;
 
-GVL.EL2798_InputFlags := TO_BYTE(GVL.NumericInput[6]); (** Index 6: EL2798 flags **)
+GVL.EL2798_InputFlags := TO_BYTE(SHR(GVL.NumericInput[6] AND 16#00F0, 4)); (** NumericInput[6] bits 4-7 -> EL2798 channels 1-4; bits 0-3 stay on EL2809 **)
 FOR i := 0 TO 7 DO
   GVL.EL2798_Output[i] := (GVL.EL2798_InputFlags AND SHL(TO_BYTE(1), i)) <> 0;
 END_FOR;
@@ -523,11 +560,17 @@ FOR groupIdx := 0 TO 3 DO
   groupReqIoutRawTotal[groupIdx] := groupIoutConfigured;
   groupReqFlags[groupIdx] := groupFlagsConfigured;
   groupReqOutputOn[groupIdx] := (groupReqFlags[groupIdx] AND 16#0010) <> 0;
-  IF groupReqOutputOn[groupIdx] THEN
+  groupReqOperationOn[groupIdx] := (groupReqFlags[groupIdx] AND 16#0002) <> 0;
+  IF groupReqOutputOn[groupIdx] OR groupReqOperationOn[groupIdx] THEN
+    (* Split group I among members that REPORT Operation On (successful CMD_OPERATION).
+       Those still absorb current even with some faults. Do not count Vin-only or
+       commanded-but-never-acked modules (that was 50%/75% of setpoint). *)
     activeInGroup := 0;
     FOR memberIdx := (groupIdx * 4) + 4 TO (groupIdx * 4) + 7 DO
       IF memberIdx <= 19 THEN
-        IF GVL.Vin[memberIdx] > 0 AND NOT GVL.CommFault[memberIdx] AND NOT GVL.SafetyShutdown[memberIdx] THEN
+        IF GVL.DataValid[memberIdx] AND NOT GVL.CommFault[memberIdx] AND
+           NOT GVL.SafetyShutdown[memberIdx] AND GVL.OperationOn[memberIdx] AND
+           THIS^.LastOperationOn[memberIdx] THEN
           activeInGroup := activeInGroup + 1;
         END_IF;
       END_IF;
@@ -581,12 +624,13 @@ FOR devIdx := 0 TO 19 DO
         activeInGroup := 0;
         FOR memberIdx := (groupIdx * 4) + 4 TO (groupIdx * 4) + 7 DO
           IF memberIdx <= 19 THEN
-            IF groupOutputRequest AND GVL.Vin[memberIdx] > 0 AND NOT GVL.CommFault[memberIdx] AND NOT GVL.SafetyShutdown[memberIdx] THEN
+            IF GVL.DataValid[memberIdx] AND NOT GVL.CommFault[memberIdx] AND
+               NOT GVL.SafetyShutdown[memberIdx] AND GVL.OperationOn[memberIdx] AND
+               THIS^.LastOperationOn[memberIdx] THEN
               activeInGroup := activeInGroup + 1;
             END_IF;
           END_IF;
         END_FOR;
-
         IF activeInGroup > 0 THEN
           groupIoutRawPerDevice := groupIoutRawTotal / activeInGroup;
         ELSE
@@ -594,7 +638,13 @@ FOR devIdx := 0 TO 19 DO
         END_IF;
 
         GVL.VoutSetpoint[devIdx] := UINT_TO_REAL(groupVoutRaw);
-        GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
+        IF GVL.DataValid[devIdx] AND NOT GVL.CommFault[devIdx] AND
+           NOT GVL.SafetyShutdown[devIdx] AND GVL.OperationOn[devIdx] AND
+           THIS^.LastOperationOn[devIdx] THEN
+          GVL.IoutSetpoint[devIdx] := UINT_TO_REAL(groupIoutRawPerDevice);
+        ELSE
+          GVL.IoutSetpoint[devIdx] := 0.0;
+        END_IF;
       END_IF;
     ELSIF GVL.UseIndividualBicControl AND GVL.UseTempGroupInputs AND devIdx >= 4 THEN
       CASE devIdx OF
@@ -676,7 +726,7 @@ FOR devIdx := 0 TO 19 DO
       GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]); (** Standby when neither Voltage nor Current **)
       GVL.Direction[devIdx] := (flags AND 16#0001) <> 0; (** Bit 0: Direction **)
       GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
-      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] THEN
+      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] AND NOT GVL.MorpheeWatchdogFault AND NOT GVL.SafetyShutdown[devIdx] THEN
         THIS^.LastVoutSetpoint[devIdx] := 0;
         THIS^.LastIoutSetpoint[devIdx] := 0;
         THIS^.LastOperationOn[devIdx] := NOT GVL.OperationOn[devIdx];
@@ -694,7 +744,7 @@ FOR devIdx := 0 TO 19 DO
       GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]); (** Standby when neither Voltage nor Current **)
       GVL.Direction[devIdx] := (flags AND 16#0001) <> 0; (** Bit 0: Direction **)
       GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0; (** Bit 1: OperationOn **)
-      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] THEN
+      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] AND NOT GVL.MorpheeWatchdogFault AND NOT GVL.SafetyShutdown[devIdx] THEN
         THIS^.LastVoutSetpoint[devIdx] := 0;
         THIS^.LastIoutSetpoint[devIdx] := 0;
         THIS^.LastOperationOn[devIdx] := NOT GVL.OperationOn[devIdx];
@@ -710,7 +760,7 @@ FOR devIdx := 0 TO 19 DO
       GVL.Standby[devIdx] := NOT (GVL.Voltage[devIdx] OR GVL.Current[devIdx]);
       GVL.Direction[devIdx] := (flags AND 16#0001) <> 0;
       GVL.OperationOn[devIdx] := (flags AND 16#0002) <> 0;
-      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] THEN
+      IF requestedOutputOn AND NOT THIS^.LastOutputOn[devIdx] AND NOT GVL.MorpheeWatchdogFault AND NOT GVL.SafetyShutdown[devIdx] THEN
         THIS^.LastVoutSetpoint[devIdx] := 0;
         THIS^.LastIoutSetpoint[devIdx] := 0;
         THIS^.LastOperationOn[devIdx] := NOT GVL.OperationOn[devIdx];
@@ -718,21 +768,56 @@ FOR devIdx := 0 TO 19 DO
       END_IF;
       GVL.OutputOn[devIdx] := requestedOutputOn;
       THIS^.LastOutputOn[devIdx] := requestedOutputOn;
+      (* Fan-out: every BIC in the group gets the group OutputOn/OperationOn bits, not only the master. *)
+      groupIdx := (devIdx - 4) / 4;
+      IF groupIdx >= 0 AND groupIdx <= 3 THEN
+        IF groupReqOutputOn[groupIdx] THEN
+          GVL.OutputOn[devIdx] := TRUE;
+          requestedOutputOn := TRUE;
+          THIS^.LastOutputOn[devIdx] := TRUE;
+        END_IF;
+        IF groupReqOperationOn[groupIdx] OR (groupReqOutputOn[groupIdx] AND ((flags AND 16#000C) <> 0)) THEN
+          GVL.OperationOn[devIdx] := TRUE;
+        END_IF;
+      END_IF;
     END_IF;
 
-    (* Safety clamp: never allow OutputOn/OperationOn while device is in shutdown. *)
+    (* Safety clamp: never allow OutputOn/OperationOn while device is in shutdown.
+       Do not clear LastOutputOn here — that created a fake OutputOn rising edge
+       against frozen Morphee PDO bits and skipped CMD_OPERATION 0. *)
     IF GVL.SafetyShutdown[devIdx] THEN
       GVL.OutputOn[devIdx] := FALSE;
       GVL.OperationOn[devIdx] := FALSE;
-      THIS^.LastOutputOn[devIdx] := FALSE;
     END_IF;
 
     (* Morphee application watchdog (not TwinSAFE): no bit2 edges for ~3s => fault.
-       Force OutputOn/OperationOn FALSE for every device until heartbeat edges resume. *)
+       Drop OutputOn/OperationOn for DPU (0-3) and BIC (4-19) and force standby so
+       the command queue sends OPERATION off and V/I = 0. Do not clear Last* here
+       or the falling edge is swallowed and hardware keeps the last Vout. *)
     IF GVL.MorpheeWatchdogFault THEN
       GVL.OutputOn[devIdx] := FALSE;
       GVL.OperationOn[devIdx] := FALSE;
-      THIS^.LastOutputOn[devIdx] := FALSE;
+      GVL.Voltage[devIdx] := FALSE;
+      GVL.Current[devIdx] := FALSE;
+      GVL.Standby[devIdx] := TRUE;
+      GVL.VoutSetpoint[devIdx] := 0.0;
+      GVL.IoutSetpoint[devIdx] := 0.0;
+      GVL.SafetyShutdown[devIdx] := TRUE;
+    END_IF;
+
+    (* After safety/watchdog clamps: if the group object is ON, force every live member ON. *)
+    IF NOT GVL.SafetyShutdown[devIdx] AND NOT GVL.MorpheeWatchdogFault THEN
+      IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND devIdx >= 4 THEN
+        groupIdx := (devIdx - 4) / 4;
+        IF groupIdx >= 0 AND groupIdx <= 3 THEN
+          IF groupReqOutputOn[groupIdx] THEN
+            GVL.OutputOn[devIdx] := TRUE;
+          END_IF;
+          IF groupReqOperationOn[groupIdx] OR (groupReqOutputOn[groupIdx] AND ((groupReqFlags[groupIdx] AND 16#000C) <> 0)) THEN
+            GVL.OperationOn[devIdx] := TRUE;
+          END_IF;
+        END_IF;
+      END_IF;
     END_IF;
 
     (* Use active-cycle command flags as the source of truth for direction when choosing VOUT command type. *)
@@ -773,8 +858,42 @@ FOR devIdx := 0 TO 19 DO
     GVL.EStop[devIdx] := (flags AND 16#0080) <> 0; (** Bit 7: EStop **)
   END_IF;
 
+  (** Lost Morphee: CMD_OPERATION 0 and V/I 0 on this DPU/BIC every cycle until accepted.
+      Frozen PDO still has OutputOn/OperationOn bits; do not let group refresh turn them back on. **)
+  IF GVL.MorpheeWatchdogFault THEN
+    GVL.OutputOn[devIdx] := FALSE;
+    GVL.OperationOn[devIdx] := FALSE;
+    GVL.Voltage[devIdx] := FALSE;
+    GVL.Current[devIdx] := FALSE;
+    GVL.Standby[devIdx] := TRUE;
+    GVL.SafetyShutdown[devIdx] := TRUE;
+    IF THIS^.LastOperationOn[devIdx] THEN
+      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, 0) THEN
+        THIS^.LastOperationOn[devIdx] := FALSE;
+        THIS^.LastOperationCommandSentTime[devIdx] := TIME();
+      END_IF;
+    END_IF;
+    IF desiredReverse THEN
+      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, 0) THEN
+        GVL.VoutSetRev[devIdx] := 0.0;
+        THIS^.LastVoutSetpoint[devIdx] := 0;
+      END_IF;
+      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, 0) THEN
+        GVL.IoutSetRev[devIdx] := 0.0;
+        THIS^.LastIoutSetpoint[devIdx] := 0;
+      END_IF;
+    ELSE
+      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_VOUT_SET, 0) THEN
+        GVL.VoutSetpoint[devIdx] := 0.0;
+        THIS^.LastVoutSetpoint[devIdx] := 0;
+      END_IF;
+      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, 0) THEN
+        GVL.IoutSetpoint[devIdx] := 0.0;
+        THIS^.LastIoutSetpoint[devIdx] := 0;
+      END_IF;
+    END_IF;
   (** Manual fault-reset sequence for BICs: force OPERATION OFF then ON. **)
-  IF devIdx >= 4 AND FaultResetState[devIdx] <> 0 THEN
+  ELSIF devIdx >= 4 AND FaultResetState[devIdx] <> 0 THEN
     CASE FaultResetState[devIdx] OF
       1:
         IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, 0) THEN
@@ -795,32 +914,22 @@ FOR devIdx := 0 TO 19 DO
         END_IF;
     END_CASE;
   ELSE
-    (** Queue direction command only when requested direction changes.
-        Avoid retrying every cycle on feedback mismatch, which can starve later commands under 50 ms pacing. **)
-    forceIoutRefresh := FALSE;
-    IF devIdx >= 4 AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
+    (** Queue OPERATION first so DIRECTION/V/I cannot steal the 10 ms CAN slot.
+        Group BIC: every member must receive CMD_OPERATION, not only the master.
+        First ApplyCommands can be consumed by SYSTEM_CONFIG/BIDIR init. **)
+    operationNeedsSend := (GVL.OperationOn[devIdx] <> THIS^.LastOperationOn[devIdx]);
+    IF NOT usePerDeviceInputs AND devIdx >= 4 AND GVL.OperationOn[devIdx] AND GVL.OutputOn[devIdx] THEN
       nowTimeForRefresh := TIME();
-      IF THIS^.LastDirectionCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastDirectionCommandSentTime[devIdx]) >= T#500MS THEN
-        forceIoutRefresh := TRUE;
+      IF THIS^.LastOperationCommandSentTime[devIdx] = T#0MS THEN
+        operationNeedsSend := TRUE;
+      ELSIF (nowTimeForRefresh - THIS^.LastOperationCommandSentTime[devIdx]) >= T#200MS THEN
+        operationNeedsSend := TRUE;
       END_IF;
     END_IF;
-    directionChangedThisCycle := (GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx]);
-    IF directionChangedThisCycle OR forceIoutRefresh THEN
-      IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
-        THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
-        THIS^.LastDirectionCommandSentTime[devIdx] := TIME();
-        IF directionChangedThisCycle THEN
-          (* Direction changed: force resend of setpoints in the new direction command space. *)
-          THIS^.LastVoutSetpoint[devIdx] := 0;
-          THIS^.LastIoutSetpoint[devIdx] := 0;
-        END_IF;
-      END_IF;
-    END_IF;
-
-    (** Queue operation command **)
-    IF GVL.OperationOn[devIdx] <> THIS^.LastOperationOn[devIdx] THEN
+    IF operationNeedsSend THEN
       IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_OPERATION, BOOL_TO_UINT(GVL.OperationOn[devIdx])) THEN (** CMD_OPERATION **)
         THIS^.LastOperationOn[devIdx] := GVL.OperationOn[devIdx];
+        THIS^.LastOperationCommandSentTime[devIdx] := TIME();
         IF GVL.OperationOn[devIdx] THEN
           (* Trigger one clean resend of setpoints after OPERATION is acknowledged. *)
           THIS^.LastVoutSetpoint[devIdx] := 0;
@@ -829,8 +938,57 @@ FOR devIdx := 0 TO 19 DO
       END_IF;
     END_IF;
 
+    (** Queue direction after OPERATION so group members actually receive ON. **)
+    forceIoutRefresh := FALSE;
+    IF THIS^.LastOperationCommandSentTime[devIdx] <> T#0MS OR NOT GVL.OperationOn[devIdx] THEN
+      IF devIdx >= 4 AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
+        nowTimeForRefresh := TIME();
+        IF THIS^.LastDirectionCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastDirectionCommandSentTime[devIdx]) >= T#500MS THEN
+          forceIoutRefresh := TRUE;
+        END_IF;
+      END_IF;
+      directionChangedThisCycle := (GVL.Direction[devIdx] <> THIS^.LastDirection[devIdx]);
+      IF directionChangedThisCycle OR forceIoutRefresh THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_DIRECTION_CTRL, BOOL_TO_UINT(GVL.Direction[devIdx])) THEN (** CMD_DIRECTION_CTRL **)
+          THIS^.LastDirection[devIdx] := GVL.Direction[devIdx];
+          THIS^.LastDirectionCommandSentTime[devIdx] := TIME();
+          IF directionChangedThisCycle THEN
+            (* Direction changed: force resend of setpoints in the new direction command space. *)
+            THIS^.LastVoutSetpoint[devIdx] := 0;
+            THIS^.LastIoutSetpoint[devIdx] := 0;
+          END_IF;
+        END_IF;
+      END_IF;
+    END_IF;
+
     (** Queue setpoint commands based on DeviceMode and Direction **)
-    IF GVL.Standby[devIdx] THEN
+    (* Output/Operation off: always clear V/I on the module. Do not stay in Voltage mode
+       (MIN_VOLTAGE floor of 19 V) or skip nonzero writes — that left ~24 V on VOUT. *)
+    IF NOT GVL.OutputOn[devIdx] OR NOT GVL.OperationOn[devIdx] THEN
+      (* Either Output or Operation off: V=0 and I=0 on DPU and BIC. *)
+      IF desiredReverse THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, 0) THEN
+          GVL.VoutSetRev[devIdx] := 0.0;
+          THIS^.LastVoutSetpoint[devIdx] := 0;
+        END_IF;
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, 0) THEN
+          GVL.IoutSetRev[devIdx] := 0.0;
+          THIS^.LastIoutSetpoint[devIdx] := 0;
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_VOUT_SET, 0) THEN
+          GVL.VoutSetpoint[devIdx] := 0.0;
+          THIS^.LastVoutSetpoint[devIdx] := 0;
+        END_IF;
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, 0) THEN
+          GVL.IoutSetpoint[devIdx] := 0.0;
+          THIS^.LastIoutSetpoint[devIdx] := 0;
+        END_IF;
+      END_IF;
+    ELSIF NOT usePerDeviceInputs AND devIdx >= 4 AND THIS^.LastOperationCommandSentTime[devIdx] = T#0MS THEN
+      (* Hold V/I until this group member has actually received CMD_OPERATION. *)
+      operationNeedsSend := operationNeedsSend;
+    ELSIF GVL.Standby[devIdx] THEN
     (** Standby mode **)
     IF THIS^.LastVoutSetpoint[devIdx] <> 0 THEN
       IF desiredReverse THEN
@@ -893,8 +1051,32 @@ FOR devIdx := 0 TO 19 DO
       END_CASE;
     END_IF;
     deferIoutUntilNextCycle := FALSE;
-    (** CC mode voltage ceiling for BIC devices: 5% margin below 28V hardware max *)
-    IF devIdx >= 4 THEN
+    (* CC: send IOUT first (group I is already split per device). Do not defer I behind V
+       ceiling — four BICs sending VOUT first starved IOUT and Morphee saw ~0 A at 28 V. *)
+    forceIoutRefresh := FALSE;
+    IF devIdx >= 4 AND NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
+      nowTimeForRefresh := TIME();
+      IF THIS^.LastIoutCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastIoutCommandSentTime[devIdx]) >= T#500MS THEN
+        forceIoutRefresh := TRUE;
+      END_IF;
+    END_IF;
+    (* Always retry IOUT in CC. Do not skip just because LastIout matches — a failed
+       CAN slot left Last=0 and V=28 V with no current. *)
+    IF GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] AND (forceIoutRefresh OR clampedIout <> THIS^.LastIoutSetpoint[devIdx] OR THIS^.LastIoutSetpoint[devIdx] = 0) THEN
+      IF GVL.Direction[devIdx] THEN
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, clampedIout) THEN
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+          THIS^.LastIoutCommandSentTime[devIdx] := TIME();
+        END_IF;
+      ELSE
+        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, clampedIout) THEN
+          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
+          THIS^.LastIoutCommandSentTime[devIdx] := TIME();
+        END_IF;
+      END_IF;
+    END_IF;
+    (** CC voltage ceiling only after IOUT has been accepted, so we do not sit at 28 V / 0 A. *)
+    IF devIdx >= 4 AND THIS^.LastIoutSetpoint[devIdx] <> 0 THEN
       IF NOT maintenanceMode THEN
         groupIdx := (devIdx - 4) / 4;
         IF groupIdx >= 0 AND groupIdx <= 3 THEN
@@ -907,18 +1089,19 @@ FOR devIdx := 0 TO 19 DO
       END_IF;
 
       IF GVL.Direction[devIdx] THEN
-        (* Reverse CC: REVERSE_VOUT_SET = lower voltage protection, floored at MIN_VOLTAGE *)
-        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
-      ELSE
-        (* Forward CC: VOUT_SET = upper voltage ceiling, capped at VoutSetMax from group/operator limits *)
-        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
-        IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
-          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE));
-        ELSIF THIS^.VoutSetMax[devIdx] > 0 THEN
-          setpointVout := MIN(setpointVout, UINT_TO_REAL(THIS^.VoutSetMax[devIdx]));
-        ELSE
-          setpointVout := MIN(setpointVout, UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE));
+        (* Discharge CC: voltage FLOOR (Vmin ~19 V). Using Vmax 28 V here meant current
+           only flowed when actual V was already above 28 V. *)
+        setpointVout := UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE);
+        IF THIS^.VoutSetMin[devIdx] > 0 THEN
+          setpointVout := MAX(setpointVout, UINT_TO_REAL(THIS^.VoutSetMin[devIdx]));
         END_IF;
+      ELSE
+        (* Charge CC: voltage CEILING (Vmax ~28 V) so current flows while V < Vmax. *)
+        setpointVout := UINT_TO_REAL(GVL_Constant.MAX_VOLTAGE);
+        IF THIS^.VoutSetMax[devIdx] > 0 THEN
+          setpointVout := MIN(setpointVout, UINT_TO_REAL(THIS^.VoutSetMax[devIdx]));
+        END_IF;
+        setpointVout := MAX(setpointVout, UINT_TO_REAL(GVL_Constant.MIN_VOLTAGE));
       END_IF;
       factorNibble := GVL.VoutScale[devIdx] AND 16#000F;
       CASE factorNibble OF
@@ -934,33 +1117,11 @@ FOR devIdx := 0 TO 19 DO
         IF desiredReverse THEN
           IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_VOUT_SET, clampedVout) THEN
             THIS^.LastVoutSetpoint[devIdx] := clampedVout;
-            deferIoutUntilNextCycle := TRUE;
           END_IF;
         ELSE
           IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_VOUT_SET, clampedVout) THEN
             THIS^.LastVoutSetpoint[devIdx] := clampedVout;
-            deferIoutUntilNextCycle := TRUE;
           END_IF;
-        END_IF;
-      END_IF;
-    END_IF;
-    forceIoutRefresh := FALSE;
-    IF devIdx >= 4 AND NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND GVL.OutputOn[devIdx] AND GVL.OperationOn[devIdx] THEN
-      nowTimeForRefresh := TIME();
-      IF THIS^.LastIoutCommandSentTime[devIdx] = T#0MS OR (nowTimeForRefresh - THIS^.LastIoutCommandSentTime[devIdx]) >= T#500MS THEN
-        forceIoutRefresh := TRUE;
-      END_IF;
-    END_IF;
-    IF NOT deferIoutUntilNextCycle AND (forceIoutRefresh OR clampedIout <> THIS^.LastIoutSetpoint[devIdx]) THEN
-      IF GVL.Direction[devIdx] THEN
-        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_REVERSE_IOUT_SET, clampedIout) THEN (** CMD_REVERSE_IOUT_SET **)
-          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
-          THIS^.LastIoutCommandSentTime[devIdx] := TIME();
-        END_IF;
-      ELSE
-        IF THIS^.ApplyCommands(devIdx, GVL_Constant.CMD_IOUT_SET, clampedIout) THEN (** CMD_IOUT_SET **)
-          THIS^.LastIoutSetpoint[devIdx] := clampedIout;
-          THIS^.LastIoutCommandSentTime[devIdx] := TIME();
         END_IF;
       END_IF;
     END_IF;
@@ -1156,6 +1317,34 @@ FOR devIdx := 0 TO 19 DO
         IoutSetMin[devIdx] := GVL.TempGroupInput[tempBase + 5] / 100;
         IoutSetMax[devIdx] := GVL.TempGroupInput[tempBase + 6] / 100;
       END_IF;
+    ELSIF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl AND devIdx >= 4 THEN
+      groupIdx := (devIdx - 4) / 4;
+      inputIdx := GVL.GroupInputBase[groupIdx];
+      IF inputIdx < 10 OR inputIdx > 31 THEN
+        inputIdx := 10 + (groupIdx * 7);
+      END_IF;
+      VoutSetpoint[devIdx] := GVL.NumericInput[inputIdx];
+      IoutSetpoint[devIdx] := GVL.NumericInput[inputIdx + 1];
+      IF GVL.NumericInput[inputIdx + 3] > 500 THEN
+        VoutSetMin[devIdx] := GVL.NumericInput[inputIdx + 3] / 100;
+      ELSE
+        VoutSetMin[devIdx] := GVL.NumericInput[inputIdx + 3];
+      END_IF;
+      IF GVL.NumericInput[inputIdx + 4] > 500 THEN
+        VoutSetMax[devIdx] := GVL.NumericInput[inputIdx + 4] / 100;
+      ELSE
+        VoutSetMax[devIdx] := GVL.NumericInput[inputIdx + 4];
+      END_IF;
+      IF GVL.NumericInput[inputIdx + 5] > 500 THEN
+        IoutSetMin[devIdx] := GVL.NumericInput[inputIdx + 5] / 100;
+      ELSE
+        IoutSetMin[devIdx] := GVL.NumericInput[inputIdx + 5];
+      END_IF;
+      IF GVL.NumericInput[inputIdx + 6] > 500 THEN
+        IoutSetMax[devIdx] := GVL.NumericInput[inputIdx + 6] / 100;
+      ELSE
+        IoutSetMax[devIdx] := GVL.NumericInput[inputIdx + 6];
+      END_IF;
     ELSE
       VoutSetpoint[devIdx] := GVL.NumericInput[baseIdx];
       IoutSetpoint[devIdx] := GVL.NumericInput[baseIdx + 1];
@@ -1332,7 +1521,7 @@ VAR
   reverseMode : BOOL;                     (* TRUE when group direction is reverse *)
   memberIdx : INT;                        (* Member index inside a BIC group *)
   groupAggVinRaw : UDINT;                 (* Sum of raw Vin across healthy devices in a group *)
-  groupAggVoutRaw : UDINT;                (* Sum of raw Vout across healthy devices in a group *)
+  groupAggVoutRaw : UDINT;                (* MAX raw Vout across healthy devices in a group (parallel bus) *)
   groupAvgVinRaw : UDINT;                 (* Average raw Vin across healthy devices in a group *)
   groupAvgVoutRaw : UDINT;                (* Average raw Vout across healthy devices in a group *)
   groupAggIoutRaw : DINT;                 (* Sum of raw signed Iout across healthy devices in a group *)
@@ -1552,7 +1741,12 @@ ELSE
               END_IF;
             END_IF;
 
-            IF GVL.Vin[devIdx] > 0 OR GVL.Vout[devIdx] > 0 THEN
+            (* Do not report bus/precharge voltage as Vout when output is off. *)
+            IF NOT GVL.OutputOn[devIdx] OR NOT GVL.OperationOn[devIdx] THEN
+              scaledVout := 0;
+            END_IF;
+
+            IF GVL.Vin[devIdx] > 0 OR scaledVout > 0 THEN
               GVL.NumericOutput[baseIdx] := SHL(TO_DWORD(scaledVin), 16) OR TO_DWORD(scaledVout);
             ELSE
                 GVL.NumericOutput[baseIdx] := 0;
@@ -1560,9 +1754,9 @@ ELSE
 
             signedIoutRaw := WORD_TO_INT(UINT_TO_WORD(GVL.Iout[devIdx]));
             IF devIdx <= 3 THEN
-              (* Export signed current as fixed-point x100 so Morphee preserves two decimal places. *)
-              ioutEngineering := INT_TO_REAL(signedIoutRaw) * 0.1;
-              scaledIout := REAL_TO_INT(ioutEngineering * 100.0);
+              (* DPU IOUT F=0.1 same as VOUT: publish raw (347 = 34.7 A). Morphee R_HDW.iNumericOutputs_* uses a=0.1.
+                 Do not pre-scale *0.1*100 — that made campaign show 347 A instead of 34.7 A. *)
+              scaledIout := signedIoutRaw;
               (* DPU fixed scaling from manual: TEMPERATURE F=0.1.
                  Publish raw value (e.g., 253 = 25.3C) so Morphee applies F=0.1 consistently. *)
               scaledTemp := GVL.Temperature[devIdx];
@@ -1650,8 +1844,8 @@ ELSE
                 scaledIin := REAL_TO_UINT(UINT_TO_REAL(GVL.Iin[devIdx]) * 0.1);
             END_IF;
 
-            (* For BIC group masters, publish aggregated group feedback in the same device channels
-               so EtherCAT master can keep reading per-master channels without remapping. *)
+            (* Group master PDO: Morphee LVLA CBU actual current is the SUM of the four BICs.
+               GVL.Iout[] stays per-unit (CAN read). Vout on the master stays this device's read. *)
             IF devIdx >= 4 THEN
               CASE devIdx OF
                 4..7: groupIdx := 0;
@@ -1673,10 +1867,14 @@ ELSE
 
                 FOR memberIdx := groupBase TO groupBase + 3 DO
                   IF memberIdx <= 19 THEN
-                    IF GVL.Vin[memberIdx] > 0 AND NOT GVL.CommFault[memberIdx] AND NOT GVL.SafetyShutdown[memberIdx] THEN
+                    (* BIC VIN is often 0 on the 28 V DC bus — do not require Vin to sum Iout. *)
+                    IF GVL.DataValid[memberIdx] AND NOT GVL.CommFault[memberIdx] AND
+                       NOT GVL.SafetyShutdown[memberIdx] THEN
                       groupActiveCount := groupActiveCount + 1;
                       groupAggVinRaw := groupAggVinRaw + UINT_TO_UDINT(GVL.Vin[memberIdx]);
-                      groupAggVoutRaw := groupAggVoutRaw + UINT_TO_UDINT(GVL.Vout[memberIdx]);
+                      IF UINT_TO_UDINT(GVL.Vout[memberIdx]) > groupAggVoutRaw THEN
+                        groupAggVoutRaw := UINT_TO_UDINT(GVL.Vout[memberIdx]);
+                      END_IF;
                       groupAggIoutRaw := groupAggIoutRaw + INT_TO_DINT(WORD_TO_INT(UINT_TO_WORD(GVL.Iout[memberIdx])));
                       groupMaxTempRaw := MAX(groupMaxTempRaw, GVL.Temperature[memberIdx]);
                       IF GVL.FanSpeed1[memberIdx] < groupMinFan1Raw THEN
@@ -1691,11 +1889,9 @@ ELSE
 
                 IF groupActiveCount > 0 THEN
                   groupAvgVinRaw := groupAggVinRaw / UINT_TO_UDINT(groupActiveCount);
-                  groupAvgVoutRaw := groupAggVoutRaw / UINT_TO_UDINT(groupActiveCount);
+                  groupAvgVoutRaw := groupAggVoutRaw;
 
-                  (* Commissioning: grouped BIC VIN uses raw averaged x10 units. *)
                   scaledVin := UDINT_TO_INT(groupAvgVinRaw);
-
                   tempScale := GVL.VoutScale[devIdx] AND 16#0F;
                   IF tempScale = 16#4 THEN
                     scaledVout := REAL_TO_UINT(UDINT_TO_REAL(groupAvgVoutRaw) * 0.1);
@@ -1787,6 +1983,10 @@ ELSE
               END_IF;
             END_IF;
 
+            IF NOT GVL.OutputOn[devIdx] OR NOT GVL.OperationOn[devIdx] THEN
+              scaledVout := 0;
+              scaledIout := 0;
+            END_IF;
             GVL.NumericOutput[baseIdx] := SHL(TO_DWORD(scaledVin), 16) OR TO_DWORD(scaledVout);
             GVL.NumericOutput[baseIdx + 1] := SHL(TO_DWORD(INT_TO_WORD(scaledIout)), 16) OR TO_DWORD(scaledTemp);
             GVL.NumericOutput[baseIdx + 2] := SHL(TO_DWORD(scaledFanSpeed1), 16) OR TO_DWORD(scaledFanSpeed2);
@@ -1872,6 +2072,25 @@ ELSE
         //END_IF;
     END_FOR;
 
+    (* Morphee resolves group feedback references during initialization, before a healthy
+       master may be elected. Mirror the selected master's aggregate packet to every
+       member slot so a later master change cannot leave Morphee on an empty slot. *)
+    IF NOT maintenanceMode AND NOT GVL.UseIndividualBicControl THEN
+      FOR groupIdx := 0 TO 3 DO
+        masterIdx := GVL.GroupMaster[groupIdx];
+        groupBase := (groupIdx * 4) + 4;
+        IF masterIdx >= groupBase AND masterIdx <= groupBase + 3 THEN
+          FOR memberIdx := groupBase TO groupBase + 3 DO
+            IF memberIdx <> masterIdx THEN
+              FOR j := 0 TO 4 DO
+                GVL.NumericOutput[(memberIdx * 5) + j] := GVL.NumericOutput[(masterIdx * 5) + j];
+              END_FOR;
+            END_IF;
+          END_FOR;
+        END_IF;
+      END_FOR;
+    END_IF;
+
     GVL.NumericOutput[100] := systemAlarms;
   safetyResetOut := ((GVL.NumericInput[1] AND 16#0400) <> 0) OR Safety_Tags.iReset;
   deviceResetOut := (GVL.NumericInput[1] AND 16#0100) <> 0;
@@ -1922,7 +2141,7 @@ ELSE
           IF GVL.Direction[devIdx] THEN
             reverseMode := TRUE;
           END_IF;
-          IF GVL.Vin[devIdx] > 0 AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
+          IF GVL.DataValid[devIdx] AND NOT GVL.CommFault[devIdx] AND NOT GVL.SafetyShutdown[devIdx] THEN
             activeInGroupX10 := activeInGroupX10 + 1;
           END_IF;
         END_IF;
