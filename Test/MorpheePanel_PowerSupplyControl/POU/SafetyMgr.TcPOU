@@ -197,8 +197,9 @@ FOR devIdx := 0 TO 19 DO
 END_FOR;
 
 // CommFault is status only. Do not pause polling — DeviceManager keeps reading until the device answers.
+// CommTimeouts is capped at MAXCOMMTIMEOUT, so '>' is never true and was clearing the fault every cycle.
 FOR devIdx := 0 TO 19 DO
-  GVL.CommFault[devIdx] := GVL.CommTimeouts[devIdx] > GVL_constant.MAXCOMMTIMEOUT; (* Fixed: MAXCOMMTIMEOUT *)
+  GVL.CommFault[devIdx] := GVL.CommTimeouts[devIdx] >= UINT_TO_INT(GVL_Constant.MAXCOMMTIMEOUT);
   GVL.RecoveryPending[devIdx] := GVL.RecoveryPending[devIdx] OR (GVL.FaultLevel[devIdx] > 0); (* Set pending if faulted *)
 END_FOR;]]></ST>
       </Implementation>

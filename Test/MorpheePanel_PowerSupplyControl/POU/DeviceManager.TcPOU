@@ -250,10 +250,16 @@ ELSIF WaitingForResponse THEN
       GVL.RecoveryPending[DeviceIndex] := TRUE;
       GVL.FaultLevel[DeviceIndex] := 1;
     END_IF;
-    WaitingForResponse := FALSE; (** Retry. Do not leave the device unanswered. *)
-    IF NOT InitDone AND CommandIndex >= ReadCommandCount THEN
-      (** Manufacturer block only: move on so telemetry reads can start. Telemetry commands retry in place. **)
+    WaitingForResponse := FALSE;
+    (** TransType 255, no event timer: the EL6751 transmits CommandNoDataBytes only when the
+        command word changes. A byte-identical retry never goes on the bus, so step to the next command. **)
+    IF NOT InitDone THEN
       CommandIndex := CommandIndex + 1;
+    ELSE
+      GVL.ReadCommandIndex[DeviceIndex] := GVL.ReadCommandIndex[DeviceIndex] + 1;
+      IF GVL.ReadCommandIndex[DeviceIndex] >= ReadCommandCount THEN
+        GVL.ReadCommandIndex[DeviceIndex] := 0;
+      END_IF;
     END_IF;
   END_IF;
 END_IF;
