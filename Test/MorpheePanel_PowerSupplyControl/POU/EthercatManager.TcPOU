@@ -2094,10 +2094,11 @@ ELSE
     GVL.NumericOutput[100] := systemAlarms;
   safetyResetOut := ((GVL.NumericInput[1] AND 16#0400) <> 0) OR Safety_Tags.iReset;
   deviceResetOut := (GVL.NumericInput[1] AND 16#0100) <> 0;
-	 EL3174_Channel1_Alarm:=  EL3174_Channel1_value>(2.5*10)/32768;
- 	 EL3174_Channel2_Alarm:=  EL3174_Channel2_value>(2.5*10)/32768;
- 	 EL3174_Channel3_Alarm:=  EL3174_Channel3_value>(2.5*10)/32768;
-	 EL3174_Channel4_Alarm:=  EL3174_Channel4_value>(2.5*10)/32768;
+	(* EL3174 ±10 V = ±32767 counts. All four alarms are > 2.5 V (8192 counts). (V*10)/32768 is < 1 and tripped on any positive reading. *)
+	 EL3174_Channel1_Alarm:=  EL3174_Channel1_value > INT#8192; (* > 2.5 V *)
+ 	 EL3174_Channel2_Alarm:=  EL3174_Channel2_value > INT#8192; (* > 2.5 V *)
+ 	 EL3174_Channel3_Alarm:=  EL3174_Channel3_value > INT#8192; (* > 2.5 V *)
+	 EL3174_Channel4_Alarm:=  EL3174_Channel4_value > INT#8192; (* > 2.5 V *)
     GVL.NumericOutput[101] := SHL(TO_DWORD(GVL.SystemFlags), 0) OR 
                               SHL(TO_DWORD(GVL.EthercatAliveFromMaster), 2) OR 
                               SHL(TO_DWORD(GVL.RemoteMasterAlive), 3) OR 

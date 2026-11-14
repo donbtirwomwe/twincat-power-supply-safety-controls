@@ -10,6 +10,8 @@ VAR
   GroupMgr : GroupManager;                    // Group manager instance
   Devices : ARRAY[0..19] OF DeviceManager;    // Array of device managers for CAN communication
   i : INT;                                    // Loop variable
+  DeviceResetRequestPrev : BOOL;              // Previous MORPHEE device-reset bit (NumericInput[1] bit 8, 0x0100)
+  DeviceResetEdge : BOOL;                     // One-cycle re-init pulse for every DeviceManager
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -39,10 +41,13 @@ END_IF;
 // Main update loop (every PLC cycle)
 CycleCounter := CycleCounter + 1;
 IF CycleCounter >= 1 THEN
+  (* MORPHEE device reset (system flag 0x0100). Rising edge only, held for this PLC cycle. *)
+  DeviceResetEdge := ((GVL.NumericInput[1] AND 16#0100) <> 0) AND NOT DeviceResetRequestPrev;
   FOR i := 0 TO 19 DO
-    Devices[i](DeviceIndex := i, Reset := FALSE); // Update device managers without reset
+    Devices[i](DeviceIndex := i, Reset := DeviceResetEdge); // Re-init all devices on that edge
     Devices[i].Poll();                        // Poll CAN devices for data
   END_FOR;
+  DeviceResetRequestPrev := (GVL.NumericInput[1] AND 16#0100) <> 0;
   SetpointTest();                             // TEMP: run setpoint test before group/input processing
   GroupMgr();                                 // Execute FB body to refresh GroupMembership mapping
   SafetyMgr.UpdateSafety();                   // Update safety conditions
