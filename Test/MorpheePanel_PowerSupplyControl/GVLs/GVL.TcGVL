@@ -34,7 +34,7 @@
     EL3174_Channel2_Value: INT;           (** Raw analog value from EL3174 channel 2, 0-10V **)
     EL3174_Channel3_Value: INT;           (** Raw analog value from EL3174 channel 3, 0-10V **)
     EL3174_Channel4_Value: INT;           (** Raw analog value from EL3174 channel 4, 0-10V **)
-    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >4.0V **)
+    EL3174_Channel1_Alarm: BOOL;          (** Yellow alarm from GT, channel 1, >2.5V **)
     EL3174_Channel2_Alarm: BOOL;          (** Alarm for channel 2, >2.5V, optional **)
     EL3174_Channel3_Alarm: BOOL;          (** Alarm for channel 3, >2.5V, optional **)
     EL3174_Channel4_Alarm: BOOL;          (** Alarm for channel 4, >2.5V, optional **)
